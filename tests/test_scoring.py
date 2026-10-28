@@ -528,6 +528,57 @@ def test_data_files_use_official_sector_names(file_name):
     assert set(raw["sector"]) <= allowed
 
 
+def test_csv_from_excel_with_semicolons_and_decimal_comma():
+    csv = io.StringIO(
+        "asset;value;sector;asset_type;market_cap;currency;region\n"
+        "Apple;1.234,56;Information Technology;stock;large;USD;US\n"
+        "Fund;413,02;Diversified;ETF;n/a;EUR;Global\n"
+        "Bond;2.000;n/a;bond;n/a;RON;Romania\n"
+        "Cash;99.5;n/a;cash;n/a;RON;Romania\n"
+    )
+    df = scoring.load_portfolio(csv)
+    assert df["value"].tolist() == pytest.approx([1234.56, 413.02, 2000, 99.5])
+
+
+def test_csv_with_thousands_separators():
+    csv = io.StringIO(
+        "asset,value,sector,asset_type,market_cap,currency,region\n"
+        'Apple,"1,234.56",Information Technology,stock,large,USD,US\n'
+        "Fund,12 000,Diversified,ETF,n/a,EUR,Global\n"
+    )
+    assert scoring.load_portfolio(csv)["value"].tolist() == pytest.approx([1234.56, 12000])
+
+
+def test_csv_saved_with_windows_encoding():
+    data = (
+        "asset;value;sector;asset_type;market_cap;currency;region\n"
+        "Societatea Naţională;100;Utilities;stock;mid;ron;Romania\n"  # cp1250 has the cedilla ţ
+    )
+    df = scoring.load_portfolio(io.BytesIO(data.encode("cp1250")))
+    assert df["asset"][0] == "Societatea Naţională"
+    assert df["currency"][0] == "RON"
+
+
+@pytest.mark.parametrize(
+    "column, written, expected",
+    [
+        ("asset_type", "Stock", "stock"),
+        ("asset_type", "etf", "ETF"),
+        ("asset_type", "Bonds", "bond"),
+        ("market_cap", "Large cap", "large"),
+        ("market_cap", "small-cap", "small"),
+        ("region", "USA", "US"),
+        ("region", "europe", "Europe"),
+        ("region", "World", "Global"),
+    ],
+)
+def test_category_spellings_are_normalised(column, written, expected):
+    row = {"asset": "A", "value": 100, "sector": "Energy", "asset_type": "stock",
+           "market_cap": "large", "currency": "USD", "region": "US"}
+    row[column] = written
+    assert scoring.validate(pd.DataFrame([row]))[column][0] == expected
+
+
 def test_na_text_stays_a_category():
     df = scoring.load_portfolio(scoring.DATA_DIR / "conservative_saver.csv")
     assert "n/a" in set(df["sector"])

@@ -6,7 +6,9 @@ displays what these functions return. Thresholds come from rules.py.
 
 from __future__ import annotations
 
+import io
 import math
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -66,8 +68,44 @@ SECTOR_NAMES = {
 
 ASSET_TYPES = ("stock", "ETF", "bond", "cash")
 CAP_SEGMENTS = ("small", "mid", "large")
+REGIONS = ("US", "Europe", "Romania", "Emerging", "Global")
 HOME_CURRENCY = "RON"
 GLOBAL_REGION = "Global"
+
+# Currencies offered in the in-app editor (a CSV may use any code).
+CURRENCIES = ("RON", "USD", "EUR", "GBP", "CHF", "NOK", "SEK", "DKK", "PLN", "HUF", "CZK", "CAD", "JPY")
+
+# Other spellings accepted for the category columns, matched in any letter case.
+CATEGORY_NAMES = {
+    "asset_type": {
+        **{t.lower(): t for t in ASSET_TYPES},
+        "stocks": "stock",
+        "share": "stock",
+        "shares": "stock",
+        "etfs": "ETF",
+        "bonds": "bond",
+        "deposit": "cash",
+    },
+    "market_cap": {
+        **{c: c for c in CAP_SEGMENTS + ("n/a",)},
+        "large cap": "large",
+        "large-cap": "large",
+        "mid cap": "mid",
+        "mid-cap": "mid",
+        "small cap": "small",
+        "small-cap": "small",
+    },
+    "region": {
+        **{r.lower(): r for r in REGIONS},
+        "usa": "US",
+        "united states": "US",
+        "eu": "Europe",
+        "ro": "Romania",
+        "emerging markets": "Emerging",
+        "em": "Emerging",
+        "world": "Global",
+    },
+}
 
 GREEN, YELLOW, RED = "green", "yellow", "red"
 STATUS_LABELS = {GREEN: "OK", YELLOW: "Watch", RED: "Over limit"}
@@ -214,17 +252,54 @@ def round_half_up(x: float) -> int:
 
 
 def load_portfolio(source) -> pd.DataFrame:
-    """Read a portfolio CSV from a path or an uploaded file, then validate it."""
+    """Read a portfolio CSV from a path or an uploaded file, then validate it.
+
+    Also reads files saved by Excel with Romanian settings: ';' between columns
+    and a decimal comma (1.234,56)."""
+    text = read_text(source)
+    if not text.strip():
+        raise PortfolioError("The file is empty. Start from the template.")
+    header = text.splitlines()[0]
+    separator = ";" if header.count(";") > header.count(",") else ","
     try:
-        # utf-8-sig also reads files saved by Excel, which start with a BOM
-        df = pd.read_csv(source, keep_default_na=False, encoding="utf-8-sig")
-    except pd.errors.EmptyDataError:
-        raise PortfolioError("The file is empty. Start from the template.") from None
-    except (pd.errors.ParserError, UnicodeDecodeError):
+        df = pd.read_csv(io.StringIO(text), sep=separator, dtype=str, keep_default_na=False)
+    except pd.errors.ParserError:
         raise PortfolioError(
             "The file could not be read as a CSV. Start from the template."
         ) from None
+    if "value" in df.columns:
+        df["value"] = df["value"].map(lambda v: parse_amount(v, decimal_comma=separator == ";"))
     return validate(df)
+
+
+def read_text(source) -> str:
+    """The file's text: UTF-8 (with or without the BOM Excel adds), or the
+    Windows Central European encoding Excel uses for 'CSV' in Romanian."""
+    raw = source.read() if hasattr(source, "read") else Path(source).read_bytes()
+    if isinstance(raw, str):
+        return raw.lstrip("﻿")
+    try:
+        return raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        pass
+    try:
+        return raw.decode("cp1250")
+    except UnicodeDecodeError:
+        raise PortfolioError("The file could not be read as text. Save it as CSV UTF-8.") from None
+
+
+def parse_amount(text: str, decimal_comma: bool) -> str:
+    """Write an amount the standard way: '1.234,56' -> '1234.56' in a file with a
+    decimal comma, '1,234.56' -> '1234.56' otherwise. Spaces between thousands
+    are dropped. Anything else is left for validate() to reject."""
+    text = text.replace(" ", "").replace(" ", "")
+    if not decimal_comma:
+        return text.replace(",", "")
+    if "," in text:
+        return text.replace(".", "").replace(",", ".")
+    if re.fullmatch(r"\d{1,3}(\.\d{3})+", text):  # here the dot separates thousands: 1.234 = 1234
+        return text.replace(".", "")
+    return text
 
 
 def validate(df: pd.DataFrame) -> pd.DataFrame:
@@ -255,6 +330,10 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
         if column in df.columns:
             df[column] = df[column].astype(str).str.strip()
     df["sector"] = df["sector"].map(normalize_sector)
+    for column, names in CATEGORY_NAMES.items():
+        if column in df.columns:
+            df[column] = df[column].map(lambda v, names=names: names.get(v.lower(), v))
+    df["currency"] = df["currency"].str.upper()
     return df[[c for c in COLUMNS if c in df.columns]]
 
 
