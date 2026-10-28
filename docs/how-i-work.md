@@ -2,7 +2,7 @@
 
 I work alone, so I hold all three Scrum accountabilities: **Product Owner** (what to build, in what order), **Scrum Master** (I keep the process going) and **Developer** (I build it, with AI assistance).
 
-- **Product Goal:** TBD
+- **Product Goal:** Help individual investors see, in under a minute, how diversified their portfolio is, without giving investment advice.
 - **Sprint:** one week, Monday to Sunday. Sprint 1 is the exception: Tuesday 27 Oct to Monday 2 Nov 2026.
 - **Sprint Planning** (15 min, first day): I set the Sprint Goal and pull items from the Product Backlog into the Sprint Backlog.
 - **Daily Scrum** (5 min, end of each working day): what I did, what comes next, any impediments, and my own feedback after using the app. Each piece of feedback becomes a new Product Backlog item.
