@@ -14,10 +14,28 @@ The first time, it sets everything up (about a minute). After that, it starts at
 ## Three ways to enter a portfolio
 
 1. **Try a sample:** pick one of the eight portfolios in the side panel. "Edit these positions" turns any of them into a starting point for your own.
-2. **Type or paste:** click "Type or paste positions" and enter a name or ticker and its value in lei. Known stocks and ETFs (Apple, AAPL, VWCE, Banca Transilvania, …) fill in sector, type, market cap, currency and region by themselves, and you choose the rest from drop-down lists. You can also paste rows copied from Excel or Google Sheets (name, then value). "Download as CSV" keeps them for next time.
-3. **Upload a CSV:** the format is below. Files saved by Excel with Romanian settings work as they are, with `;` between columns and a decimal comma (1.234,56). Common spellings are accepted too ("Stock", "Large cap", "USA").
+2. **Type or paste:** click "Type or paste positions" and enter a name or ticker and its value in lei. Sector, type, market cap, currency and region fill in by themselves (see below), and whatever cannot be found is chosen from drop-down lists. You can also paste rows copied from Excel or Google Sheets (name, then value). "Download as CSV" keeps them for next time.
+3. **Upload a CSV:** the format is below. Files saved by Excel with Romanian settings work as they are, with `;` between columns and a decimal comma (1.234,56). Common spellings are accepted too ("Stock", "Large cap", "USA"). A file with only names and values is enough: the app offers to fill in the missing details.
 
-The list of known securities is [data/known_securities.csv](data/known_securities.csv). Add a row to teach the app a new stock or fund.
+![Positions pasted from a spreadsheet, filled in automatically](docs/screenshots/editor-paste-desktop.png)
+
+## Where the details come from
+
+Only free sources whose terms allow this use, in this order:
+
+| Source | Covers | Licence | Gives |
+|---|---|---|---|
+| Built-in list, [data/known_securities.csv](data/known_securities.csv) | about 220 popular stocks and ETFs: US and European large caps, Bucharest (BVB) shares, US and UCITS ETFs | our own compilation | everything |
+| [SEC EDGAR](https://www.sec.gov/edgar) | every company listed in the US (about 10,000), including European and emerging-market companies with US listings | U.S. government data, public domain | sector (from the SIC code), size (from the public float), region (from the business address), currency |
+| [OpenFIGI](https://www.openfigi.com) | listings on other exchanges, and funds | free, MIT licence, no restrictions on use or redistribution | type and currency; for funds, region and sector read from the fund's name |
+
+- **Not used:** Yahoo Finance and the libraries that read it (such as yfinance). Yahoo's terms do not allow automated extraction.
+- **Approximate sector and size:** GICS sector assignments and live market caps are licensed commercial data. The sector here comes from the official SIC code through our own table, and the size from the public float the company last reported. The app says so and lets you change both.
+- **What still needs a choice:** a European share that is not in the built-in list gets its type, currency and region, but you choose its sector and size. A ticker on its own is read as the US ticker (M is Macy's, not MedLife on BVB), so type the company name for a share listed only in Europe.
+- **Privacy and offline use:** only the names you type are sent. The "Look up names online" switch turns the lookup off, and the editor works offline.
+- **Optional settings:** a free [OpenFIGI API key](https://www.openfigi.com/api) in the `OPENFIGI_API_KEY` environment variable raises OpenFIGI's limit on name searches. `PHC_CONTACT` adds an e-mail to the identification string SEC asks automated clients to send.
+
+Add a row to the built-in list to teach the app a new stock or fund.
 
 ## Install and run by hand
 
@@ -77,7 +95,7 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - The market-cap reference is approximate: CRSP uses cumulative cap bands, while the data here use dollar thresholds.
 - Issuer risk on bonds is not analysed.
 - No live prices: values are entered by hand, in lei.
-- The details of known securities are approximate (market caps change), and each fund lists one common listing: if you bought it in another currency, change the currency in the editor.
+- The details filled in automatically are approximate: market caps change, sectors come from SIC codes (not GICS), and each fund in the built-in list has one common listing, so if you bought it in another currency, change the currency in the editor.
 
 ## Sources
 
@@ -85,6 +103,8 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - Banz, R. W. (1981). The relationship between return and market value of common stocks. *Journal of Financial Economics*, 9(1), 3–18.
 - Fama, E. F., & French, K. R. (1993). Common risk factors in the returns on stocks and bonds. *Journal of Financial Economics*, 33(1), 3–56.
 - Directive 2009/65/EC (UCITS), Article 52: the 5/10/40 diversification rule for funds.
+- U.S. Securities and Exchange Commission, EDGAR company tickers, submissions and XBRL frames (public float) APIs.
+- OpenFIGI, Open Symbology API (Bloomberg; FIGI under the MIT licence).
 
 ## How it was built
 
