@@ -9,9 +9,9 @@
   - Insights, exposure notes, charts, a stocks tab and a full positions table explain the details.
   - A calm design that also works on a phone, a README and automated tests.
 - **Next:** use the app myself, polish what still looks unfinished, add screenshots.
-- **Blockers:** TBD
-- **My feedback:** TBD
-- **Backlog changes:** TBD
+- **Blockers:** None
+- **My feedback:** It was the first version, so I wrote the core features down on paper, from my own ideas, and worked from that list to have a deliverable.
+- **Backlog changes:** None. The sprint backlog started from that paper list.
 
 ## Day 2 – 28 Oct
 
