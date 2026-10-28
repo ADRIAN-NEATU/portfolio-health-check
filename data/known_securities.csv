@@ -51,17 +51,17 @@ ASML,ASML Holding,Information Technology,stock,large,EUR,Europe
 SAP,SAP SE,Information Technology,stock,large,EUR,Europe
 Infineon,IFX|Infineon Technologies,Information Technology,stock,large,EUR,Europe
 Siemens,SIE,Industrials,stock,large,EUR,Europe
-Airbus,AIR,Industrials,stock,large,EUR,Europe
+Airbus,,Industrials,stock,large,EUR,Europe
 Rheinmetall,RHM,Industrials,stock,large,EUR,Europe
-LVMH,MC|LVMH Moet Hennessy Louis Vuitton,Consumer Discretionary,stock,large,EUR,Europe
+LVMH,LVMH Moet Hennessy Louis Vuitton,Consumer Discretionary,stock,large,EUR,Europe
 Nestle,NESN,Consumer Staples,stock,large,CHF,Europe
 Novo Nordisk,NOVO B|NVO,Health Care,stock,large,DKK,Europe
-Air Liquide,AI,Materials,stock,large,EUR,Europe
-Orange,ORA,Communication Services,stock,large,EUR,Europe
+Air Liquide,,Materials,stock,large,EUR,Europe
+Orange,,Communication Services,stock,large,EUR,Europe
 TotalEnergies,TTE,Energy,stock,large,EUR,Europe
 Shell,SHEL,Energy,stock,large,GBP,Europe
-Allianz,ALV,Financials,stock,large,EUR,Europe
-Erste Group Bank,EBS|Erste,Financials,stock,large,RON,Europe
+Allianz,,Financials,stock,large,EUR,Europe
+Erste Group Bank,Erste,Financials,stock,large,RON,Europe
 TSMC,TSM|Taiwan Semiconductor,Information Technology,stock,large,USD,Emerging
 Vale,VALE,Materials,stock,large,USD,Emerging
 Alibaba,BABA,Consumer Discretionary,stock,large,USD,Emerging
@@ -69,14 +69,14 @@ Petrobras,PBR,Energy,stock,large,USD,Emerging
 Banca Transilvania,TLV,Financials,stock,mid,RON,Romania
 BRD Groupe Societe Generale,BRD,Financials,stock,mid,RON,Romania
 Hidroelectrica,H2O,Utilities,stock,large,RON,Romania
-Nuclearelectrica,SNN,Utilities,stock,mid,RON,Romania
-Electrica,EL,Utilities,stock,small,RON,Romania
-Transelectrica,TEL,Utilities,stock,small,RON,Romania
+Nuclearelectrica,,Utilities,stock,mid,RON,Romania
+Electrica,,Utilities,stock,small,RON,Romania
+Transelectrica,,Utilities,stock,small,RON,Romania
 OMV Petrom,SNP,Energy,stock,large,RON,Romania
 Romgaz,SNG,Energy,stock,mid,RON,Romania
 Digi Communications,DIGI,Communication Services,stock,small,RON,Romania
-MedLife,M,Health Care,stock,small,RON,Romania
-Teraplast,TRP,Industrials,stock,small,RON,Romania
+MedLife,,Health Care,stock,small,RON,Romania
+Teraplast,,Industrials,stock,small,RON,Romania
 Aquila,AQ,Consumer Staples,stock,small,RON,Romania
 Sphera Franchise Group,SFG,Consumer Discretionary,stock,small,RON,Romania
 One United Properties,ONE,Real Estate,stock,small,RON,Romania
@@ -95,8 +95,131 @@ iShares MSCI World Small Cap UCITS ETF,IUSN,Diversified,ETF,n/a,EUR,Global
 Patria BET-TR UCITS ETF,TVBETETF|Patria Stock Market BET-TR UCITS ETF,Diversified,ETF,n/a,RON,Romania
 iShares S&P 500 Information Technology Sector UCITS ETF,IUIT,Information Technology,ETF,n/a,USD,US
 VanEck Semiconductor UCITS ETF,SMH,Information Technology,ETF,n/a,USD,Global
-VanEck Defense UCITS ETF,DFNS,Industrials,ETF,n/a,USD,Global
+VanEck Defense UCITS ETF,,Industrials,ETF,n/a,USD,Global
 iShares Core Euro Government Bond UCITS ETF,IEGA,n/a,bond,n/a,EUR,Europe
 iShares USD Treasury Bond 7-10yr UCITS ETF,IBTM,n/a,bond,n/a,USD,US
 Fidelis,Fidelis bond,n/a,bond,n/a,RON,Romania
 Tezaur,Tezaur bond,n/a,bond,n/a,RON,Romania
+Adidas,ADS,Consumer Discretionary,stock,large,EUR,Europe
+Adyen,ADYEN,Financials,stock,large,EUR,Europe
+Ahold Delhaize,,Consumer Staples,stock,large,EUR,Europe
+Anheuser-Busch InBev,ABI|AB InBev,Consumer Staples,stock,large,EUR,Europe
+AXA,CS,Financials,stock,large,EUR,Europe
+BASF,BAS,Materials,stock,large,EUR,Europe
+Bayer,BAYN,Health Care,stock,large,EUR,Europe
+BBVA,Banco Bilbao Vizcaya Argentaria,Financials,stock,large,EUR,Europe
+BMW,Bayerische Motoren Werke,Consumer Discretionary,stock,large,EUR,Europe
+BNP Paribas,BNP,Financials,stock,large,EUR,Europe
+Danone,,Consumer Staples,stock,large,EUR,Europe
+Deutsche Boerse,DB1|Deutsche Börse,Financials,stock,large,EUR,Europe
+Deutsche Telekom,,Communication Services,stock,large,EUR,Europe
+DHL Group,DHL|Deutsche Post,Industrials,stock,large,EUR,Europe
+Enel,ENEL,Utilities,stock,large,EUR,Europe
+Eni,ENI,Energy,stock,large,EUR,Europe
+EssilorLuxottica,Essilor,Health Care,stock,large,EUR,Europe
+Ferrari,RACE,Consumer Discretionary,stock,large,EUR,Europe
+Hermes,RMS|Hermès|Hermes International,Consumer Discretionary,stock,large,EUR,Europe
+Iberdrola,IBE,Utilities,stock,large,EUR,Europe
+Inditex,ITX|Industria de Diseno Textil,Consumer Discretionary,stock,large,EUR,Europe
+ING Groep,INGA|ING,Financials,stock,large,EUR,Europe
+Intesa Sanpaolo,ISP,Financials,stock,large,EUR,Europe
+L'Oreal,L'Oréal,Consumer Staples,stock,large,EUR,Europe
+Mercedes-Benz Group,MBG|Mercedes-Benz,Consumer Discretionary,stock,large,EUR,Europe
+Munich Re,MUV2|Muenchener Rueckversicherung,Financials,stock,large,EUR,Europe
+Nokia,NOKIA,Information Technology,stock,large,EUR,Europe
+Nordea,NDA FI|Nordea Bank,Financials,stock,large,EUR,Europe
+Pernod Ricard,RI,Consumer Staples,stock,large,EUR,Europe
+Prosus,PRX,Consumer Discretionary,stock,large,EUR,Europe
+Safran,SAF,Industrials,stock,large,EUR,Europe
+Sanofi,Sanofi SA,Health Care,stock,large,EUR,Europe
+Banco Santander,Santander,Financials,stock,large,EUR,Europe
+Schneider Electric,Schneider,Industrials,stock,large,EUR,Europe
+Siemens Energy,,Industrials,stock,large,EUR,Europe
+Stellantis,STLAM,Consumer Discretionary,stock,large,EUR,Europe
+UniCredit,UCG,Financials,stock,large,EUR,Europe
+Vinci,Vinci SA,Industrials,stock,large,EUR,Europe
+Volkswagen,VOW3,Consumer Discretionary,stock,large,EUR,Europe
+Wolters Kluwer,WKL,Industrials,stock,large,EUR,Europe
+argenx,ARGX,Health Care,stock,large,EUR,Europe
+Saint-Gobain,SGO|Compagnie de Saint-Gobain,Industrials,stock,large,EUR,Europe
+Thales,HO,Industrials,stock,large,EUR,Europe
+Leonardo,LDO,Industrials,stock,large,EUR,Europe
+Kering,KER,Consumer Discretionary,stock,large,EUR,Europe
+Heineken,HEIA,Consumer Staples,stock,large,EUR,Europe
+Deutsche Bank,DBK,Financials,stock,large,EUR,Europe
+Commerzbank,,Financials,stock,large,EUR,Europe
+E.ON,EOAN|EON,Utilities,stock,large,EUR,Europe
+RWE,RWE AG,Utilities,stock,large,EUR,Europe
+Hensoldt,HAG,Industrials,stock,mid,EUR,Europe
+Renk,R3NK|Renk Group,Industrials,stock,mid,EUR,Europe
+AstraZeneca,AZN,Health Care,stock,large,GBP,Europe
+HSBC,HSBA|HSBC Holdings,Financials,stock,large,GBP,Europe
+Unilever,ULVR,Consumer Staples,stock,large,GBP,Europe
+BP,BP plc,Energy,stock,large,GBP,Europe
+Rio Tinto,RIO,Materials,stock,large,GBP,Europe
+GSK,GSK plc,Health Care,stock,large,GBP,Europe
+Diageo,DGE,Consumer Staples,stock,large,GBP,Europe
+British American Tobacco,BATS|BAT,Consumer Staples,stock,large,GBP,Europe
+Rolls-Royce,Rolls-Royce Holdings,Industrials,stock,large,GBP,Europe
+BAE Systems,BAE,Industrials,stock,large,GBP,Europe
+Barclays,BARC,Financials,stock,large,GBP,Europe
+Lloyds Banking Group,LLOY|Lloyds,Financials,stock,large,GBP,Europe
+Glencore,GLEN,Materials,stock,large,GBP,Europe
+Vodafone,VOD,Communication Services,stock,large,GBP,Europe
+RELX,REL,Industrials,stock,large,GBP,Europe
+London Stock Exchange Group,LSEG,Financials,stock,large,GBP,Europe
+Novartis,NOVN,Health Care,stock,large,CHF,Europe
+Roche,Roche Holding,Health Care,stock,large,CHF,Europe
+UBS,UBSG|UBS Group,Financials,stock,large,CHF,Europe
+Zurich Insurance,ZURN|Zurich Insurance Group,Financials,stock,large,CHF,Europe
+ABB,ABBN,Industrials,stock,large,CHF,Europe
+Richemont,Compagnie Financiere Richemont,Consumer Discretionary,stock,large,CHF,Europe
+Holcim,HOLN,Materials,stock,large,CHF,Europe
+Lonza,LONN,Health Care,stock,large,CHF,Europe
+Sika,SIKA,Materials,stock,large,CHF,Europe
+Givaudan,GIVN,Materials,stock,large,CHF,Europe
+Equinor,EQNR,Energy,stock,large,NOK,Europe
+DNB Bank,DNB,Financials,stock,large,NOK,Europe
+Kongsberg Gruppen,KOG|Kongsberg,Industrials,stock,large,NOK,Europe
+Volvo,VOLV B|AB Volvo,Industrials,stock,large,SEK,Europe
+Atlas Copco,ATCO A,Industrials,stock,large,SEK,Europe
+Investor AB,INVE B|Investor,Financials,stock,large,SEK,Europe
+Ericsson,ERIC B,Information Technology,stock,large,SEK,Europe
+Saab,SAAB B,Industrials,stock,large,SEK,Europe
+A.P. Moller-Maersk,MAERSK B|Maersk,Industrials,stock,large,DKK,Europe
+DSV,DSV A/S,Industrials,stock,large,DKK,Europe
+Vestas,VWS|Vestas Wind Systems,Industrials,stock,large,DKK,Europe
+Transgaz,TGN,Utilities,stock,small,RON,Romania
+Transport Trade Services,TTS,Industrials,stock,small,RON,Romania
+Fondul Proprietatea,FP,Financials,stock,small,RON,Romania
+Evergent Investments,,Financials,stock,small,RON,Romania
+Lion Capital,,Financials,stock,small,RON,Romania
+Transilvania Investments,TRANSI,Financials,stock,small,RON,Romania
+Bursa de Valori Bucuresti,BVB|Bucharest Stock Exchange,Financials,stock,small,RON,Romania
+Antibiotice,ATB,Health Care,stock,small,RON,Romania
+Conpet,COTE,Energy,stock,small,RON,Romania
+AROBS Transilvania Software,AROBS,Information Technology,stock,small,RON,Romania
+Bittnet Systems,Bittnet,Information Technology,stock,small,RON,Romania
+SPDR S&P 500 ETF Trust,SPY,Diversified,ETF,n/a,USD,US
+iShares Core S&P 500 ETF,IVV,Diversified,ETF,n/a,USD,US
+Vanguard S&P 500 ETF,VOO,Diversified,ETF,n/a,USD,US
+Vanguard Total Stock Market ETF,VTI,Diversified,ETF,n/a,USD,US
+Invesco QQQ Trust,QQQ,Diversified,ETF,n/a,USD,US
+Vanguard Total World Stock ETF,VT,Diversified,ETF,n/a,USD,Global
+Vanguard FTSE Emerging Markets ETF,VWO,Diversified,ETF,n/a,USD,Emerging
+Schwab US Dividend Equity ETF,SCHD,Diversified,ETF,n/a,USD,US
+Technology Select Sector SPDR Fund,XLK,Information Technology,ETF,n/a,USD,US
+Health Care Select Sector SPDR Fund,XLV,Health Care,ETF,n/a,USD,US
+Financial Select Sector SPDR Fund,XLF,Financials,ETF,n/a,USD,US
+Energy Select Sector SPDR Fund,XLE,Energy,ETF,n/a,USD,US
+iShares Core US Aggregate Bond ETF,AGG,n/a,bond,n/a,USD,US
+Vanguard Total Bond Market ETF,BND,n/a,bond,n/a,USD,US
+iShares 20+ Year Treasury Bond ETF,TLT,n/a,bond,n/a,USD,US
+Xtrackers MSCI World UCITS ETF,XDWD,Diversified,ETF,n/a,EUR,Global
+Amundi MSCI World UCITS ETF,CW8,Diversified,ETF,n/a,EUR,Global
+iShares Core MSCI Europe UCITS ETF,IMAE|SMEA,Diversified,ETF,n/a,EUR,Europe
+iShares STOXX Europe 600 UCITS ETF,EXSA,Diversified,ETF,n/a,EUR,Europe
+iShares Core DAX UCITS ETF,EXS1,Diversified,ETF,n/a,EUR,Europe
+Xtrackers MSCI Emerging Markets UCITS ETF,XMME,Diversified,ETF,n/a,EUR,Emerging
+Vanguard FTSE All-World High Dividend Yield UCITS ETF,VHYL,Diversified,ETF,n/a,EUR,Global
+iShares Core EUR Corporate Bond UCITS ETF,IEAC,n/a,bond,n/a,EUR,Europe
