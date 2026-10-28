@@ -31,6 +31,21 @@ In the Backlog view (Jira's name for the Product Backlog), create one item per r
 
 The epic goes in the **Parent** field. The points field is called "Story point estimate" or "Story Points", depending on the project type.
 
+### Faster: half by hand, half imported
+1. Create **S1-01** and **S1-03** by hand, as above, to learn the fields.
+2. Import the other 15 from [jira-import.csv](jira-import.csv): Jira settings → System → External system import → CSV (or the Import option in the project).
+3. Match the columns:
+   - Summary → Summary
+   - Issue Type → Issue Type
+   - Story Points → Story point estimate (or Story Points)
+   - Fix Version → Fix versions
+   - Labels → Labels
+   - Description → Description
+   - Comment → Comment
+   - Don't import Doc ID and Epic (they are for you).
+4. Set the epics by hand: in the Backlog, Ctrl+click the items of one epic (see the Epic column in the file), right-click → **Parent** → choose the epic. Repeat for each epic.
+5. Rename the version (step 1) **before** importing, so "v0.1 – MVP" matches.
+
 ## 3. Sprint Planning: start the Sprint
 - Drag the 16 items from the Product Backlog into **PHC Sprint 1**. They become the Sprint Backlog.
 - Click **Start sprint** and set:
