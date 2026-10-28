@@ -1,0 +1,7 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Tesla,8000,Consumer Discretionary,stock,large,USD,US
+Banca Transilvania,1800,Financials,stock,mid,RON,Romania
+Nvidia,1600,Technology,stock,large,USD,US
+Vanguard FTSE All-World UCITS ETF,10600,Diversified,ETF,n/a,EUR,Global
+Romanian government bond 2029 (RON),6000,n/a,bond,n/a,RON,Romania
+Cash deposit (RON),12000,n/a,cash,n/a,RON,Romania

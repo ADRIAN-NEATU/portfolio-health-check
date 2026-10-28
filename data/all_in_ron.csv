@@ -1,0 +1,14 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Hidroelectrica,4500,Utilities,stock,large,RON,Romania
+OMV Petrom,4500,Energy,stock,large,RON,Romania
+Erste Group Bank,4500,Financials,stock,large,RON,Europe
+Banca Transilvania,4500,Financials,stock,mid,RON,Romania
+Romgaz,4500,Energy,stock,mid,RON,Romania
+BRD Groupe Societe Generale,4500,Financials,stock,mid,RON,Romania
+Nuclearelectrica,4500,Utilities,stock,mid,RON,Romania
+Digi Communications,4500,Communication Services,stock,small,RON,Romania
+MedLife,4500,Health Care,stock,small,RON,Romania
+Patria BET-TR UCITS ETF,9500,Diversified,ETF,n/a,RON,Romania
+EBRD bond 2027 (RON),20000,n/a,bond,n/a,RON,Europe
+Romanian government bond 2029 (RON),20000,n/a,bond,n/a,RON,Romania
+Cash deposit (RON),10000,n/a,cash,n/a,RON,Romania

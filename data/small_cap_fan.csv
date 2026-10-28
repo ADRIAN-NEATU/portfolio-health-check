@@ -1,0 +1,19 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Sturm Ruger,4800,Consumer Discretionary,stock,small,USD,US
+Northwest Natural,4800,Utilities,stock,small,USD,US
+Ennis,4800,Industrials,stock,small,USD,US
+Universal Insurance Holdings,4800,Financials,stock,small,USD,US
+Harmonic,4800,Technology,stock,small,USD,US
+Basic-Fit,4800,Consumer Discretionary,stock,small,EUR,Europe
+Kontron,4800,Technology,stock,small,EUR,Europe
+Ence Energia y Celulosa,4800,Materials,stock,small,EUR,Europe
+Teraplast,4800,Industrials,stock,small,RON,Romania
+Aquila,4800,Consumer Staples,stock,small,RON,Romania
+MedLife,4800,Health Care,stock,small,RON,Romania
+Microsoft,4800,Technology,stock,large,USD,US
+Johnson & Johnson,4800,Health Care,stock,large,USD,US
+Siemens,4800,Industrials,stock,large,EUR,Europe
+Hidroelectrica,4800,Utilities,stock,large,RON,Romania
+iShares MSCI World Small Cap UCITS ETF,24000,Diversified,ETF,n/a,EUR,Global
+Romanian government bond 2029 (RON),18000,n/a,bond,n/a,RON,Romania
+Cash deposit (RON),6000,n/a,cash,n/a,RON,Romania

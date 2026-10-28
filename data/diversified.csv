@@ -1,0 +1,23 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Vanguard FTSE All-World UCITS ETF,40000,Diversified,ETF,n/a,EUR,Global
+iShares Core MSCI EM IMI UCITS ETF,14000,Diversified,ETF,n/a,USD,Emerging
+Patria BET-TR UCITS ETF,12000,Diversified,ETF,n/a,RON,Romania
+Romanian government bond 2029 (RON),18000,n/a,bond,n/a,RON,Romania
+Romanian government bond 2031 (EUR),12000,n/a,bond,n/a,EUR,Romania
+Cash deposit (RON),8000,n/a,cash,n/a,RON,Romania
+Apple,6000,Technology,stock,large,USD,US
+Microsoft,6000,Technology,stock,large,USD,US
+Johnson & Johnson,6000,Health Care,stock,large,USD,US
+JPMorgan Chase,6000,Financials,stock,large,USD,US
+Procter & Gamble,6000,Consumer Staples,stock,large,USD,US
+Exxon Mobil,6000,Energy,stock,large,USD,US
+Prologis,6000,Real Estate,stock,large,USD,US
+ASML,6000,Technology,stock,large,EUR,Europe
+Siemens,6000,Industrials,stock,large,EUR,Europe
+LVMH,6000,Consumer Discretionary,stock,large,EUR,Europe
+Air Liquide,6000,Materials,stock,large,EUR,Europe
+Nestle,6000,Consumer Staples,stock,large,CHF,Europe
+Hidroelectrica,6000,Utilities,stock,large,RON,Romania
+Banca Transilvania,6000,Financials,stock,mid,RON,Romania
+Romgaz,6000,Energy,stock,mid,RON,Romania
+Digi Communications,6000,Communication Services,stock,small,RON,Romania

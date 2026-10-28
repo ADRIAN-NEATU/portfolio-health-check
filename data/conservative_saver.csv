@@ -1,0 +1,9 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Romanian government bond 2028 (RON),60000,n/a,bond,n/a,RON,Romania
+Romanian government bond 2027 (RON),45000,n/a,bond,n/a,RON,Romania
+Romanian government bond 2030 (EUR),45000,n/a,bond,n/a,EUR,Romania
+Cash deposit (RON),30000,n/a,cash,n/a,RON,Romania
+Cash deposit (EUR),15000,n/a,cash,n/a,EUR,Romania
+iShares Core Euro Government Bond UCITS ETF,30000,n/a,bond,n/a,EUR,Europe
+iShares USD Treasury Bond 7-10yr UCITS ETF,30000,n/a,bond,n/a,USD,US
+Vanguard FTSE All-World UCITS ETF,45000,Diversified,ETF,n/a,USD,Global

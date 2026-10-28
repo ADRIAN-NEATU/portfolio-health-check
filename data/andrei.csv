@@ -1,0 +1,15 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Apple,12000,Technology,stock,large,USD,US
+Microsoft,11250,Technology,stock,large,USD,US
+Nvidia,9000,Technology,stock,large,USD,US
+Alphabet,9750,Communication Services,stock,large,USD,US
+Meta Platforms,8250,Communication Services,stock,large,USD,US
+Amazon,10500,Consumer Discretionary,stock,large,USD,US
+Tesla,6000,Consumer Discretionary,stock,large,USD,US
+JPMorgan Chase,8250,Financials,stock,large,USD,US
+Berkshire Hathaway,5250,Financials,stock,large,USD,US
+Johnson & Johnson,4500,Health Care,stock,large,USD,US
+Coca-Cola,4500,Consumer Staples,stock,large,USD,US
+Exxon Mobil,3000,Energy,stock,large,USD,US
+Vanguard S&P 500 UCITS ETF,38250,Diversified,ETF,n/a,USD,US
+iShares Core MSCI World UCITS ETF,19500,Diversified,ETF,n/a,USD,Global
