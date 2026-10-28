@@ -38,6 +38,37 @@ LIMITS = {
     },
 }
 
+# The 11 official GICS sectors (not an example: this is the standard).
+GICS_SECTORS = (
+    "Energy",
+    "Materials",
+    "Industrials",
+    "Consumer Discretionary",
+    "Consumer Staples",
+    "Health Care",
+    "Financials",
+    "Information Technology",
+    "Communication Services",
+    "Utilities",
+    "Real Estate",
+)
+
+# Common names accepted in uploaded CSVs and replaced by the official GICS
+# name. Matching ignores letter case.
+SECTOR_ALIASES = {
+    "Technology": "Information Technology",
+    "Tech": "Information Technology",
+    "IT": "Information Technology",
+    "Healthcare": "Health Care",
+    "Telecom": "Communication Services",
+    "Telecommunications": "Communication Services",
+    "Telecommunication Services": "Communication Services",
+    "Financial Services": "Financials",
+    "Basic Materials": "Materials",
+    "Consumer Cyclical": "Consumer Discretionary",
+    "Consumer Defensive": "Consumer Staples",
+}
+
 # Sectors that never count towards the sector limit.
 SECTOR_EXEMPT = ("Diversified", "n/a")  # EXAMPLE
 

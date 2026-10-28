@@ -43,13 +43,13 @@ One row per position. Start from [data/template.csv](data/template.csv).
 |---|---|---|
 | asset | any name | |
 | value | number > 0 | always in lei (RON) |
-| sector | a GICS sector, `Diversified` or `n/a` | broad ETFs are `Diversified`; single-sector ETFs keep their sector; bonds and cash are `n/a` |
+| sector | an official GICS sector name, `Diversified` or `n/a` | broad ETFs are `Diversified`; single-sector ETFs keep their sector; bonds and cash are `n/a` |
 | asset_type | `stock` / `ETF` / `bond` / `cash` | ETFs are treated as equity; bond ETFs are marked `bond` |
 | market_cap | `large` / `mid` / `small` / `n/a` | `n/a` for everything that is not a stock; large > $10bn, mid $2–10bn, small < $2bn |
 | currency | `RON`, `USD`, `EUR`, … | the currency of the asset |
 | region | `US` / `Europe` / `Romania` / `Emerging` / `Global` | the region of the company or fund, not of the currency; global ETFs are `Global`; bonds and cash take the region of the issuer or bank |
 
-GICS sector names: Communication Services, Consumer Discretionary, Consumer Staples, Energy, Financials, Health Care, Industrials, Materials, Real Estate, Technology, Utilities.
+The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretionary, Consumer Staples, Health Care, Financials, Information Technology, Communication Services, Utilities, Real Estate. Common aliases are accepted and replaced by the official name, in any letter case: for example Technology → Information Technology, Healthcare → Health Care, Telecom → Communication Services (full list in [rules.py](rules.py)).
 
 `region` is optional: without it, the analysis runs without the region part. Every other column is required.
 

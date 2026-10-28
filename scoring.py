@@ -58,20 +58,11 @@ OPTIONAL_COLUMNS = ("region",)
 REQUIRED_COLUMNS = tuple(c for c in COLUMNS if c not in OPTIONAL_COLUMNS)
 TEXT_COLUMNS = tuple(c for c in COLUMNS if c != "value")
 
-# The 11 GICS sectors ("Technology" stands for Information Technology).
-GICS_SECTORS = (
-    "Communication Services",
-    "Consumer Discretionary",
-    "Consumer Staples",
-    "Energy",
-    "Financials",
-    "Health Care",
-    "Industrials",
-    "Materials",
-    "Real Estate",
-    "Technology",
-    "Utilities",
-)
+# Sector spelling (any letter case, or an alias) -> official name.
+SECTOR_NAMES = {
+    **{name.lower(): name for name in rules.GICS_SECTORS + rules.SECTOR_EXEMPT},
+    **{alias.lower(): name for alias, name in rules.SECTOR_ALIASES.items()},
+}
 
 ASSET_TYPES = ("stock", "ETF", "bond", "cash")
 CAP_SEGMENTS = ("small", "mid", "large")
@@ -263,7 +254,14 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
     for column in TEXT_COLUMNS:
         if column in df.columns:
             df[column] = df[column].astype(str).str.strip()
+    df["sector"] = df["sector"].map(normalize_sector)
     return df[[c for c in COLUMNS if c in df.columns]]
+
+
+def normalize_sector(name: str) -> str:
+    """Official GICS name for a sector ('Technology' -> 'Information Technology');
+    unknown names are kept as written."""
+    return SECTOR_NAMES.get(name.lower(), name)
 
 
 # ---------------------------------------------------------------------------
@@ -505,15 +503,19 @@ def insights_for(
         text = f"{fmt_pct(other)} of your portfolio is in currencies other than {HOME_CURRENCY}."
     insights.append(Insight("other_currencies", "Other currencies", text, label("currency")))
 
-    covered = len(set(df["sector"]) & set(GICS_SECTORS))
-    insights.append(
-        Insight(
-            "sector_coverage",
-            "Sector coverage",
-            f"You cover {covered} of {len(GICS_SECTORS)} GICS sectors.",
-            label("sector"),
+    covered = len(set(df["sector"]) & set(rules.GICS_SECTORS))
+    total = len(rules.GICS_SECTORS)
+    broad_funds = ((df["asset_type"] == "ETF") & (df["sector"] == rules.BROAD_ETF_SECTOR)).any()
+    if broad_funds and covered:
+        text = (
+            f"You cover {covered} of {total} GICS sectors directly, "
+            "plus global funds that span all sectors."
         )
-    )
+    elif broad_funds:
+        text = "You hold global funds that span all sectors."
+    else:
+        text = f"You cover {covered} of {total} GICS sectors."
+    insights.append(Insight("sector_coverage", "Sector coverage", text, label("sector")))
 
     if has_region:
         global_share = float(weights(df, "region").get(GLOBAL_REGION, 0.0))

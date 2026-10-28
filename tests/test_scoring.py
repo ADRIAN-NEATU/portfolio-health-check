@@ -94,8 +94,8 @@ def test_diversified_has_no_warnings_and_at_least_20_positions():
 def test_tech_heavy_sector_is_technology_45_percent():
     analysis = sample("tech_heavy.csv")
     sector = analysis.limits[0]
-    assert (sector.category, sector.weight) == ("Technology", pytest.approx(0.45))
-    assert analysis.verdict == "1 issue: sector (Technology 45%)."
+    assert (sector.category, sector.weight) == ("Information Technology", pytest.approx(0.45))
+    assert analysis.verdict == "1 issue: sector (Information Technology 45%)."
 
 
 def test_andrei_at_a_glance():
@@ -163,7 +163,7 @@ def test_overall_score_is_rounded_mean():
     # sector 100, asset 88 (8%), currency 80 (70%) -> 89.33 -> 89
     df = make(
         [
-            ("A", 8, "Technology", "stock", "large", "USD", "US"),
+            ("A", 8, "Information Technology", "stock", "large", "USD", "US"),
             ("B", 62, "Diversified", "ETF", "n/a", "USD", "Global"),
             ("C", 30, "n/a", "cash", "n/a", "RON", "Romania"),
         ]
@@ -183,11 +183,11 @@ def test_exempt_categories_do_not_count():
         [
             ("World ETF", 50, "Diversified", "ETF", "n/a", "EUR", "Global"),
             ("Bond", 30, "n/a", "bond", "n/a", "RON", "Romania"),
-            ("Tech ETF", 20, "Technology", "ETF", "n/a", "USD", "US"),
+            ("Tech ETF", 20, "Information Technology", "ETF", "n/a", "USD", "US"),
         ]
     )
     limits = {r.key: r for r in scoring.analyze(df).limits}
-    assert (limits["sector"].category, limits["sector"].weight) == ("Technology", 0.2)
+    assert (limits["sector"].category, limits["sector"].weight) == ("Information Technology", 0.2)
     # the sector ETF counts as a single position, the broad ETF and the bond do not
     assert (limits["asset"].category, limits["asset"].weight) == ("Tech ETF", 0.2)
 
@@ -195,7 +195,7 @@ def test_exempt_categories_do_not_count():
 def test_warnings_sorted_red_then_yellow_then_size():
     df = make(
         [
-            ("A", 12, "Technology", "stock", "large", "USD", "US"),
+            ("A", 12, "Information Technology", "stock", "large", "USD", "US"),
             ("B", 6, "Financials", "stock", "large", "USD", "US"),
             ("C", 9, "Health Care", "stock", "large", "USD", "US"),
             ("D", 73, "Diversified", "ETF", "n/a", "USD", "Global"),
@@ -243,7 +243,7 @@ def test_profile(share, expected):
 def test_profile_breakdown():
     df = make(
         [
-            ("A", 40, "Technology", "stock", "large", "USD", "US"),
+            ("A", 40, "Information Technology", "stock", "large", "USD", "US"),
             ("B", 30, "Diversified", "ETF", "n/a", "EUR", "Global"),
             ("C", 20, "n/a", "bond", "n/a", "RON", "Romania"),
             ("D", 10, "n/a", "cash", "n/a", "RON", "Romania"),
@@ -265,7 +265,7 @@ def test_asset_class_slices_skip_empty_classes():
 
 
 def test_csv_saved_with_bom():
-    data = "﻿asset,value,sector,asset_type,market_cap,currency,region\nA,10,Technology,stock,large,USD,US\n"
+    data = "﻿asset,value,sector,asset_type,market_cap,currency,region\nA,10,Information Technology,stock,large,USD,US\n"
     df = scoring.load_portfolio(io.BytesIO(data.encode("utf-8")))
     assert list(df.columns) == list(scoring.COLUMNS)
 
@@ -344,7 +344,7 @@ def test_portfolio_without_stocks():
 # Total 100. Weights: A 40%, B 20%, C 15%, D 10%, E 10%, F 5%.
 # Sum of squares = 0.16 + 0.04 + 0.0225 + 0.01 + 0.01 + 0.0025 = 0.245 -> 1/0.245 = 4.08
 HAND = [
-    ("A", 40, "Technology", "stock", "large", "USD", "US"),
+    ("A", 40, "Information Technology", "stock", "large", "USD", "US"),
     ("B", 20, "Financials", "stock", "mid", "EUR", "Europe"),
     ("C", 15, "Diversified", "ETF", "n/a", "EUR", "Global"),
     ("D", 10, "n/a", "bond", "n/a", "RON", "Romania"),
@@ -370,7 +370,7 @@ def test_top5(hand_insights):
 
 def test_largest_sector(hand_insights):
     insight = hand_insights["largest_sector"]
-    assert insight.text == "Your largest sector exposure is Technology, at 40% of your portfolio."
+    assert insight.text == "Your largest sector exposure is Information Technology, at 40% of your portfolio."
     assert insight.label == "Watch"
 
 
@@ -382,12 +382,33 @@ def test_other_currencies(hand_insights):
 
 def test_stress_test(hand_insights):
     assert hand_insights["stress_test"].text == (
-        "If Technology fell 20%, your portfolio would fall about 8%."
+        "If Information Technology fell 20%, your portfolio would fall about 8%."
     )
 
 
-def test_sector_coverage(hand_insights):
-    assert hand_insights["sector_coverage"].text == "You cover 3 of 11 GICS sectors."
+def test_sector_coverage_with_global_funds(hand_insights):
+    # HAND holds 3 sectors directly plus a Diversified ETF
+    assert hand_insights["sector_coverage"].text == (
+        "You cover 3 of 11 GICS sectors directly, plus global funds that span all sectors."
+    )
+
+
+def test_sector_coverage_without_funds():
+    df = make(
+        [
+            ("A", 50, "Energy", "stock", "large", "USD", "US"),
+            ("B", 30, "Utilities", "stock", "large", "EUR", "Europe"),
+            ("C", 20, "n/a", "bond", "n/a", "RON", "Romania"),
+        ]
+    )
+    coverage = next(i for i in scoring.analyze(df).insights if i.key == "sector_coverage")
+    assert coverage.text == "You cover 2 of 11 GICS sectors."
+
+
+def test_sector_coverage_never_zero_with_global_funds():
+    for file_name in ["one_global_etf.csv", "conservative_saver.csv"]:
+        coverage = next(i for i in sample(file_name).insights if i.key == "sector_coverage")
+        assert coverage.text == "You hold global funds that span all sectors."
 
 
 def test_regions(hand_insights):
@@ -404,8 +425,14 @@ def test_insights_without_sector_exposure():
     assert insights["effective_positions"].text == "You hold a single position."
     assert insights["top5"].text == "With 1 position, your top 5 are the whole portfolio."
     assert insights["other_currencies"].text == "All of your portfolio is in RON."
-    assert insights["sector_coverage"].text == "You cover 0 of 11 GICS sectors."
+    assert insights["sector_coverage"].text == "You hold global funds that span all sectors."
     assert "No single sector" in insights["stress_test"].text
+
+
+def test_bonds_only_covers_zero_sectors():
+    df = make([("Bond", 100, "n/a", "bond", "n/a", "RON", "Romania")])
+    coverage = next(i for i in scoring.analyze(df).insights if i.key == "sector_coverage")
+    assert coverage.text == "You cover 0 of 11 GICS sectors."
 
 
 def test_insights_do_not_change_the_score():
@@ -424,7 +451,7 @@ def test_chart_data_sector():
     assert limit == SECTOR["limit"]
     assert bars["weight"].is_monotonic_decreasing
     statuses = dict(zip(bars["category"], bars["status"]))
-    assert statuses["Technology"] == RED
+    assert statuses["Information Technology"] == RED
     assert statuses["Diversified"] == GREEN  # exempt, never coloured
 
 
@@ -446,7 +473,7 @@ def test_missing_currency_column_gives_clear_error():
 def test_missing_region_still_works():
     csv = io.StringIO(
         "asset,value,sector,asset_type,market_cap,currency\n"
-        "Apple,4000,Technology,stock,large,USD\n"
+        "Apple,4000,Information Technology,stock,large,USD\n"
         "World ETF,6000,Diversified,ETF,n/a,EUR\n"
     )
     analysis = scoring.analyze(scoring.load_portfolio(csv))
@@ -461,11 +488,44 @@ def test_missing_region_still_works():
 def test_value_must_be_positive_number(value):
     csv = io.StringIO(
         "asset,value,sector,asset_type,market_cap,currency,region\n"
-        "Apple,1000,Technology,stock,large,USD,US\n"
-        f"Bad,{value},Technology,stock,large,USD,US\n"
+        "Apple,1000,Information Technology,stock,large,USD,US\n"
+        f"Bad,{value},Information Technology,stock,large,USD,US\n"
     )
     with pytest.raises(scoring.PortfolioError, match="positive number.*line\\(s\\) 3"):
         scoring.load_portfolio(csv)
+
+
+@pytest.mark.parametrize(
+    "written, official",
+    [
+        ("Technology", "Information Technology"),
+        ("technology", "Information Technology"),
+        ("Healthcare", "Health Care"),
+        ("Telecom", "Communication Services"),
+        ("health care", "Health Care"),
+        ("DIVERSIFIED", "Diversified"),
+        ("N/A", "n/a"),
+        ("Crypto", "Crypto"),  # unknown names are kept as written
+    ],
+)
+def test_sector_aliases_are_normalised(written, official):
+    csv = io.StringIO(
+        "asset,value,sector,asset_type,market_cap,currency,region\n"
+        f"A,100,{written},stock,large,USD,US\n"
+    )
+    assert scoring.load_portfolio(csv)["sector"].tolist() == [official]
+
+
+def test_aliases_point_to_official_names():
+    assert len(rules.GICS_SECTORS) == 11
+    assert set(rules.SECTOR_ALIASES.values()) <= set(rules.GICS_SECTORS)
+
+
+@pytest.mark.parametrize("file_name", sorted(EXPECTED) + ["template.csv"])
+def test_data_files_use_official_sector_names(file_name):
+    raw = pd.read_csv(scoring.DATA_DIR / file_name, keep_default_na=False)
+    allowed = set(rules.GICS_SECTORS) | set(rules.SECTOR_EXEMPT)
+    assert set(raw["sector"]) <= allowed
 
 
 def test_na_text_stays_a_category():

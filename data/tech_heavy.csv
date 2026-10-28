@@ -1,14 +1,14 @@
 asset,value,sector,asset_type,market_cap,currency,region
-Apple,6750,Technology,stock,large,USD,US
-Microsoft,6750,Technology,stock,large,USD,US
-Nvidia,6750,Technology,stock,large,USD,US
-Broadcom,6750,Technology,stock,large,USD,US
-Lattice Semiconductor,6750,Technology,stock,mid,USD,US
-Qorvo,6750,Technology,stock,mid,USD,US
-TSMC,6750,Technology,stock,large,USD,Emerging
-ASML,6750,Technology,stock,large,EUR,Europe
-SAP,6750,Technology,stock,large,EUR,Europe
-Infineon,6750,Technology,stock,large,EUR,Europe
+Apple,6750,Information Technology,stock,large,USD,US
+Microsoft,6750,Information Technology,stock,large,USD,US
+Nvidia,6750,Information Technology,stock,large,USD,US
+Broadcom,6750,Information Technology,stock,large,USD,US
+Lattice Semiconductor,6750,Information Technology,stock,mid,USD,US
+Qorvo,6750,Information Technology,stock,mid,USD,US
+TSMC,6750,Information Technology,stock,large,USD,Emerging
+ASML,6750,Information Technology,stock,large,EUR,Europe
+SAP,6750,Information Technology,stock,large,EUR,Europe
+Infineon,6750,Information Technology,stock,large,EUR,Europe
 Johnson & Johnson,6000,Health Care,stock,large,USD,US
 Visa,6000,Financials,stock,large,USD,US
 Hidroelectrica,5250,Utilities,stock,large,RON,Romania
