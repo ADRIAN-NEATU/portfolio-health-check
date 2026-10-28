@@ -10,7 +10,7 @@
   - A calm design that also works on a phone, a README and automated tests.
 - **Next:** use the app myself, polish what still looks unfinished, add screenshots.
 - **Blockers:** None
-- **My feedback:** It was the first version, so I wrote the core features down on paper, from my own ideas, and worked from that list to have a deliverable.
+- **My feedback:** It was the first version, so I wrote the core features down on paper, from my own ideas, and worked from that list to have a working increment.
 - **Backlog changes:** None. The sprint backlog started from that paper list.
 
 ## Day 2 – 28 Oct
