@@ -1,0 +1,102 @@
+name,aliases,sector,asset_type,market_cap,currency,region
+Apple,AAPL,Information Technology,stock,large,USD,US
+Microsoft,MSFT,Information Technology,stock,large,USD,US
+Nvidia,NVDA,Information Technology,stock,large,USD,US
+Broadcom,AVGO,Information Technology,stock,large,USD,US
+AMD,Advanced Micro Devices,Information Technology,stock,large,USD,US
+Intel,INTC,Information Technology,stock,large,USD,US
+Oracle,ORCL,Information Technology,stock,large,USD,US
+Salesforce,CRM,Information Technology,stock,large,USD,US
+Adobe,ADBE,Information Technology,stock,large,USD,US
+Micron,MU|Micron Technology,Information Technology,stock,large,USD,US
+Palantir,PLTR|Palantir Technologies,Information Technology,stock,large,USD,US
+Amazon,AMZN|Amazon.com,Consumer Discretionary,stock,large,USD,US
+Tesla,TSLA,Consumer Discretionary,stock,large,USD,US
+Home Depot,HD,Consumer Discretionary,stock,large,USD,US
+McDonald's,MCD,Consumer Discretionary,stock,large,USD,US
+Nike,NKE,Consumer Discretionary,stock,large,USD,US
+Ford Motor,F|Ford,Consumer Discretionary,stock,large,USD,US
+General Motors,GM,Consumer Discretionary,stock,large,USD,US
+Alphabet,GOOGL|GOOG|Google,Communication Services,stock,large,USD,US
+Meta Platforms,META|Meta|Facebook,Communication Services,stock,large,USD,US
+Netflix,NFLX,Communication Services,stock,large,USD,US
+Walt Disney,DIS|Disney,Communication Services,stock,large,USD,US
+Berkshire Hathaway,BRK.B|BRK-B,Financials,stock,large,USD,US
+JPMorgan Chase,JPM|JPMorgan,Financials,stock,large,USD,US
+Bank of America,BAC,Financials,stock,large,USD,US
+Goldman Sachs,GS,Financials,stock,large,USD,US
+Visa,V,Financials,stock,large,USD,US
+Mastercard,MA,Financials,stock,large,USD,US
+Johnson & Johnson,JNJ,Health Care,stock,large,USD,US
+UnitedHealth,UNH|UnitedHealth Group,Health Care,stock,large,USD,US
+Eli Lilly,LLY,Health Care,stock,large,USD,US
+Pfizer,PFE,Health Care,stock,large,USD,US
+Merck,MRK,Health Care,stock,large,USD,US
+AbbVie,ABBV,Health Care,stock,large,USD,US
+Exxon Mobil,XOM|ExxonMobil,Energy,stock,large,USD,US
+Chevron,CVX,Energy,stock,large,USD,US
+Procter & Gamble,PG,Consumer Staples,stock,large,USD,US
+Coca-Cola,KO,Consumer Staples,stock,large,USD,US
+PepsiCo,PEP,Consumer Staples,stock,large,USD,US
+Walmart,WMT,Consumer Staples,stock,large,USD,US
+Costco,COST,Consumer Staples,stock,large,USD,US
+Lockheed Martin,LMT,Industrials,stock,large,USD,US
+Boeing,BA,Industrials,stock,large,USD,US
+Caterpillar,CAT,Industrials,stock,large,USD,US
+GE Aerospace,GE|General Electric,Industrials,stock,large,USD,US
+Uber,UBER|Uber Technologies,Industrials,stock,large,USD,US
+Prologis,PLD,Real Estate,stock,large,USD,US
+NextEra Energy,NEE,Utilities,stock,large,USD,US
+ASML,ASML Holding,Information Technology,stock,large,EUR,Europe
+SAP,SAP SE,Information Technology,stock,large,EUR,Europe
+Infineon,IFX|Infineon Technologies,Information Technology,stock,large,EUR,Europe
+Siemens,SIE,Industrials,stock,large,EUR,Europe
+Airbus,AIR,Industrials,stock,large,EUR,Europe
+Rheinmetall,RHM,Industrials,stock,large,EUR,Europe
+LVMH,MC|LVMH Moet Hennessy Louis Vuitton,Consumer Discretionary,stock,large,EUR,Europe
+Nestle,NESN,Consumer Staples,stock,large,CHF,Europe
+Novo Nordisk,NOVO B|NVO,Health Care,stock,large,DKK,Europe
+Air Liquide,AI,Materials,stock,large,EUR,Europe
+Orange,ORA,Communication Services,stock,large,EUR,Europe
+TotalEnergies,TTE,Energy,stock,large,EUR,Europe
+Shell,SHEL,Energy,stock,large,GBP,Europe
+Allianz,ALV,Financials,stock,large,EUR,Europe
+Erste Group Bank,EBS|Erste,Financials,stock,large,RON,Europe
+TSMC,TSM|Taiwan Semiconductor,Information Technology,stock,large,USD,Emerging
+Vale,VALE,Materials,stock,large,USD,Emerging
+Alibaba,BABA,Consumer Discretionary,stock,large,USD,Emerging
+Petrobras,PBR,Energy,stock,large,USD,Emerging
+Banca Transilvania,TLV,Financials,stock,mid,RON,Romania
+BRD Groupe Societe Generale,BRD,Financials,stock,mid,RON,Romania
+Hidroelectrica,H2O,Utilities,stock,large,RON,Romania
+Nuclearelectrica,SNN,Utilities,stock,mid,RON,Romania
+Electrica,EL,Utilities,stock,small,RON,Romania
+Transelectrica,TEL,Utilities,stock,small,RON,Romania
+OMV Petrom,SNP,Energy,stock,large,RON,Romania
+Romgaz,SNG,Energy,stock,mid,RON,Romania
+Digi Communications,DIGI,Communication Services,stock,small,RON,Romania
+MedLife,M,Health Care,stock,small,RON,Romania
+Teraplast,TRP,Industrials,stock,small,RON,Romania
+Aquila,AQ,Consumer Staples,stock,small,RON,Romania
+Sphera Franchise Group,SFG,Consumer Discretionary,stock,small,RON,Romania
+One United Properties,ONE,Real Estate,stock,small,RON,Romania
+Alro,ALR,Materials,stock,small,RON,Romania
+Vanguard FTSE All-World UCITS ETF,VWCE,Diversified,ETF,n/a,EUR,Global
+Vanguard FTSE All-World UCITS ETF (USD),VWRA,Diversified,ETF,n/a,USD,Global
+iShares Core MSCI World UCITS ETF,EUNL,Diversified,ETF,n/a,EUR,Global
+iShares Core MSCI World UCITS ETF (USD),IWDA,Diversified,ETF,n/a,USD,Global
+iShares Core S&P 500 UCITS ETF,CSPX,Diversified,ETF,n/a,USD,US
+iShares Core S&P 500 UCITS ETF (EUR),SXR8,Diversified,ETF,n/a,EUR,US
+Vanguard S&P 500 UCITS ETF,VUAA,Diversified,ETF,n/a,USD,US
+iShares Nasdaq 100 UCITS ETF,CNDX,Diversified,ETF,n/a,USD,US
+iShares Core MSCI EM IMI UCITS ETF,EIMI,Diversified,ETF,n/a,USD,Emerging
+iShares Core MSCI EM IMI UCITS ETF (EUR),IS3N,Diversified,ETF,n/a,EUR,Emerging
+iShares MSCI World Small Cap UCITS ETF,IUSN,Diversified,ETF,n/a,EUR,Global
+Patria BET-TR UCITS ETF,TVBETETF|Patria Stock Market BET-TR UCITS ETF,Diversified,ETF,n/a,RON,Romania
+iShares S&P 500 Information Technology Sector UCITS ETF,IUIT,Information Technology,ETF,n/a,USD,US
+VanEck Semiconductor UCITS ETF,SMH,Information Technology,ETF,n/a,USD,Global
+VanEck Defense UCITS ETF,DFNS,Industrials,ETF,n/a,USD,Global
+iShares Core Euro Government Bond UCITS ETF,IEGA,n/a,bond,n/a,EUR,Europe
+iShares USD Treasury Bond 7-10yr UCITS ETF,IBTM,n/a,bond,n/a,USD,US
+Fidelis,Fidelis bond,n/a,bond,n/a,RON,Romania
+Tezaur,Tezaur bond,n/a,bond,n/a,RON,Romania

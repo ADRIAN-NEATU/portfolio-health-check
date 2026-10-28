@@ -51,7 +51,7 @@ EXPECTED = {
 
 
 def test_every_sample_is_listed():
-    files = {p.name for p in scoring.DATA_DIR.glob("*.csv")} - {"template.csv"}
+    files = {p.name for p in scoring.DATA_DIR.glob("*.csv")} - {"template.csv", "known_securities.csv"}
     assert files == set(scoring.SAMPLE_PORTFOLIOS) == set(EXPECTED)
 
 
@@ -577,6 +577,95 @@ def test_category_spellings_are_normalised(column, written, expected):
            "market_cap": "large", "currency": "USD", "region": "US"}
     row[column] = written
     assert scoring.validate(pd.DataFrame([row]))[column][0] == expected
+
+
+# ---------------------------------------------------------------------------
+# In-app editor: known securities, auto-fill, checks, export
+# ---------------------------------------------------------------------------
+
+
+def test_known_securities_use_valid_details():
+    table = pd.read_csv(scoring.KNOWN_SECURITIES_PATH, dtype=str, keep_default_na=False)
+    for column, options in scoring.EDITOR_OPTIONS.items():
+        assert set(table[column]) <= set(options), column
+    assert not (table == "").drop(columns="aliases").any().any()
+
+
+def test_known_security_names_do_not_collide():
+    table = pd.read_csv(scoring.KNOWN_SECURITIES_PATH, dtype=str, keep_default_na=False)
+    owner = {}
+    for row in table.to_dict("records"):
+        for name in [row["name"], *row["aliases"].split("|")]:
+            if name:
+                key = scoring.match_key(name)
+                assert owner.setdefault(key, row["name"]) == row["name"], name
+
+
+@pytest.mark.parametrize(
+    "written, key",
+    [
+        ("Apple Inc.", "apple"),
+        ("Johnson and Johnson", "johnson & johnson"),
+        ("BRK-B", "brk b"),
+        ("BRK.B", "brk b"),
+        ("Nestlé", "nestle"),
+        ("McDonald's", "mcdonalds"),
+    ],
+)
+def test_match_key(written, key):
+    assert scoring.match_key(written) == key
+
+
+def editor_rows(*rows):
+    return pd.DataFrame(rows, columns=list(scoring.COLUMNS))
+
+
+def test_autofill_by_name_or_ticker():
+    df = editor_rows(
+        ("Apple Inc.", 1000, None, None, None, None, None),
+        ("VWCE", 2000, None, None, None, None, None),
+        ("Some Unknown Co", 300, None, None, None, None, None),
+    )
+    filled, names = scoring.autofill(df)
+    assert names == ["Apple Inc.", "VWCE"]
+    assert filled.iloc[0, 2:].tolist() == ["Information Technology", "stock", "large", "USD", "US"]
+    assert filled.iloc[1, 2:].tolist() == ["Diversified", "ETF", "n/a", "EUR", "Global"]
+    assert filled.iloc[2, 2:].isna().all()
+
+
+def test_autofill_keeps_what_the_user_chose():
+    df = editor_rows(("Microsoft", 1000, None, None, None, "EUR", None))
+    filled, names = scoring.autofill(df)
+    assert filled.loc[0, "currency"] == "EUR"
+    assert filled.loc[0, "region"] == "US"
+    assert scoring.autofill(filled)[1] == []  # nothing left to fill
+
+
+def test_check_editor_rows():
+    df = editor_rows(
+        ("Apple", 1000, "Information Technology", "stock", "large", "USD", "US"),
+        (None, None, None, None, None, None, None),  # blank row, ignored
+        ("Netstreit", 400, None, "stock", None, "USD", "US"),
+        (None, 50, "n/a", "cash", "n/a", "RON", "Romania"),
+        ("Zero", 0, "Energy", "stock", "small", "USD", "US"),
+    )
+    rows, problems = scoring.check_editor_rows(df)
+    assert len(rows) == 4
+    assert problems == [
+        "Netstreit: sector, market cap",
+        "row 3: name",
+        "Zero: a value above 0",
+    ]
+
+
+def test_editor_csv_round_trip():
+    df = editor_rows(
+        ("Apple", 1234.5, "Information Technology", "stock", "large", "USD", "US"),
+        ("VWCE", 2000, "Diversified", "ETF", "n/a", "EUR", "Global"),
+    )
+    loaded = scoring.load_portfolio(io.BytesIO(scoring.to_csv(df)))
+    assert loaded["value"].tolist() == [1234.5, 2000]
+    assert loaded["asset"].tolist() == ["Apple", "VWCE"]
 
 
 def test_na_text_stays_a_category():

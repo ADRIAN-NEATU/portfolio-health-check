@@ -47,6 +47,18 @@ COLUMN_LABELS = {
     "currency": "Currency",
     "region": "Region",
 }
+EDITOR_CONFIG = {
+    "asset": st.column_config.TextColumn("Asset", help="Name or ticker, for example Apple or AAPL"),
+    "value": st.column_config.NumberColumn(COLUMN_LABELS["value"], min_value=0.0, format="localized"),
+    **{
+        column: st.column_config.SelectboxColumn(COLUMN_LABELS[column], options=list(options))
+        for column, options in scoring.EDITOR_OPTIONS.items()
+    },
+}
+# Blank rows the editor starts with: one click on a blank row selects it, so a
+# block pasted from a spreadsheet fills rows and columns (a click on the "add
+# row" line would open a single cell for typing instead).
+EDITOR_BLANK_ROWS = 5
 NUMBER_COLUMNS = ("value", "weight")
 MAX_TABLE_ROWS = 25  # longer tables scroll inside
 ROW_HEIGHT = 35  # Streamlit's default row height, in pixels
@@ -230,10 +242,15 @@ def inject_css() -> None:
 [data-testid="stPlotlyChart"] .bglayer .bg { fill: transparent !important; }
 [data-testid="stDataFrame"] { border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
   background: var(--card); }
-[data-testid="stDownloadButton"] button { width: 100%; border-radius: 8px; border: 1px solid var(--accent);
-  color: var(--accent); background: var(--card); }
-[data-testid="stDownloadButton"] button:hover { background: color-mix(in srgb, var(--accent) 7%, white);
-  color: var(--accent); border-color: var(--accent); }
+[data-testid="stDownloadButton"] button, .st-key-type_positions button { width: 100%; border-radius: 8px;
+  border: 1px solid var(--accent); color: var(--accent); background: var(--card); }
+[data-testid="stDownloadButton"] button:hover, .st-key-type_positions button:hover {
+  background: color-mix(in srgb, var(--accent) 7%, white); color: var(--accent); border-color: var(--accent); }
+.st-key-download_positions button { width: auto; }
+.st-key-edit_positions button { color: var(--accent); padding: 0; }
+.st-key-edit_positions button:hover { color: var(--text); }
+.phc-side-gap { margin-top: 1rem; }
+.phc-editor-hint { margin-bottom: .25rem; }
 
 @media (max-width: 640px) {
   [data-testid="stMainBlockContainer"] { padding: 3.75rem 1rem 2rem; }
@@ -466,22 +483,43 @@ def header() -> None:
     )
 
 
+def init_state() -> None:
+    st.session_state.setdefault("upload_round", 0)
+    st.session_state.setdefault("editing", False)
+    st.session_state.setdefault("editor_round", 0)
+    st.session_state.setdefault("editor_rows", scoring.empty_positions(EDITOR_BLANK_ROWS))
+    st.session_state.setdefault("filled_names", [])
+
+
 def clear_upload() -> None:
     """A sample was picked: drop the uploaded file by renewing the uploader's key."""
     st.session_state.upload_round += 1
+    st.session_state.editing = False
 
 
 def clear_sample() -> None:
     """A file was uploaded: unselect the sample."""
     st.session_state.sample = None
+    st.session_state.editing = False
+
+
+def start_editing(rows=None) -> None:
+    """Open the editor with the given positions, or with the last ones typed."""
+    if rows is None:
+        rows = st.session_state.get("editor_latest", scoring.empty_positions(EDITOR_BLANK_ROWS))
+    st.session_state.sample = None
+    st.session_state.upload_round += 1
+    st.session_state.editing = True
+    st.session_state.editor_rows = rows.reindex(columns=scoring.COLUMNS).reset_index(drop=True)
+    st.session_state.editor_round += 1  # a new key gives the editor the new rows
+    st.session_state.filled_names = []
 
 
 def choose_portfolio():
     """Sidebar. Returns (source, id, name) of the chosen portfolio, or None."""
-    st.session_state.setdefault("upload_round", 0)
     samples = scoring.SAMPLE_PORTFOLIOS
     with st.sidebar:
-        st.html('<div class="phc-side-title">Portfolio</div>')
+        st.html('<div class="phc-side-title">Sample portfolios</div>')
         sample = st.radio(
             "Sample portfolios",
             options=list(samples),
@@ -490,18 +528,27 @@ def choose_portfolio():
             index=None,
             key="sample",
             on_change=clear_upload,
+            label_visibility="collapsed",
         )
+        st.html('<div class="phc-side-title phc-side-gap">Your portfolio</div>')
         upload = st.file_uploader(
-            "Or upload your own CSV",
+            "Upload a CSV",
             type="csv",
             key=f"upload_{st.session_state.upload_round}",
             on_change=clear_sample,
+        )
+        st.button(
+            "Type or paste positions",
+            key="type_positions",
+            icon=":material/edit_note:",
+            on_click=start_editing,
         )
         st.download_button(
             "Download template.csv",
             data=scoring.TEMPLATE_PATH.read_bytes(),
             file_name="template.csv",
             mime="text/csv",
+            icon=":material/download:",
         )
 
     if upload is not None:
@@ -509,6 +556,57 @@ def choose_portfolio():
     if sample is not None:
         return scoring.DATA_DIR / sample, sample, samples[sample][0]
     return None
+
+
+def edit_positions():
+    """The in-app editor. Returns a validated portfolio once every row is complete."""
+    section("Your positions")
+    st.html(
+        '<div class="phc-muted phc-editor-hint">Type a name or ticker and its value in lei. '
+        "Known stocks and ETFs fill in the rest. You can also paste rows copied from Excel "
+        "or Google Sheets.</div>"
+    )
+    edited = st.data_editor(
+        st.session_state.editor_rows,
+        key=f"editor_{st.session_state.editor_round}",
+        num_rows="dynamic",
+        hide_index=True,
+        column_config=EDITOR_CONFIG,
+        column_order=scoring.COLUMNS,
+        placeholder="",  # empty cells stay empty instead of showing "None"
+    )
+    filled, names = scoring.autofill(edited)
+    if names:
+        st.session_state.editor_rows = filled
+        st.session_state.editor_round += 1
+        st.session_state.filled_names = names
+        st.rerun()
+    st.session_state.editor_latest = edited
+
+    rows, problems = scoring.check_editor_rows(edited)
+    notes = []
+    if st.session_state.filled_names:
+        notes.append(
+            "Filled in from the list of known securities: "
+            + ", ".join(st.session_state.filled_names)
+            + ". Check the details and change anything that differs."
+        )
+    if problems:
+        notes.append("To see the analysis, complete " + "; ".join(problems) + ".")
+    if notes:
+        st.html('<div class="phc-rows">' + "".join(note_card(n) for n in notes) + "</div>")
+    st.download_button(
+        "Download as CSV",
+        data=scoring.to_csv(rows),
+        file_name="my_portfolio.csv",
+        mime="text/csv",
+        icon=":material/download:",
+        key="download_positions",
+        disabled=rows.empty,
+    )
+    if rows.empty or problems:
+        return None
+    return scoring.validate(rows)
 
 
 def error_card(message: str) -> None:
@@ -520,7 +618,10 @@ def error_card(message: str) -> None:
 
 def start_screen() -> None:
     steps = [
-        ("Choose a portfolio", "Pick one of the samples in the side panel, or upload your own CSV."),
+        (
+            "Choose a portfolio",
+            "Pick a sample in the side panel, upload a CSV, or type your positions.",
+        ),
         ("See your score", "One number from 0 to 100, built from three concentration limits."),
         ("Read the details", "Limits, stocks, charts and every position, one tab each."),
     ]
@@ -696,18 +797,23 @@ def main() -> None:
         layout="wide",
     )
     inject_css()
+    init_state()
     header()
 
     chosen = choose_portfolio()
     portfolio = None
-    if chosen is not None:
+    if st.session_state.editing:
+        portfolio = edit_positions()
+        portfolio_id, name = f"editor_{st.session_state.editor_round}", "Your positions"
+    elif chosen is not None:
         source, portfolio_id, name = chosen
         try:
             portfolio = scoring.load_portfolio(source)
         except scoring.PortfolioError as error:
             error_card(str(error))
     if portfolio is None:
-        start_screen()
+        if not st.session_state.editing:
+            start_screen()
         footer()
         return
 
@@ -716,6 +822,15 @@ def main() -> None:
         st.html(note_card(message))
 
     at_a_glance(analysis, name)
+    if not st.session_state.editing:
+        st.button(
+            "Edit these positions",
+            key="edit_positions",
+            type="tertiary",
+            icon=":material/edit:",
+            on_click=start_editing,
+            args=(portfolio,),
+        )
     overview, stocks, charts, positions = st.tabs(TABS)
     with overview:
         overview_tab(analysis)

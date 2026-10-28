@@ -6,9 +6,11 @@ displays what these functions return. Thresholds come from rules.py.
 
 from __future__ import annotations
 
+import functools
 import io
 import math
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +20,8 @@ import rules
 
 DATA_DIR = Path(__file__).parent / "data"
 TEMPLATE_PATH = DATA_DIR / "template.csv"
+# Stocks and funds the editor can fill in by name or ticker (details approximate).
+KNOWN_SECURITIES_PATH = DATA_DIR / "known_securities.csv"
 
 # Sample portfolios offered in the app: file name -> (display name, description).
 SAMPLE_PORTFOLIOS = {
@@ -74,6 +78,28 @@ GLOBAL_REGION = "Global"
 
 # Currencies offered in the in-app editor (a CSV may use any code).
 CURRENCIES = ("RON", "USD", "EUR", "GBP", "CHF", "NOK", "SEK", "DKK", "PLN", "HUF", "CZK", "CAD", "JPY")
+
+# The columns that describe a position, and the choices the editor offers for them.
+DETAIL_COLUMNS = ("sector", "asset_type", "market_cap", "currency", "region")
+EDITOR_OPTIONS = {
+    "sector": rules.GICS_SECTORS + rules.SECTOR_EXEMPT,
+    "asset_type": ASSET_TYPES,
+    "market_cap": CAP_SEGMENTS + ("n/a",),
+    "currency": CURRENCIES,
+    "region": REGIONS,
+}
+FIELD_NAMES = {
+    "asset": "name",
+    "value": "value",
+    "sector": "sector",
+    "asset_type": "type",
+    "market_cap": "market cap",
+    "currency": "currency",
+    "region": "region",
+}
+# Words dropped from the end of a name before matching ("Apple Inc." -> "apple").
+LEGAL_SUFFIXES = {"inc", "corp", "corporation", "co", "company", "plc", "ltd", "limited",
+                  "sa", "nv", "ag", "se", "asa", "spa", "ab", "holdings"}
 
 # Other spellings accepted for the category columns, matched in any letter case.
 CATEGORY_NAMES = {
@@ -341,6 +367,86 @@ def normalize_sector(name: str) -> str:
     """Official GICS name for a sector ('Technology' -> 'Information Technology');
     unknown names are kept as written."""
     return SECTOR_NAMES.get(name.lower(), name)
+
+
+# ---------------------------------------------------------------------------
+# In-app editor: known securities, auto-fill, checks, export
+# ---------------------------------------------------------------------------
+
+
+def is_blank(value) -> bool:
+    """Empty cell: None, NaN or only spaces."""
+    return value is None or (isinstance(value, float) and math.isnan(value)) or not str(value).strip()
+
+
+def match_key(name: str) -> str:
+    """The form used to compare names: 'Apple Inc.' -> 'apple',
+    'Johnson and Johnson' -> 'johnson & johnson', 'BRK-B' -> 'brk b', 'Nestlé' -> 'nestle'."""
+    text = unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode()
+    text = text.lower().replace("'", "").replace(" and ", " & ")
+    words = re.sub(r"[^a-z0-9&]+", " ", text).split()
+    while len(words) > 1 and words[-1] in LEGAL_SUFFIXES:
+        words.pop()
+    return " ".join(words)
+
+
+@functools.cache
+def known_securities() -> dict[str, dict[str, str]]:
+    """Name, ticker or alias (in match_key form) -> details of a known security."""
+    table = pd.read_csv(KNOWN_SECURITIES_PATH, dtype=str, keep_default_na=False)
+    lookup = {}
+    for row in table.to_dict("records"):
+        details = {column: row[column] for column in DETAIL_COLUMNS}
+        for name in [row["name"], *row["aliases"].split("|")]:
+            if name.strip():
+                lookup.setdefault(match_key(name), details)
+    return lookup
+
+
+def empty_positions(rows: int = 0) -> pd.DataFrame:
+    """A table with the portfolio columns and `rows` blank rows, to start the editor."""
+    return pd.DataFrame(
+        {c: pd.Series([None] * rows, dtype=float if c == "value" else object) for c in COLUMNS}
+    )
+
+
+def autofill(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """Fill the empty details of rows whose asset is a known security. Details
+    already chosen are kept. Returns the table and the assets that were filled."""
+    df = df.copy()
+    lookup = known_securities()
+    filled = []
+    for i, row in df.iterrows():
+        if is_blank(row["asset"]):
+            continue
+        details = lookup.get(match_key(row["asset"]))
+        empty = [c for c in DETAIL_COLUMNS if details and is_blank(row[c])]
+        for column in empty:
+            df.at[i, column] = details[column]
+        if empty:
+            filled.append(str(row["asset"]).strip())
+    return df, filled
+
+
+def check_editor_rows(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """The rows typed in the editor without the blank ones, and what each row
+    still misses, e.g. 'Netstreit: sector, market cap'."""
+    typed = df[[not (is_blank(a) and is_blank(v)) for a, v in zip(df["asset"], df["value"])]]
+    typed = typed.reset_index(drop=True)
+    problems = []
+    for number, row in typed.iterrows():
+        missing = [FIELD_NAMES[c] for c in COLUMNS if is_blank(row[c])]
+        if "value" not in missing and not pd.to_numeric(row["value"], errors="coerce") > 0:
+            missing.append("a value above 0")
+        if missing:
+            label = f"row {number + 1}" if is_blank(row["asset"]) else str(row["asset"]).strip()
+            problems.append(f"{label}: {', '.join(missing)}")
+    return typed, problems
+
+
+def to_csv(df: pd.DataFrame) -> bytes:
+    """The positions as a CSV file, in the same format the app reads."""
+    return df.reindex(columns=COLUMNS).to_csv(index=False, float_format="%.2f").encode("utf-8")
 
 
 # ---------------------------------------------------------------------------
