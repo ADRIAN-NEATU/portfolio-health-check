@@ -47,6 +47,9 @@ COLUMN_LABELS = {
     "currency": "Currency",
     "region": "Region",
 }
+NUMBER_COLUMNS = ("value", "weight")
+MAX_TABLE_ROWS = 25  # longer tables scroll inside
+ROW_HEIGHT = 35  # Streamlit's default row height, in pixels
 
 
 # ---------------------------------------------------------------------------
@@ -175,17 +178,58 @@ def inject_css() -> None:
 .phc-detail dt { color: var(--text-2); font-size: .8rem; }
 .phc-detail dd { margin: .1rem 0 0; font-weight: 500; }
 
-/* Streamlit widgets */
-.stTabs [data-baseweb="tab-list"] { gap: 1.75rem; border-bottom: 1px solid var(--border); }
-.stTabs [data-baseweb="tab"] { padding: .7rem 0; }
-.stTabs [data-baseweb="tab"] p { font-size: .95rem; font-weight: 500; color: var(--text-2); }
-.stTabs [aria-selected="true"] p { color: var(--text); }
+/* Streamlit widgets. Selectors use data-testid, ARIA roles and the st-key-* classes
+   Streamlit adds to keyed widgets, not its generated class names. */
+
+/* Sample portfolios: the radio list drawn as selectable cards */
+.st-key-sample [role="radiogroup"] { gap: .5rem; }
+.st-key-sample [role="radiogroup"] > div { position: relative; padding: .7rem .85rem;
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color .15s, background .15s; }
+.st-key-sample [role="radiogroup"] > div:hover { border-color: var(--neutral); }
+.st-key-sample [role="radiogroup"] > div:has(input:checked) { border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 4%, white); }
+.st-key-sample [role="radiogroup"] > div:has(input:focus-visible) { outline: 2px solid var(--accent);
+  outline-offset: 2px; }
+.st-key-sample [data-testid="stRadioOption"] { margin: 0; padding: 0; cursor: pointer; }
+.st-key-sample [data-testid="stRadioOption"]::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.st-key-sample [data-testid="stRadioOption"] div:has(+ [data-testid="stMarkdownContainer"]) { display: none; }
+.st-key-sample [data-testid="stRadioOption"] p { font-weight: 600; color: var(--text); }
+.st-key-sample [data-testid="stRadioCaption"] { margin: .15rem 0 0; padding: 0; }
+.st-key-sample [data-testid="stRadioCaption"] p { font-size: .82rem; line-height: 1.4; color: var(--text-2); }
+
+/* Upload: a card with a dotted border and our own text */
+[data-testid="stFileUploaderDropzone"] { flex-direction: column; align-items: center; gap: .65rem;
+  padding: 1.1rem 1rem; background: var(--card); border: 1.5px dashed var(--neutral); border-radius: 12px; }
+[data-testid="stFileUploaderDropzone"]:hover { border-color: var(--accent); }
+[data-testid="stFileUploaderDropzoneInstructions"] { order: -1; margin: 0; text-align: center; }
+[data-testid="stFileUploaderDropzoneInstructions"] > * { display: none; }
+[data-testid="stFileUploaderDropzoneInstructions"]::before { content: "Drop your CSV here or browse";
+  color: var(--text-2); font-size: .85rem; }
+
+/* Chart dimension: pills */
+[data-testid="stButtonGroup"] [role="radiogroup"] { gap: .5rem; }
+[data-testid="stButtonGroup"] button { border-radius: 999px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text-2); padding: .3rem 1rem; }
+[data-testid="stButtonGroup"] button:hover { border-color: var(--neutral); color: var(--text); }
+[data-testid="stButtonGroup"] button[aria-checked="true"] { border-color: var(--accent); color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, white); }
+
+/* Tabs: a thin accent line under the active tab, no backgrounds */
+[role="tablist"] { gap: 1.75rem; border-bottom: 1px solid var(--border); }
+[role="tab"], [role="tab"]:hover { background: transparent !important; padding: .7rem 0; }
+[role="tab"] p { font-size: .95rem; font-weight: 500; color: var(--text-2); }
+[role="tab"][aria-selected="true"] p, [role="tab"]:hover p { color: var(--text); }
+
+/* Expander: same as the cards */
+[data-testid="stExpander"] details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+[data-testid="stExpander"] summary { padding: .8rem 1.1rem; font-weight: 500; color: var(--text-2); }
+[data-testid="stExpander"] summary:hover { color: var(--text); }
+
 [data-testid="stPlotlyChart"] .main-svg { background: transparent !important; }
 [data-testid="stPlotlyChart"] .bglayer .bg { fill: transparent !important; }
-[data-testid="stExpander"] details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
 [data-testid="stDataFrame"] { border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
   background: var(--card); }
-[data-testid="stFileUploaderDropzone"] { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; }
 [data-testid="stDownloadButton"] button { width: 100%; border-radius: 8px; border: 1px solid var(--accent);
   color: var(--accent); background: var(--card); }
 [data-testid="stDownloadButton"] button:hover { background: color-mix(in srgb, var(--accent) 7%, white);
@@ -258,6 +302,28 @@ def section(title: str) -> None:
 
 def note_card(text: str) -> str:
     return f'<div class="phc-card phc-note"><span class="phc-i">i</span><span>{escape(text)}</span></div>'
+
+
+def show_table(table, formats: dict, **options):
+    """A table with readable headers, numbers aligned right, a very light stripe
+    on every other row, and tall enough that a short table never scrolls inside."""
+    stripe = f"background-color: {COLORS['bg']}"
+    styled = table.style.format(formats).apply(
+        lambda row: [stripe if row.name % 2 else ""] * len(row), axis=1
+    )
+    config = {
+        column: st.column_config.Column(
+            COLUMN_LABELS[column], alignment="right" if column in NUMBER_COLUMNS else None
+        )
+        for column in table.columns
+    }
+    return st.dataframe(
+        styled,
+        hide_index=True,
+        column_config=config,
+        height=ROW_HEIGHT * (min(len(table), MAX_TABLE_ROWS) + 1) + 3,
+        **options,
+    )
 
 
 def rows_html(items: list[tuple[str, str, str]]) -> str:
@@ -568,10 +634,9 @@ def stocks_tab(analysis: scoring.Analysis, portfolio_id: str) -> None:
 
     section("Your stocks")
     st.html('<div class="phc-muted">Select a row to see the details of a stock.</div>')
-    event = st.dataframe(
-        table.style.format({"weight": scoring.fmt_pct}),
-        hide_index=True,
-        column_config=COLUMN_LABELS,
+    event = show_table(
+        table,
+        {"weight": scoring.fmt_pct},
         on_select="rerun",
         selection_mode="single-row",
         key=f"stocks_{portfolio_id}",  # a new portfolio starts with no selection
@@ -593,7 +658,7 @@ def stocks_tab(analysis: scoring.Analysis, portfolio_id: str) -> None:
 
 def charts_tab(analysis: scoring.Analysis) -> None:
     dimensions = scoring.chart_dimensions(analysis)
-    dimension = st.segmented_control(
+    dimension = st.pills(
         "Dimension",
         options=list(dimensions),
         format_func=dimensions.get,
@@ -613,12 +678,8 @@ def charts_tab(analysis: scoring.Analysis) -> None:
 
 
 def positions_tab(analysis: scoring.Analysis) -> None:
-    st.dataframe(
-        analysis.positions.style.format({"value": scoring.fmt_ron, "weight": scoring.fmt_pct}),
-        hide_index=True,
-        column_config=COLUMN_LABELS,
-        column_order=[c for c in COLUMN_LABELS if c in analysis.positions.columns],
-    )
+    columns = [c for c in COLUMN_LABELS if c in analysis.positions.columns]
+    show_table(analysis.positions[columns], {"value": scoring.fmt_ron, "weight": scoring.fmt_pct})
 
 
 def footer() -> None:
