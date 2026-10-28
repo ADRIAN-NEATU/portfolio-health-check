@@ -1,8 +1,25 @@
 # Portfolio Health Check
 
-Portfolio Health Check is a local web tool that shows an individual investor, in under a minute, how concentrated their portfolio is. You pick a sample portfolio or upload a CSV of your positions. The app gives a score from 0 to 100, based on three concentration limits: sector, single position and currency. It then lists what to look at first, compares every figure with its threshold, and adds plain-language insights about asset classes, market cap and regions. It is analysis, not investment advice.
+Portfolio Health Check is a local web tool that shows an individual investor, in under a minute, how concentrated their portfolio is. You pick a sample portfolio, upload a CSV, or type your positions straight into the app. The app gives a score from 0 to 100, based on three concentration limits: sector, single position and currency. It then lists what to look at first, compares every figure with its threshold, and adds plain-language insights about asset classes, market cap and regions. It is analysis, not investment advice.
 
-## Install and run
+![At a glance and the three limits for a sample portfolio](docs/screenshots/andrei-overview-desktop.png)
+
+## Quick start on Windows
+
+1. Install Python 3.10 or newer from [python.org](https://www.python.org/downloads/) and tick "Add python.exe to PATH".
+2. Double-click **`start.bat`**.
+
+The first time, it sets everything up (about a minute). After that, it starts at once. The app opens in your browser at http://localhost:8501. Keep the black window open while you use the app, and close it to stop the app.
+
+## Three ways to enter a portfolio
+
+1. **Try a sample:** pick one of the eight portfolios in the side panel. "Edit these positions" turns any of them into a starting point for your own.
+2. **Type or paste:** click "Type or paste positions" and enter a name or ticker and its value in lei. Known stocks and ETFs (Apple, AAPL, VWCE, Banca Transilvania, …) fill in sector, type, market cap, currency and region by themselves, and you choose the rest from drop-down lists. You can also paste rows copied from Excel or Google Sheets (name, then value). "Download as CSV" keeps them for next time.
+3. **Upload a CSV:** the format is below. Files saved by Excel with Romanian settings work as they are, with `;` between columns and a decimal comma (1.234,56). Common spellings are accepted too ("Stock", "Large cap", "USA").
+
+The list of known securities is [data/known_securities.csv](data/known_securities.csv). Add a row to teach the app a new stock or fund.
+
+## Install and run by hand
 
 Requires Python 3.10 or newer.
 
@@ -60,6 +77,7 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - The market-cap reference is approximate: CRSP uses cumulative cap bands, while the data here use dollar thresholds.
 - Issuer risk on bonds is not analysed.
 - No live prices: values are entered by hand, in lei.
+- The details of known securities are approximate (market caps change), and each fund lists one common listing: if you bought it in another currency, change the currency in the editor.
 
 ## Sources
 
