@@ -1,11 +1,11 @@
 # Sprint 1 – MVP
 
-- **Sprint goal:** A user loads a portfolio and, in under a minute, sees their concentration score, the main risks and key insights.
+- **Sprint Goal:** A user loads a portfolio and, in under a minute, sees their concentration score, the main risks and key insights.
 - **Dates:** Tuesday 27 Oct – Monday 2 Nov 2026
-- **Version:** v0.1 – MVP
+- **Increment (release):** v0.1 – MVP
 - Day 1 was built on my previous laptop and moved to this one on 28 Oct.
 
-## Sprint backlog
+## Sprint Backlog
 
 | ID | Type | Epic | Title | Points | Status | Done on |
 |---|---|---|---|---|---|---|
@@ -26,13 +26,13 @@
 | S1-15 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
 | S1-16 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | To do | – |
 
-Added at the daily for after v0.1 (not in this sprint):
+Added to the Product Backlog at the Daily Scrum on 28 Oct, for after v0.1 (not in this Sprint):
 
 | ID | Type | Epic | Title | Points | Status | Done on |
 |---|---|---|---|---|---|---|
 | S1-17 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | To do | – |
 
-## Stories
+## User stories and acceptance criteria
 
 **S1-03 – Load a sample portfolio or my own CSV**
 As an investor, I want to open a sample or upload my own CSV, so that I can analyse a portfolio without any setup.
@@ -90,13 +90,14 @@ As an investor, I want suggestions while I type, so that I pick the right compan
 - Given the editor, when I type the first letters of a company, then a list suggests matching names and tickers.
 - Given the suggestions, when I pick one, then its name and details fill in.
 
-## Sprint review (2 Nov)
+## Sprint Review (2 Nov)
 
-- Delivered:
-- Not delivered:
+- Sprint Goal met? Yes / No
+- Increment delivered:
+- Not Done (back to the Product Backlog):
 - Demo notes:
 
-## Retro (Start / Stop / Continue)
+## Sprint Retrospective (Start / Stop / Continue)
 
 - **Start:**
 - **Stop:**

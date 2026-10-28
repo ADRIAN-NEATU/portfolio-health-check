@@ -7,8 +7,8 @@ Releases (or Versions) → **v0.1** → ••• → Edit:
 - Name: `v0.1 – MVP`
 - Release date: `2 Nov 2026`
 
-## 2. Create the sprint items in the Backlog
-In the Backlog, create one item per row. For each story, copy the user story and its criteria from [sprint-1.md](sprint-1.md) into Description.
+## 2. Create the Sprint Backlog items
+In the Backlog view (Jira's name for the Product Backlog), create one item per row. For each story, copy the user story and its criteria from [sprint-1.md](sprint-1.md) into Description.
 
 | # | Type | Summary | Parent (epic) | Story points | Fix version | Label | Description |
 |---|---|---|---|---|---|---|---|
@@ -31,15 +31,15 @@ In the Backlog, create one item per row. For each story, copy the user story and
 
 The epic goes in the **Parent** field. The points field is called "Story point estimate" or "Story Points", depending on the project type.
 
-## 3. Start the sprint
-- Drag the 16 items from the Backlog into **PHC Sprint 1**.
+## 3. Sprint Planning: start the Sprint
+- Drag the 16 items from the Product Backlog into **PHC Sprint 1**. They become the Sprint Backlog.
 - Click **Start sprint** and set:
   - Name: `Sprint 1 – MVP`
   - Dates: 27 Oct 2026 – 2 Nov 2026
-  - Goal: `A user loads a portfolio and, in under a minute, sees their concentration score, the main risks and key insights.`
+  - Sprint Goal: `A user loads a portfolio and, in under a minute, sees their concentration score, the main risks and key insights.`
 - If Jira refuses a start date in the past, use today's date and add to the goal: `Work started on 27 Oct.`
 
-## 4. Close what is already done
+## 4. Mark what already meets the Definition of Done
 On the board, move S1-01 to S1-12 to **Done** and add this comment to each:
 
 | Items | Comment |
@@ -49,14 +49,19 @@ On the board, move S1-01 to S1-12 to **Done** and add this comment to each:
 | S1-11 | `Done on 28 Oct 2026 – commits 796244f, bcbb19b` |
 | S1-12 | `Done on 28 Oct 2026 – commits 2ec5891, c3ad7f7, 686b97c, c9a927c, b39e8dc, f347ba6` |
 
-## 5. After each daily
-For every new row under "Backlog changes" in [daily-log.md](daily-log.md), create an item the same way: type, summary, parent, points, version `v0.1 – MVP`, label `must`. Put it in the sprint if it is for this week; otherwise leave it in the Backlog.
+## 5. After each Daily Scrum
+For every new row under "Product Backlog changes" in [daily-log.md](daily-log.md), create an item the same way: type, summary, parent, points, version `v0.1 – MVP`, label `must`. Put it in the Sprint if it is for this week; otherwise leave it in the Product Backlog.
 
-From the Day 2 daily (28 Oct):
-- **S1-16** is already in the table above and goes into the sprint.
+From the Daily Scrum on 28 Oct:
+- **S1-16** is already in the table above and goes into the Sprint.
 - **S1-13:** if you already created it, update its summary to the one above.
-- Create **S1-17** and leave it in the Backlog, without a version (it is for after v0.1):
+- Create **S1-17** and leave it in the Product Backlog, without a version (it is for after v0.1):
 
 | # | Type | Summary | Parent (epic) | Story points | Fix version | Label | Description |
 |---|---|---|---|---|---|---|---|
 | S1-17 | Story | Search bar with suggestions as you type a name or ticker | E2 Introducerea portofoliului | 3 | – | – | sprint-1.md › S1-17 |
+
+## 6. Sprint Review and Sprint Retrospective (2 Nov)
+- Fill in the two last sections of [sprint-1.md](sprint-1.md).
+- On the board, click **Complete sprint**. Items that are not Done go back to the Product Backlog or to the next Sprint.
+- If the Sprint Goal is met: Releases → **v0.1 – MVP** → **Release**.

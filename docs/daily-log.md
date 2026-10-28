@@ -1,4 +1,6 @@
-# Daily log
+# Daily Scrum log
+
+Five minutes at the end of each working day.
 
 ## Day 1 – 27 Oct
 
@@ -9,9 +11,9 @@
   - Insights, exposure notes, charts, a stocks tab and a full positions table explain the details.
   - A calm design that also works on a phone, a README and automated tests.
 - **Next:** use the app myself, polish what still looks unfinished, add screenshots.
-- **Blockers:** None
+- **Impediments:** None
 - **My feedback:** It was the first version, so I wrote the core features down on paper, from my own ideas, and worked from that list to have a working increment.
-- **Backlog changes:** None. The sprint backlog started from that paper list.
+- **Product Backlog changes:** None. The Sprint Backlog started from that paper list.
 
 ## Day 2 – 28 Oct
 
@@ -22,14 +24,14 @@
   - Positions can be typed or pasted into the app. Names and tickers fill in sector, size, currency and region, from a built-in list and from free online sources.
   - CSV files saved by Excel open as they are, and a file with only names and values can be completed in one click.
 - **Next:** Day 3: stop counting RON as a currency risk (S1-16). Then documented, simpler rules (S1-13), reread and explain the code (S1-14), publish on GitHub (S1-15).
-- **Blockers:** I don't know yet how the app will reach the public or friends for feedback. For now it only runs on my computer. I will sort it out.
+- **Impediments:** I don't know yet how the app will reach the public or friends for feedback. For now it only runs on my computer. I will sort it out.
 - **My feedback:**
   - The design and the core features are nice.
   - Someone who buys in RON because they work in Romania should not get a currency problem. To be fixed on Day 3.
   - The score weights are still placeholders. They will be replaced with rules that are documented and simpler.
   - Search could be better, with a bar that suggests names as you type. Fine for the first version.
   - Nothing else to change or add for now: the points above are the priorities.
-- **Backlog changes:**
+- **Product Backlog changes:**
   - New S1-16: don't count RON as a currency risk for someone who earns in lei (planned for Day 3).
   - Updated S1-13: the thresholds and weights will also be documented and simplified (no new item).
   - New S1-17: search bar with suggestions as you type (after v0.1).
