@@ -610,6 +610,11 @@ def test_known_security_names_do_not_collide():
         ("BRK.B", "brk b"),
         ("Nestlé", "nestle"),
         ("McDonald's", "mcdonalds"),
+        ("Vale S.A.", "vale"),
+        ("Novo Nordisk A/S", "novo nordisk"),
+        ("Seanergy Maritime Holdings Corp.", "seanergy maritime"),
+        ("SIEMENS AG-REG", "siemens"),
+        ("The Walt Disney Company", "walt disney"),
     ],
 )
 def test_match_key(written, key):
@@ -626,8 +631,12 @@ def test_autofill_by_name_or_ticker():
         ("VWCE", 2000, None, None, None, None, None),
         ("Some Unknown Co", 300, None, None, None, None, None),
     )
-    filled, names = scoring.autofill(df)
-    assert names == ["Apple Inc.", "VWCE"]
+    filled, fills, unknown = scoring.autofill(df)  # our own list only, no online lookup
+    assert [(asset, found.name) for asset, found in fills] == [
+        ("Apple Inc.", "Apple"),
+        ("VWCE", "Vanguard FTSE All-World UCITS ETF"),
+    ]
+    assert unknown == ["Some Unknown Co"]
     assert filled.iloc[0, 2:].tolist() == ["Information Technology", "stock", "large", "USD", "US"]
     assert filled.iloc[1, 2:].tolist() == ["Diversified", "ETF", "n/a", "EUR", "Global"]
     assert filled.iloc[2, 2:].isna().all()
@@ -635,7 +644,7 @@ def test_autofill_by_name_or_ticker():
 
 def test_autofill_keeps_what_the_user_chose():
     df = editor_rows(("Microsoft", 1000, None, None, None, "EUR", None))
-    filled, names = scoring.autofill(df)
+    filled, _, _ = scoring.autofill(df)
     assert filled.loc[0, "currency"] == "EUR"
     assert filled.loc[0, "region"] == "US"
     assert scoring.autofill(filled)[1] == []  # nothing left to fill

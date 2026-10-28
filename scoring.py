@@ -98,8 +98,8 @@ FIELD_NAMES = {
     "region": "region",
 }
 # Words dropped from the end of a name before matching ("Apple Inc." -> "apple").
-LEGAL_SUFFIXES = {"inc", "corp", "corporation", "co", "company", "plc", "ltd", "limited",
-                  "sa", "nv", "ag", "se", "asa", "spa", "ab", "holdings"}
+LEGAL_SUFFIXES = {"inc", "corp", "corporation", "co", "company", "plc", "ltd", "limited", "sa", "nv",
+                  "ag", "se", "asa", "as", "spa", "ab", "publ", "oyj", "holdings", "reg"}
 
 # Other spellings accepted for the category columns, matched in any letter case.
 CATEGORY_NAMES = {
@@ -380,26 +380,38 @@ def is_blank(value) -> bool:
 
 
 def match_key(name: str) -> str:
-    """The form used to compare names: 'Apple Inc.' -> 'apple',
+    """The form used to compare names: 'Apple Inc.' -> 'apple', 'Vale S.A.' -> 'vale',
     'Johnson and Johnson' -> 'johnson & johnson', 'BRK-B' -> 'brk b', 'Nestlé' -> 'nestle'."""
     text = unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode()
     text = text.lower().replace("'", "").replace(" and ", " & ")
+    text = re.sub(r"\b([a-z])[./](?=[a-z]\b)", r"\1", text)  # "s.a." -> "sa", "a/s" -> "as"
     words = re.sub(r"[^a-z0-9&]+", " ", text).split()
+    if len(words) > 1 and words[0] == "the":
+        words.pop(0)
     while len(words) > 1 and words[-1] in LEGAL_SUFFIXES:
         words.pop()
     return " ".join(words)
 
 
+@dataclass
+class Found:
+    """A security found by name or ticker, and where its details come from."""
+
+    name: str
+    source: str
+    details: dict  # some or all of DETAIL_COLUMNS; missing ones are None
+
+
 @functools.cache
-def known_securities() -> dict[str, dict[str, str]]:
-    """Name, ticker or alias (in match_key form) -> details of a known security."""
+def known_securities() -> dict[str, Found]:
+    """Name, ticker or alias (in match_key form) -> a security from our own list."""
     table = pd.read_csv(KNOWN_SECURITIES_PATH, dtype=str, keep_default_na=False)
     lookup = {}
     for row in table.to_dict("records"):
-        details = {column: row[column] for column in DETAIL_COLUMNS}
+        found = Found(row["name"], "the built-in list", {column: row[column] for column in DETAIL_COLUMNS})
         for name in [row["name"], *row["aliases"].split("|")]:
             if name.strip():
-                lookup.setdefault(match_key(name), details)
+                lookup.setdefault(match_key(name), found)
     return lookup
 
 
@@ -410,22 +422,44 @@ def empty_positions(rows: int = 0) -> pd.DataFrame:
     )
 
 
-def autofill(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
-    """Fill the empty details of rows whose asset is a known security. Details
-    already chosen are kept. Returns the table and the assets that were filled."""
+def assets_to_look_up(df: pd.DataFrame) -> list[str]:
+    """Names of rows with empty details that our own list does not know."""
+    known = known_securities()
+    names = [
+        str(row["asset"]).strip()
+        for _, row in df.iterrows()
+        if not is_blank(row["asset"]) and any(is_blank(row[c]) for c in DETAIL_COLUMNS)
+    ]
+    return list(dict.fromkeys(n for n in names if match_key(n) not in known))
+
+
+def autofill(df: pd.DataFrame, find_many=None) -> tuple[pd.DataFrame, list[tuple[str, Found]], list[str]]:
+    """Fill the empty details of each row from our own list and, when `find_many`
+    is given (name list -> {name: Found or None}), from an online lookup.
+    Details already chosen are kept.
+
+    Returns the table, (asset, Found) for every row that got new details, and
+    the names nobody knows."""
     df = df.copy()
-    lookup = known_securities()
-    filled = []
+    known = known_securities()
+    online = find_many(assets_to_look_up(df)) if find_many else {}
+    filled, unknown = [], []
     for i, row in df.iterrows():
         if is_blank(row["asset"]):
             continue
-        details = lookup.get(match_key(row["asset"]))
-        empty = [c for c in DETAIL_COLUMNS if details and is_blank(row[c])]
-        for column in empty:
-            df.at[i, column] = details[column]
-        if empty:
-            filled.append(str(row["asset"]).strip())
-    return df, filled
+        asset = str(row["asset"]).strip()
+        found = known.get(match_key(asset)) or online.get(asset)
+        empty = [c for c in DETAIL_COLUMNS if is_blank(row[c])]
+        if found is None:
+            if empty:
+                unknown.append(asset)
+            continue
+        new = [c for c in empty if not is_blank(found.details.get(c))]
+        for column in new:
+            df.at[i, column] = found.details[column]
+        if new:
+            filled.append((asset, found))
+    return df, filled, list(dict.fromkeys(unknown))
 
 
 def check_editor_rows(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:

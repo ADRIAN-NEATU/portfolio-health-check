@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit as st
 
+import lookup
 import scoring
 from scoring import GREEN, RED, YELLOW
 
@@ -558,13 +559,39 @@ def choose_portfolio():
     return None
 
 
+def fill_summary(fills) -> str:
+    """'Filled in 20 positions: 15 from SEC EDGAR, 5 from the known list.', plus the
+    names that were matched to a different name, which are worth a look."""
+    sources = {}
+    for _, found in fills:
+        sources[found.source] = sources.get(found.source, 0) + 1
+    count = len(fills)
+    text = f"Filled in {count} position{'s' if count > 1 else ''}: " + ", ".join(
+        f"{n} from {source}" for source, n in sources.items()
+    )
+    renamed = [
+        f"{asset} → {found.name}"
+        for asset, found in fills
+        if scoring.match_key(asset) != scoring.match_key(found.name)
+    ]
+    if renamed:
+        text += ". Matched as: " + "; ".join(renamed)
+    return text + ". Sector and size are approximate: check them and change anything that differs."
+
+
 def edit_positions():
     """The in-app editor. Returns a validated portfolio once every row is complete."""
     section("Your positions")
     st.html(
-        '<div class="phc-muted phc-editor-hint">Type a name or ticker and its value in lei. '
-        "Known stocks and ETFs fill in the rest. You can also paste rows copied from Excel "
-        "or Google Sheets.</div>"
+        '<div class="phc-muted phc-editor-hint">Type a name or ticker and its value in lei: '
+        "the rest fills in by itself. You can also paste rows copied from Excel or Google Sheets.</div>"
+    )
+    online = st.toggle(
+        "Look up names online",
+        value=True,
+        key="online_lookup",
+        help="Free, openly licensed sources: SEC EDGAR for companies listed in the US and "
+        "OpenFIGI for other exchanges. Only the names you type are sent.",
     )
     edited = st.data_editor(
         st.session_state.editor_rows,
@@ -574,23 +601,29 @@ def edit_positions():
         column_config=EDITOR_CONFIG,
         column_order=scoring.COLUMNS,
         placeholder="",  # empty cells stay empty instead of showing "None"
+        # every row visible (header, rows and the "add row" line), like the other tables
+        height=ROW_HEIGHT * (min(len(st.session_state.editor_rows), MAX_TABLE_ROWS) + 2) + 3,
     )
-    filled, names = scoring.autofill(edited)
-    if names:
+    find_many = lookup.find_many if online else None
+    to_look_up = scoring.assets_to_look_up(edited) if online else []
+    if lookup.uncached(to_look_up):
+        with st.spinner("Looking up " + ", ".join(to_look_up[:3]) + ("…" if len(to_look_up) > 3 else "")):
+            filled, fills, unknown = scoring.autofill(edited, find_many)
+    else:
+        filled, fills, unknown = scoring.autofill(edited, find_many)
+    if fills:
         st.session_state.editor_rows = filled
         st.session_state.editor_round += 1
-        st.session_state.filled_names = names
+        st.session_state.filled_names = fill_summary(fills)
         st.rerun()
     st.session_state.editor_latest = edited
 
     rows, problems = scoring.check_editor_rows(edited)
     notes = []
     if st.session_state.filled_names:
-        notes.append(
-            "Filled in from the list of known securities: "
-            + ", ".join(st.session_state.filled_names)
-            + ". Check the details and change anything that differs."
-        )
+        notes.append(st.session_state.filled_names)
+    if unknown:
+        notes.append("Not found: " + ", ".join(unknown) + ". Choose their details from the lists.")
     if problems:
         notes.append("To see the analysis, complete " + "; ".join(problems) + ".")
     if notes:
