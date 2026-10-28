@@ -253,6 +253,22 @@ def test_profile_breakdown():
     assert profile.breakdown == pytest.approx({"stock": 0.4, "ETF": 0.3, "bond": 0.2, "cash": 0.1})
     assert profile.defensive_share == pytest.approx(0.3)
 
+    slices = scoring.asset_class_slices(profile)
+    assert slices["label"].tolist() == ["Equity", "Bonds", "Cash"]
+    assert slices["share"].tolist() == pytest.approx([0.7, 0.2, 0.1])
+    assert slices["detail"][0] == "Stocks 40% · ETFs 30%"
+
+
+def test_asset_class_slices_skip_empty_classes():
+    slices = scoring.asset_class_slices(sample("one_global_etf.csv").profile)
+    assert slices["label"].tolist() == ["Equity"]
+
+
+def test_csv_saved_with_bom():
+    data = "﻿asset,value,sector,asset_type,market_cap,currency,region\nA,10,Technology,stock,large,USD,US\n"
+    df = scoring.load_portfolio(io.BytesIO(data.encode("utf-8")))
+    assert list(df.columns) == list(scoring.COLUMNS)
+
 
 # ---------------------------------------------------------------------------
 # Exposure notes

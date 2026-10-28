@@ -225,7 +225,8 @@ def round_half_up(x: float) -> int:
 def load_portfolio(source) -> pd.DataFrame:
     """Read a portfolio CSV from a path or an uploaded file, then validate it."""
     try:
-        df = pd.read_csv(source, keep_default_na=False)
+        # utf-8-sig also reads files saved by Excel, which start with a BOM
+        df = pd.read_csv(source, keep_default_na=False, encoding="utf-8-sig")
     except pd.errors.EmptyDataError:
         raise PortfolioError("The file is empty. Start from the template.") from None
     except (pd.errors.ParserError, UnicodeDecodeError):
@@ -603,6 +604,24 @@ def chart_data(analysis: Analysis, dimension: str) -> tuple[pd.DataFrame, float 
     ]
     bars = pd.DataFrame({"category": shares.index, "weight": shares.values, "status": statuses})
     return bars, (limit["limit"] if limit else None)
+
+
+def asset_class_slices(profile: Profile) -> pd.DataFrame:
+    """Donut slices: stocks and ETFs grouped as Equity, then bonds and cash.
+    Empty slices are left out."""
+    b = profile.breakdown
+    slices = pd.DataFrame(
+        {
+            "label": ["Equity", "Bonds", "Cash"],
+            "share": [b["stock"] + b["ETF"], b["bond"], b["cash"]],
+            "detail": [
+                f"Stocks {fmt_pct(b['stock'])} · ETFs {fmt_pct(b['ETF'])}",
+                f"{fmt_pct(b['bond'])} of your portfolio",
+                f"{fmt_pct(b['cash'])} of your portfolio",
+            ],
+        }
+    )
+    return slices[slices["share"] > EPS].reset_index(drop=True)
 
 
 def cap_comparison(analysis: Analysis) -> pd.DataFrame:

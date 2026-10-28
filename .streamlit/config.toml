@@ -1,0 +1,21 @@
+[theme]
+base = "light"
+primaryColor = "#1F6F50"
+backgroundColor = "#F7F8FA"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#14213D"
+linkColor = "#1F6F50"
+borderColor = "#E3E6EB"
+# Inter is loaded by the CSS in app.py (Google Fonts); this makes Streamlit's
+# own widgets and tables use it too.
+font = "Inter, sans-serif"
+
+[theme.sidebar]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F7F8FA"
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
