@@ -642,6 +642,26 @@ def edit_positions():
     return scoring.validate(rows)
 
 
+def offer_editor(source) -> None:
+    """A CSV with names and values but missing details can be finished in the editor."""
+    if not hasattr(source, "seek"):
+        return
+    source.seek(0)
+    try:
+        table = scoring.read_table(source)
+    except scoring.PortfolioError:
+        return
+    if {"asset", "value"} <= set(table.columns):
+        st.button(
+            "Fill in the missing details",
+            key="fill_from_csv",
+            type="primary",
+            icon=":material/auto_fix_high:",
+            on_click=start_editing,
+            args=(scoring.editor_table(table),),
+        )
+
+
 def error_card(message: str) -> None:
     st.html(
         '<div class="phc-card phc-error"><div class="phc-error-title">This file can\'t be analysed</div>'
@@ -844,6 +864,7 @@ def main() -> None:
             portfolio = scoring.load_portfolio(source)
         except scoring.PortfolioError as error:
             error_card(str(error))
+            offer_editor(source)
     if portfolio is None:
         if not st.session_state.editing:
             start_screen()

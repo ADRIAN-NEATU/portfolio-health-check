@@ -265,7 +265,7 @@ def test_asset_class_slices_skip_empty_classes():
 
 
 def test_csv_saved_with_bom():
-    data = "﻿asset,value,sector,asset_type,market_cap,currency,region\nA,10,Information Technology,stock,large,USD,US\n"
+    data = "\ufeffasset,value,sector,asset_type,market_cap,currency,region\nA,10,Information Technology,stock,large,USD,US\n"
     df = scoring.load_portfolio(io.BytesIO(data.encode("utf-8")))
     assert list(df.columns) == list(scoring.COLUMNS)
 
@@ -675,6 +675,20 @@ def test_editor_csv_round_trip():
     loaded = scoring.load_portfolio(io.BytesIO(scoring.to_csv(df)))
     assert loaded["value"].tolist() == [1234.5, 2000]
     assert loaded["asset"].tolist() == ["Apple", "VWCE"]
+
+
+def test_csv_with_only_names_and_values_goes_to_the_editor():
+    text = "asset;value\nApple;1.000\nNetstreit;412,5\nStock Without Value;\n"
+    with pytest.raises(scoring.PortfolioError, match="Missing required columns"):
+        scoring.load_portfolio(io.StringIO(text))
+    table = scoring.editor_table(scoring.read_table(io.StringIO(text)))
+    assert list(table.columns) == list(scoring.COLUMNS)
+    assert table["asset"].tolist() == ["Apple", "Netstreit", "Stock Without Value"]
+    assert table["value"].tolist()[:2] == [1000, 412.5]
+    assert pd.isna(table["value"][2])
+    assert table["sector"].isna().all()
+    filled, fills, _ = scoring.autofill(table)
+    assert filled.loc[0, "sector"] == "Information Technology"
 
 
 def test_na_text_stays_a_category():

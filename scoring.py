@@ -278,10 +278,13 @@ def round_half_up(x: float) -> int:
 
 
 def load_portfolio(source) -> pd.DataFrame:
-    """Read a portfolio CSV from a path or an uploaded file, then validate it.
+    """Read a portfolio CSV from a path or an uploaded file, then validate it."""
+    return validate(read_table(source))
 
-    Also reads files saved by Excel with Romanian settings: ';' between columns
-    and a decimal comma (1.234,56)."""
+
+def read_table(source) -> pd.DataFrame:
+    """The CSV as a table of text, before any check. Also reads files saved by
+    Excel with Romanian settings: ';' between columns and a decimal comma (1.234,56)."""
     text = read_text(source)
     if not text.strip():
         raise PortfolioError("The file is empty. Start from the template.")
@@ -293,9 +296,10 @@ def load_portfolio(source) -> pd.DataFrame:
         raise PortfolioError(
             "The file could not be read as a CSV. Start from the template."
         ) from None
+    df.columns = [str(c).strip() for c in df.columns]
     if "value" in df.columns:
         df["value"] = df["value"].map(lambda v: parse_amount(v, decimal_comma=separator == ";"))
-    return validate(df)
+    return df
 
 
 def read_text(source) -> str:
@@ -303,7 +307,7 @@ def read_text(source) -> str:
     Windows Central European encoding Excel uses for 'CSV' in Romanian."""
     raw = source.read() if hasattr(source, "read") else Path(source).read_bytes()
     if isinstance(raw, str):
-        return raw.lstrip("﻿")
+        return raw.lstrip("\ufeff")
     try:
         return raw.decode("utf-8-sig")
     except UnicodeDecodeError:
@@ -318,7 +322,7 @@ def parse_amount(text: str, decimal_comma: bool) -> str:
     """Write an amount the standard way: '1.234,56' -> '1234.56' in a file with a
     decimal comma, '1,234.56' -> '1234.56' otherwise. Spaces between thousands
     are dropped. Anything else is left for validate() to reject."""
-    text = text.replace(" ", "").replace(" ", "")
+    text = text.replace(" ", "").replace("\u00a0", "")
     if not decimal_comma:
         return text.replace(",", "")
     if "," in text:
@@ -352,15 +356,34 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
         )
 
     df["value"] = values.astype(float)
+    df = clean_text(df)
+    return df[[c for c in COLUMNS if c in df.columns]]
+
+
+def clean_text(df: pd.DataFrame) -> pd.DataFrame:
+    """Trim the text columns and write categories the standard way
+    ('Technology' -> 'Information Technology', 'Stock' -> 'stock', 'usd' -> 'USD')."""
     for column in TEXT_COLUMNS:
         if column in df.columns:
             df[column] = df[column].astype(str).str.strip()
-    df["sector"] = df["sector"].map(normalize_sector)
+    if "sector" in df.columns:
+        df["sector"] = df["sector"].map(normalize_sector)
     for column, names in CATEGORY_NAMES.items():
         if column in df.columns:
             df[column] = df[column].map(lambda v, names=names: names.get(v.lower(), v))
-    df["currency"] = df["currency"].str.upper()
-    return df[[c for c in COLUMNS if c in df.columns]]
+    if "currency" in df.columns:
+        df["currency"] = df["currency"].str.upper()
+    return df
+
+
+def editor_table(df: pd.DataFrame) -> pd.DataFrame:
+    """The rows of a CSV that could not be analysed, ready for the editor: our
+    columns only, amounts as numbers, missing details as empty cells."""
+    table = clean_text(df.copy()).reindex(columns=COLUMNS)
+    table["value"] = pd.to_numeric(table["value"], errors="coerce")
+    for column in TEXT_COLUMNS:
+        table[column] = [None if is_blank(v) else v for v in table[column]]
+    return table.reset_index(drop=True)
 
 
 def normalize_sector(name: str) -> str:
