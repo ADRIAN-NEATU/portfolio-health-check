@@ -38,7 +38,7 @@ What a user can see and do in Portfolio Health Check.
 | | Click a stock to see its sector, size, region and weight | Done | 27 Oct |
 | **Charts** | See bars by sector, currency, position or region, largest first, with the limit as a dotted line | Done | 27 Oct |
 | | Hover over a bar to see the positions inside it, or click it to list them all | Done | 29 Oct |
-| | Values never sit on the limit line, and tooltips show the share, where it stands against the limit and the positions, lined up | Done | 29 Oct |
+| | Values sit inside their bars, never on the limit line, and tooltips show the share, where it stands against the limit and the positions, lined up | Done | 29 Oct |
 | | Read what "Diversified" and "n/a" mean, under the Sector chart and in the tables | Done | 29 Oct |
 | | See every position in a table, with values in lei and weights in % | Done | 27 Oct |
 | **Design** | Calm, report-like look: colour only where there is a problem | Done | 27 Oct |

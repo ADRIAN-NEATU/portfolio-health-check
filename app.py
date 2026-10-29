@@ -490,16 +490,12 @@ def bar_hover(category: str, weight: float, phrase: str, members: list | None, s
     return "<br>".join(lines)
 
 
-# Share of the chart's width a value label needs next to its bar, on a phone.
-LABEL_ROOM = 0.25
+# Ink for a value written on a bar, readable on the bar's colour.
+TEXT_ON_BAR = {GREEN: COLORS["text"], YELLOW: COLORS["text"], RED: "#FFFFFF"}
 
 
 def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figure:
-    span = max(bars["weight"].max(), limit or 0) * 1.15
-    # A label beside a bar that ends just before the limit would sit on the dotted
-    # line: it goes inside the bar's end instead. If it doesn't fit there, Plotly
-    # hides it and the tooltip still shows the value.
-    inside = [limit is not None and 0 <= limit - w < LABEL_ROOM * span for w in bars["weight"]]
+    top = max(bars["weight"].max(), limit or 0)
     hover = [
         bar_hover(
             row.category,
@@ -516,9 +512,12 @@ def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figu
             orientation="h",
             marker_color=[BAR_COLORS[status] for status in bars["status"]],
             text=[scoring.fmt_pct(weight) for weight in bars["weight"]],
-            textposition=["inside" if i else "outside" for i in inside],
+            # Each value sits inside the end of its bar. One too small to hold it
+            # (uniformtext in the template) is hidden and stays in the tooltip.
+            textposition="inside",
+            textangle=0,
             insidetextanchor="end",
-            insidetextfont=dict(color=COLORS["text"]),
+            insidetextfont=dict(color=[TEXT_ON_BAR[status] for status in bars["status"]]),
             cliponaxis=False,
             customdata=hover,
             hovertemplate="%{customdata}<extra></extra>",
@@ -527,12 +526,13 @@ def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figu
     fig.update_layout(
         height=70 + 30 * len(bars),
         margin=dict(l=4, r=40, t=30, b=8),
-        xaxis=dict(visible=False, range=[0, span]),
+        xaxis=dict(visible=False, range=[0, top * 1.15]),
         yaxis=dict(autorange="reversed"),
     )
     if limit is not None:
         fig.add_vline(
             x=limit,
+            layer="below",  # behind the bars, so it never runs through a value
             line=dict(color=COLORS["text"], width=1.5, dash="dot"),
             annotation=dict(
                 text=f"Limit {scoring.fmt_pct(limit)}",

@@ -161,7 +161,7 @@ As an investor, I want to see what is inside each bar, so that I know which hold
 
 **S1-25 – Keep chart labels off the limit line and make the tooltips easier to read**
 As an investor, I want the charts to read cleanly, so that a value near the limit is easy to see and compare.
-- Given my portfolio, when I open the Sector chart, then "28.9%" sits inside the Industrials bar, not on the dotted "Limit 30%" line.
+- Given my portfolio, when I open the Sector chart, then every value sits inside the end of its bar ("28.9%" in Industrials), never on the dotted "Limit 30%" line. A bar too short for its value shows it in the tooltip.
 - Given any bar, when I hover over it, then a card shows its share first, then where it stands against the limit (for example "Close to the 30% limit"), then the positions in it, lined up.
 - Given a bar near the top or bottom of the chart, when I hover over it, then the card is not cut off.
 
