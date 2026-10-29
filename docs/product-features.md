@@ -25,9 +25,9 @@ What a user can see and do in Portfolio Health Check.
 | | See up to three findings that matter most, each pointing to the tab with the details | Done | 27 Oct |
 | | See your investor profile: Conservative, Balanced or Dynamic | Done | 27 Oct |
 | **Insights** | See how your money splits between stocks, ETFs, bonds and cash | Done | 27 Oct |
-| | See how many equal positions your portfolio behaves like, and the share of the five largest | Done | 27 Oct |
-| | See what a 20% fall in your largest sector would do to your portfolio | Done | 27 Oct |
-| | See your largest sector, your share outside RON and your largest region | Done | 27 Oct |
+| | See how many equal positions your portfolio behaves like (explained in plain words), and the share of the five largest | Done | 27 Oct |
+| | See your largest sector and your largest region as simple percentages (they replace the stress test) | Done | 29 Oct |
+| | See your share outside RON | Done | 27 Oct |
 | | See how many of the 11 sectors you cover, with global funds counted | Done | 28 Oct |
 | | Each insight is marked Info or Watch and never changes the score | Done | 27 Oct |
 | **Exposure notes** | Compare your stocks' company sizes with the US market | Done | 27 Oct |
@@ -36,6 +36,8 @@ What a user can see and do in Portfolio Health Check.
 | | Get a note when one foreign currency holds most of your portfolio; the leu never counts | Done | 29 Oct |
 | | Click a stock to see its sector, size, region and weight | Done | 27 Oct |
 | **Charts** | See bars by sector, currency, position or region, largest first, with the limit as a dotted line | Done | 27 Oct |
+| | Hover over a bar to see the positions inside it, or click it to list them all | Done | 29 Oct |
+| | Read what "Diversified" and "n/a" mean, under the Sector chart and in the tables | Done | 29 Oct |
 | | See every position in a table, with values in lei and weights in % | Done | 27 Oct |
 | **Design** | Calm, report-like look: colour only where there is a problem | Done | 27 Oct |
 | | Works on a phone-sized screen | Done | 27 Oct |

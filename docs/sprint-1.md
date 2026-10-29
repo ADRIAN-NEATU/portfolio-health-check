@@ -26,12 +26,12 @@
 | S1-14 | PHC-20 | Task | E5 | Reread and explain the code | 2 | To do | – |
 | S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
 | S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | Done | 29 Oct |
-| S1-18 | PHC-24 | Story | E3 | Explain "behaves like N equal positions" in plain words | 1 | To do | – |
-| S1-19 | PHC-25 | Story | E3 | Replace the stress test with simple exposure figures by sector and region | 2 | To do | – |
+| S1-18 | PHC-24 | Story | E3 | Explain "behaves like N equal positions" in plain words | 1 | Done | 29 Oct |
+| S1-19 | PHC-25 | Story | E3 | Replace the stress test with simple exposure figures by sector and region | 2 | Done | 29 Oct |
 | S1-20 | PHC-26 | Story | E3 | Colour each insight by what it means: good, watch, worth asking | 3 | To do | – |
-| S1-21 | PHC-27 | Story | E3 | Explain "n/a" and "Diversified" in the charts | 1 | To do | – |
+| S1-21 | PHC-27 | Story | E3 | Explain "n/a" and "Diversified" in the charts | 1 | Done | 29 Oct |
 | S1-22 | PHC-28 | Story | E4 | Ask a neutral question when one region holds a large share | 2 | To do | – |
-| S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | To do | – |
+| S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | Done | 29 Oct |
 | S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
 
 S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. Anything not Done by 2 Nov goes back to the Product Backlog.
@@ -53,7 +53,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | Start | 42 | – | – | 42 | 42 |
 | 27 Oct | 42 | – | 26 | 16 | 36 |
 | 28 Oct | 45 | 3 (S1-16) | 10 | 9 | 30 |
-| 29 Oct | 60 | 15 (S1-18 to S1-24) | 6 | 18 | 24 |
+| 29 Oct | 60 | 15 (S1-18 to S1-24) | 13 | 11 | 24 |
 | 30 Oct | | | | | 18 |
 | 31 Oct | | | | | 12 |
 | 1 Nov | | | | | 6 |
@@ -67,7 +67,7 @@ xychart-beta
     title "Sprint 1 burndown: bars = points left, line = ideal"
     x-axis ["Start", "27 Oct", "28 Oct", "29 Oct"]
     y-axis "Story points" 0 --> 45
-    bar [42, 16, 9, 18]
+    bar [42, 16, 9, 11]
     line [42, 36, 30, 24]
 ```
 

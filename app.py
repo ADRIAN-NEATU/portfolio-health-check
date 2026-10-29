@@ -190,6 +190,10 @@ def inject_css() -> None:
 .phc-detail { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .75rem; }
 .phc-detail dt { color: var(--text-2); font-size: .8rem; }
 .phc-detail dd { margin: .1rem 0 0; font-weight: 500; }
+.phc-members { display: flex; flex-direction: column; }
+.phc-member { display: flex; justify-content: space-between; gap: 1rem; padding: .4rem 0;
+  border-bottom: 1px solid var(--border); }
+.phc-member:last-child { border-bottom: none; }
 
 /* Streamlit widgets. Selectors use data-testid, ARIA roles and the st-key-* classes
    Streamlit adds to keyed widgets, not its generated class names. */
@@ -331,7 +335,9 @@ def show_table(table, formats: dict, **options):
     )
     config = {
         column: st.column_config.Column(
-            COLUMN_LABELS[column], alignment="right" if column in NUMBER_COLUMNS else None
+            COLUMN_LABELS[column],
+            alignment="right" if column in NUMBER_COLUMNS else None,
+            help=" ".join(scoring.LABEL_EXPLANATIONS.values()) if column == "sector" else None,
         )
         for column in table.columns
     }
@@ -439,7 +445,20 @@ def cap_chart(comparison) -> go.Figure:
     return fig
 
 
-def bar_chart(bars, limit: float | None) -> go.Figure:
+def members_hover(members: list[tuple[str, float]], shown: int = 8) -> str:
+    """The positions inside a bar, for its tooltip: the largest eight, then a count."""
+    lines = [f"{escape(name)}  {scoring.fmt_pct(weight)}" for name, weight in members[:shown]]
+    if len(members) > shown:
+        lines.append(f"and {len(members) - shown} more")
+    return "<br>".join(lines)
+
+
+def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figure:
+    hover = "<b>%{y}</b>: %{text}<extra></extra>"
+    customdata = None
+    if members:
+        customdata = [members_hover(members.get(category, [])) for category in bars["category"]]
+        hover = "<b>%{y}</b>: %{text}<br><br>%{customdata}<extra></extra>"
     fig = go.Figure(
         go.Bar(
             x=bars["weight"],
@@ -449,7 +468,8 @@ def bar_chart(bars, limit: float | None) -> go.Figure:
             text=[scoring.fmt_pct(weight) for weight in bars["weight"]],
             textposition="outside",
             cliponaxis=False,
-            hovertemplate="%{y}: %{text}<extra></extra>",
+            customdata=customdata,
+            hovertemplate=hover,
         )
     )
     top = max(bars["weight"].max(), limit or 0)
@@ -810,7 +830,19 @@ def stocks_tab(analysis: scoring.Analysis, portfolio_id: str) -> None:
         )
 
 
-def charts_tab(analysis: scoring.Analysis) -> None:
+def members_card(category: str, share: float, members: list[tuple[str, float]]) -> str:
+    rows = "".join(
+        f'<div class="phc-member"><span>{escape(name)}</span>'
+        f'<span class="phc-num">{scoring.fmt_pct(weight)}</span></div>'
+        for name, weight in members
+    )
+    return (
+        f'<div class="phc-card"><div class="phc-detail-name">{escape(category)} · '
+        f'{scoring.fmt_pct(share)} of your portfolio</div><div class="phc-members">{rows}</div></div>'
+    )
+
+
+def charts_tab(analysis: scoring.Analysis, portfolio_id: str) -> None:
     dimensions = scoring.chart_dimensions(analysis)
     dimension = st.pills(
         "Dimension",
@@ -822,8 +854,27 @@ def charts_tab(analysis: scoring.Analysis) -> None:
         label_visibility="collapsed",
     )
     bars, limit = scoring.chart_data(analysis, dimension)
-    show_chart(bar_chart(bars, limit))
-    if dimension in ("sector", "asset"):
+    # Each bar of Sector, Currency and Region holds several positions: show them.
+    members = scoring.bar_members(analysis, dimension) if dimension != "asset" else None
+    event = st.plotly_chart(
+        bar_chart(bars, limit, members),
+        theme=None,
+        config=PLOTLY_CONFIG,
+        on_select="rerun" if members else "ignore",
+        selection_mode="points",
+        key=f"chart_{portfolio_id}_{dimension}",  # a new portfolio starts with no bar picked
+    )
+    points = event.selection.points if members else []
+    if points:
+        category = points[0]["y"]
+        share = float(bars.loc[bars["category"] == category, "weight"].iloc[0])
+        st.html(members_card(category, share, members[category]))
+    elif members:
+        st.html('<div class="phc-muted">Hover over a bar to see the positions in it, or click it to list them.</div>')
+    explanations = scoring.label_explanations(bars["category"]) if dimension == "sector" else []
+    if explanations:
+        st.html(note_card(" ".join(explanations) + " They don't count towards the sector limit, so they stay grey."))
+    elif dimension in ("sector", "asset"):
         st.html('<div class="phc-muted">Broad ETFs, bonds and cash are exempt from this limit and stay grey.</div>')
     for note in analysis.notes:
         if note.key == dimension:  # the region and currency notes sit under their charts
@@ -890,7 +941,7 @@ def main() -> None:
     with stocks:
         stocks_tab(analysis, portfolio_id)
     with charts:
-        charts_tab(analysis)
+        charts_tab(analysis, portfolio_id)
     with positions:
         positions_tab(analysis)
     footer()

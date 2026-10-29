@@ -140,6 +140,15 @@ STATUS_RANK = {RED: 0, YELLOW: 1, GREEN: 2}
 # Word that starts a warning, e.g. "Position Apple: 8% (limit 10%)".
 WARNING_PREFIX = {"sector": "Sector", "asset": "Position"}
 
+# How a region reads inside a sentence ("87% of your money is in the US").
+REGION_PHRASES = {"US": "the US", "Emerging": "emerging markets"}
+
+# What the two non-sector labels mean, shown under the Sector chart and in tables.
+LABEL_EXPLANATIONS = {
+    "Diversified": "Diversified: broad funds (ETFs) spread over many sectors.",
+    "n/a": "n/a: bonds and cash, which have no sector.",
+}
+
 # Dimensions offered in the Charts tab.
 CHART_DIMENSIONS = {
     "sector": "Sector",
@@ -729,9 +738,15 @@ def insights_for(
     elif equal >= count:
         text = f"You hold {count} positions of about equal size."
     elif equal == 1:
-        text = f"You hold {count} positions, but your portfolio behaves like a single one."
+        text = (
+            f"You hold {count} positions, but one is much bigger than the rest: "
+            "your money is spread as if you held a single position."
+        )
     else:
-        text = f"You hold {count} positions, but your portfolio behaves like {equal} equal ones."
+        text = (
+            f"You hold {count} positions of different sizes. Because a few large ones weigh "
+            f"more, your money is spread as if you held {equal} equal positions."
+        )
     insights.append(Insight("effective_positions", "Effective positions", text, label("asset")))
 
     if count <= 5:
@@ -742,16 +757,9 @@ def insights_for(
 
     sectors = limit_weights(df, "sector")
     if sectors.empty:
-        stress = "No single sector to stress-test: your holdings are broad funds, bonds or cash."
         largest = "You have no single-sector exposure outside broad funds, bonds and cash."
     else:
-        sector, share = sectors.index[0], float(sectors.iloc[0])
-        stress = (
-            f"If {sector} fell {fmt_pct(rules.STRESS_DROP)}, your portfolio would fall "
-            f"about {fmt_pct(share * rules.STRESS_DROP)}."
-        )
-        largest = f"Your largest sector exposure is {sector}, at {fmt_pct(share)} of your portfolio."
-    insights.append(Insight("stress_test", "Stress test", stress, label("sector")))
+        largest = f"{fmt_pct(float(sectors.iloc[0]))} of your money is in {sectors.index[0]}."
     insights.append(Insight("largest_sector", "Largest sector", largest, label("sector")))
 
     other = 1 - float(weights(df, "currency").get(HOME_CURRENCY, 0.0))
@@ -780,8 +788,11 @@ def insights_for(
     if has_region:
         global_share = float(weights(df, "region").get(GLOBAL_REGION, 0.0))
         region, share = largest_region(df)
-        text = f"Global funds cover {fmt_pct(global_share)} of your portfolio"
-        text += f"; the largest single region is {region} with {fmt_pct(share)}." if region else "."
+        if region:
+            text = f"{fmt_pct(share)} of your money is in {REGION_PHRASES.get(region, region)}"
+            text += f", and {fmt_pct(global_share)} in global funds." if global_share > EPS else "."
+        else:
+            text = "All of your money is in global funds."
         insights.append(Insight("regions", "Regions", text, label("region")))
 
     return insights
@@ -884,6 +895,21 @@ def asset_class_slices(profile: Profile) -> pd.DataFrame:
         }
     )
     return slices[slices["share"] > EPS].reset_index(drop=True)
+
+
+def bar_members(analysis: Analysis, dimension: str) -> dict[str, list[tuple[str, float]]]:
+    """For each bar of a chart (a sector, currency or region), the positions in it
+    with their weights, largest first."""
+    members = {}
+    for _, row in analysis.positions.iterrows():  # positions are already largest first
+        members.setdefault(row[dimension], []).append((row["asset"], float(row["weight"])))
+    return members
+
+
+def label_explanations(categories) -> list[str]:
+    """Explanations for the "Diversified" and "n/a" labels that appear in `categories`."""
+    present = set(categories)
+    return [text for label, text in LABEL_EXPLANATIONS.items() if label in present]
 
 
 def cap_comparison(analysis: Analysis) -> pd.DataFrame:

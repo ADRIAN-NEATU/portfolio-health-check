@@ -111,7 +111,7 @@ def test_one_global_etf_region_is_global():
     analysis = sample("one_global_etf.csv")
     assert scoring.weights(analysis.positions, "region").to_dict() == {"Global": 1.0}
     regions = next(i for i in analysis.insights if i.key == "regions")
-    assert regions.text == "Global funds cover 100% of your portfolio."
+    assert regions.text == "All of your money is in global funds."
 
 
 # ---------------------------------------------------------------------------
@@ -389,7 +389,10 @@ def hand_insights():
 
 def test_effective_positions(hand_insights):
     insight = hand_insights["effective_positions"]
-    assert insight.text == "You hold 6 positions, but your portfolio behaves like 4 equal ones."
+    assert insight.text == (
+        "You hold 6 positions of different sizes. Because a few large ones weigh more, "
+        "your money is spread as if you held 4 equal positions."
+    )
     assert insight.label == "Watch"  # A is 40%: single-position limit is red
 
 
@@ -399,7 +402,7 @@ def test_top5(hand_insights):
 
 def test_largest_sector(hand_insights):
     insight = hand_insights["largest_sector"]
-    assert insight.text == "Your largest sector exposure is Information Technology, at 40% of your portfolio."
+    assert insight.text == "40% of your money is in Information Technology."
     assert insight.label == "Watch"
 
 
@@ -409,10 +412,10 @@ def test_other_currencies(hand_insights):
     assert insight.label == "Info"  # USD 45% is below 56%
 
 
-def test_stress_test(hand_insights):
-    assert hand_insights["stress_test"].text == (
-        "If Information Technology fell 20%, your portfolio would fall about 8%."
-    )
+def test_no_stress_test_but_plain_exposure():
+    insights = {i.key: i for i in sample("tech_heavy.csv").insights}
+    assert "stress_test" not in insights
+    assert insights["largest_sector"].text == "45% of your money is in Information Technology."
 
 
 def test_sector_coverage_with_global_funds(hand_insights):
@@ -443,7 +446,7 @@ def test_sector_coverage_never_zero_with_global_funds():
 def test_regions(hand_insights):
     insight = hand_insights["regions"]
     assert insight.text == (
-        "Global funds cover 15% of your portfolio; the largest single region is US with 45%."
+        "45% of your money is in the US, and 15% in global funds."
     )
     assert insight.label == "Info"
 
@@ -455,7 +458,40 @@ def test_insights_without_sector_exposure():
     assert insights["top5"].text == "With 1 position, your top 5 are the whole portfolio."
     assert insights["other_currencies"].text == "All of your portfolio is in RON."
     assert insights["sector_coverage"].text == "You hold global funds that span all sectors."
-    assert "No single sector" in insights["stress_test"].text
+    assert insights["largest_sector"].text.startswith("You have no single-sector exposure")
+
+
+def test_one_dominant_position():
+    df = make(
+        [
+            ("Big", 97, "Energy", "stock", "large", "USD", "US"),
+            ("Small", 3, "Utilities", "stock", "large", "USD", "US"),
+        ]
+    )
+    insight = next(i for i in scoring.analyze(df).insights if i.key == "effective_positions")
+    assert insight.text == (
+        "You hold 2 positions, but one is much bigger than the rest: "
+        "your money is spread as if you held a single position."
+    )
+
+
+def test_bar_members():
+    analysis = scoring.analyze(make(HAND))
+    sectors = scoring.bar_members(analysis, "sector")
+    assert sectors["Information Technology"] == [("A", pytest.approx(0.4))]
+    assert [name for name, _ in sectors["n/a"]] == ["D", "E"]
+    usd = scoring.bar_members(analysis, "currency")["USD"]
+    assert [name for name, _ in usd] == ["A", "F"]  # largest first
+    assert sum(w for _, w in usd) == pytest.approx(0.45)
+
+
+def test_label_explanations():
+    texts = scoring.label_explanations(["Information Technology", "Diversified", "n/a"])
+    assert texts == [
+        "Diversified: broad funds (ETFs) spread over many sectors.",
+        "n/a: bonds and cash, which have no sector.",
+    ]
+    assert scoring.label_explanations(["Energy"]) == []
 
 
 def test_bonds_only_covers_zero_sectors():

@@ -68,7 +68,7 @@ All thresholds live in [rules.py](rules.py) and are examples (see Known limitati
 - **Market cap:** the stocks' small / mid / large split is compared with the US market. A note appears when small caps are well above the market share or when almost everything is large cap. As with asset classes, the right mix depends on the investor, so it does not affect the score.
 - **Currency:** a note, not a limit ([decision D1](docs/decisions.md)). It appears when one foreign currency holds most of the portfolio. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
 - **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio.
-- **Insights:** effective number of positions, top 5 share, largest sector, a stress test on that sector, share outside RON, GICS sector coverage and regions. Each insight is labelled Info or Watch and has no effect on the score.
+- **Insights:** effective number of positions, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Info or Watch and has no effect on the score.
 
 ## CSV format
 

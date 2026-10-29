@@ -5,6 +5,10 @@
 ### 29 Oct 2026
 - Currency is no longer part of the score. When one foreign currency holds most of your portfolio, a note explains what that means in lei. Money in lei never counts as a currency risk.
 - The score now comes from two limits: sector and single position.
+- In Charts, hover over a bar to see the positions inside it, or click it to list them all.
+- A note under the Sector chart explains "Diversified" (broad funds) and "n/a" (bonds and cash). The tables explain it too.
+- The "what if a sector fell 20%" insight is gone. Your largest sector and region now show as simple percentages.
+- "Behaves like N equal positions" now says why, in plain words.
 
 ### 28 Oct 2026
 - You can type or paste your positions straight into the app.

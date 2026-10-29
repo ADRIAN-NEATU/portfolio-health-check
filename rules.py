@@ -105,5 +105,3 @@ SINGLE_REGION_NOTE = 0.80  # EXAMPLE
 # portfolio. Same value as the old currency limit's yellow threshold.
 FOREIGN_CURRENCY_NOTE = 0.56  # EXAMPLE
 
-# Stress test: drop applied to the largest sector.
-STRESS_DROP = 0.20  # EXAMPLE
