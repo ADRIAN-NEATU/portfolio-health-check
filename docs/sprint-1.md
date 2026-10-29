@@ -27,11 +27,20 @@
 | S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
 | S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | To do | – |
 
-Added to the Product Backlog at the Daily Scrum on 28 Oct, for after v0.1 (not in this Sprint):
+## Product Backlog (not in this Sprint)
 
-| ID | Jira | Type | Epic | Title | Points | Status | Done on |
-|---|---|---|---|---|---|---|---|
-| S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | To do | – |
+Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or now if I pull it in.
+
+| ID | Jira | Type | Epic | Title | Points | Added |
+|---|---|---|---|---|---|---|
+| S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
+| S1-18 | – | Story | E3 | Explain "behaves like N equal positions" in plain words | 1 | 29 Oct |
+| S1-19 | – | Story | E3 | Replace the stress test with simple exposure figures by sector and region | 2 | 29 Oct |
+| S1-20 | – | Story | E3 | Colour each insight by what it means: good, watch, worth asking | 3 | 29 Oct |
+| S1-21 | – | Story | E3 | Explain "n/a" and "Diversified" in the charts | 1 | 29 Oct |
+| S1-22 | – | Story | E4 | Ask a neutral question when one region holds a large share | 2 | 29 Oct |
+| S1-23 | – | Story | E3 | See which positions make up each bar in the charts | 3 | 29 Oct |
+| S1-24 | – | Task | E4 | Review how the currency and sector limits are calculated | 3 | 29 Oct |
 
 ## Burndown
 
@@ -117,6 +126,35 @@ As an investor who earns in lei, I want my RON holdings not to count as a curren
 As an investor, I want suggestions while I type, so that I pick the right company without knowing its exact name.
 - Given the editor, when I type the first letters of a company, then a list suggests matching names and tickers.
 - Given the suggestions, when I pick one, then its name and details fill in.
+
+**S1-18 – Explain "behaves like N equal positions" in plain words**
+As an investor, I want this insight in plain words, so that I understand why 22 positions count as about 13.
+- Given "Diversified", when I read the insight, then one simple sentence says why: a few large positions weigh more than many small ones.
+
+**S1-19 – Replace the stress test with simple exposure figures by sector and region**
+As an investor who isn't good with numbers, I want my exposure as simple percentages, so that I don't have to work out what a fall would mean.
+- Given "Tech-heavy", when I read the insights, then I see "45% of your money is in Information Technology" instead of a fall scenario.
+- Given a portfolio with regions, when I read the insights, then I see my largest region in %.
+
+**S1-20 – Colour each insight by what it means: good, watch, worth asking**
+As an investor, I want each insight marked by what it means, so that I see at a glance what is fine and what deserves a look.
+- Given "Diversified", when I read "You cover 11 of 11 GICS sectors…", then it is marked as good.
+- Given a portfolio with a red limit, when I read the related insight, then it is marked to watch.
+- Each colour always comes with a word, never colour alone.
+
+**S1-21 – Explain "n/a" and "Diversified" in the charts**
+As an investor, I want to know what these labels mean, so that the charts don't confuse me.
+- Given the Sector chart, when I see "Diversified" or "n/a", then a short note says: Diversified = broad funds (ETFs) spread over many sectors; n/a = bonds and cash, which have no sector.
+
+**S1-22 – Ask a neutral question when one region holds a large share**
+As an investor, I want to be asked whether a large share in one region is intentional, so that I notice it without being told what to buy.
+- Given my portfolio (68% in the US), when it opens, then a neutral note asks whether that is intentional.
+- Given any portfolio, the note never tells me what to buy or sell.
+
+**S1-23 – See which positions make up each bar in the charts**
+As an investor, I want to see what is inside each bar, so that I know which holdings create an exposure.
+- Given my portfolio, when I click or hover the Industrials bar (28.9%), then I see the stocks in it, with their weights.
+- Given the Currency or Region chart, when I do the same, then it works the same way.
 
 ## Sprint Review (2 Nov)
 

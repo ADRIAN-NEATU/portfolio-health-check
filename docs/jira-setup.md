@@ -78,6 +78,18 @@ From the Daily Scrum on 28 Oct:
 |---|---|---|---|---|---|---|---|
 | S1-17 | Story | Search bar with suggestions as you type a name or ticker | E2 Introducerea portofoliului | 3 | – | – | sprint-1.md › S1-17 |
 
+From the Daily Scrum on 29 Oct: create these in the Product Backlog, without a version or label. If you pull one into Sprint 1, give it the version `v0.1 – MVP` and the label `must`.
+
+| # | Type | Summary | Parent (epic) | Story points | Description |
+|---|---|---|---|---|---|
+| S1-18 | Story | Explain "behaves like N equal positions" in plain words | E3 Analiza diversificării | 1 | sprint-1.md › S1-18 |
+| S1-19 | Story | Replace the stress test with simple exposure figures by sector and region | E3 Analiza diversificării | 2 | sprint-1.md › S1-19 |
+| S1-20 | Story | Colour each insight by what it means: good, watch, worth asking | E3 Analiza diversificării | 3 | sprint-1.md › S1-20 |
+| S1-21 | Story | Explain "n/a" and "Diversified" in the charts | E3 Analiza diversificării | 1 | sprint-1.md › S1-21 |
+| S1-22 | Story | Ask a neutral question when one region holds a large share | E4 Avertismente și scor | 2 | sprint-1.md › S1-22 |
+| S1-23 | Story | See which positions make up each bar in the charts | E3 Analiza diversificării | 3 | sprint-1.md › S1-23 |
+| S1-24 | Task | Review how the currency and sector limits are calculated | E4 Avertismente și scor | 3 | – |
+
 ## 6. Sprint Review and Sprint Retrospective (2 Nov)
 - Fill in the two last sections of [sprint-1.md](sprint-1.md).
 - On the board, click **Complete sprint**. Items that are not Done go back to the Product Backlog or to the next Sprint.
