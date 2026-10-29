@@ -9,6 +9,9 @@
 - A note under the Sector chart explains "Diversified" (broad funds) and "n/a" (bonds and cash). The tables explain it too.
 - The "what if a sector fell 20%" insight is gone. Your largest sector and region now show as simple percentages.
 - "Behaves like N equal positions" now says why, in plain words.
+- A value on a bar that ends just before the limit line now sits inside the bar instead of on the line.
+- Chart tooltips are small cards: the share first, then where it stands against the limit and the positions in it, lined up.
+- The single-position thresholds (5% and 10%) now have sources: the limits EU and US law set for diversified funds. "Why it matters" on the Single position card says so.
 
 ### 28 Oct 2026
 - You can type or paste your positions straight into the app.

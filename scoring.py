@@ -190,6 +190,7 @@ class LimitResult:
     key: str
     label: str
     why: str
+    source: str  # where the thresholds come from, "" while they are examples
     yellow_from: float
     limit: float
     category: str  # largest counted category, "" when nothing counts
@@ -601,6 +602,7 @@ def evaluate_limits(df: pd.DataFrame) -> list[LimitResult]:
                 key=key,
                 label=limit["label"],
                 why=limit["why"],
+                source=limit.get("source", ""),
                 yellow_from=limit["yellow_from"],
                 limit=limit["limit"],
                 category=category,
@@ -865,8 +867,9 @@ def chart_dimensions(analysis: Analysis) -> dict[str, str]:
 
 
 def chart_data(analysis: Analysis, dimension: str) -> tuple[pd.DataFrame, float | None]:
-    """Bars for one dimension, largest first, with a status per bar, and the limit
-    to draw (None for region). Exempt categories are always green."""
+    """Bars for one dimension, largest first, with a status per bar, whether the bar
+    counts towards the limit, and the limit to draw (None for currency and region).
+    Exempt categories are always green."""
     df = analysis.positions
     shares = weights(df, dimension)
     limit = rules.LIMITS.get(dimension)
@@ -875,8 +878,31 @@ def chart_data(analysis: Analysis, dimension: str) -> tuple[pd.DataFrame, float 
         status_for(share, limit) if category in counted else GREEN
         for category, share in shares.items()
     ]
-    bars = pd.DataFrame({"category": shares.index, "weight": shares.values, "status": statuses})
+    bars = pd.DataFrame(
+        {
+            "category": shares.index,
+            "weight": shares.values,
+            "status": statuses,
+            "counted": [category in counted for category in shares.index],
+        }
+    )
     return bars, (limit["limit"] if limit else None)
+
+
+# How a bar stands against its limit, in words: the bar's colour says the same.
+LIMIT_PHRASES = {
+    GREEN: "Below the {limit} limit",
+    YELLOW: "Close to the {limit} limit",
+    RED: "Over the {limit} limit",
+}
+
+
+def limit_phrase(status: str, counted: bool, limit: float | None) -> str:
+    if limit is None:
+        return ""
+    if not counted:
+        return "Not counted towards the limit"
+    return LIMIT_PHRASES[status].format(limit=fmt_pct(limit))
 
 
 def asset_class_slices(profile: Profile) -> pd.DataFrame:

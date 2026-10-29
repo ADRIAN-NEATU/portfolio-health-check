@@ -60,7 +60,7 @@ The score is the average of two limit scores (sector and single position), round
 | Sector | 24% | 30% | Diversified, n/a |
 | Single position | 5% | 10% | broad ETFs, bonds, cash |
 
-All thresholds live in [rules.py](rules.py) and are examples (see Known limitations).
+All thresholds live in [rules.py](rules.py). The single-position ones (5% and 10%) are the limits EU and US law set for diversified funds, used here as a reference ([decision D2](docs/decisions.md)); no regulator sets one for an individual investor. The sector ones are examples (see Known limitations).
 
 ## Informative dimensions (not scored)
 
@@ -90,7 +90,7 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 
 ## Known limitations
 
-- The thresholds are EXAMPLES until they are replaced with the rules from the author's bachelor's thesis.
+- The sector thresholds and the note thresholds are EXAMPLES until they are replaced with the rules from the author's bachelor's thesis.
 - ETFs are not broken down into their companies, sectors or regions.
 - The market-cap reference is approximate: CRSP uses cumulative cap bands, while the data here use dollar thresholds.
 - Issuer risk on bonds is not analysed.
@@ -105,6 +105,11 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - Froot, K. A. (1993). Currency hedging over long horizons. NBER Working Paper 4355.
 - Campbell, J. Y., Serfaty-de Medeiros, K., & Viceira, L. M. (2010). Global currency hedging. *Journal of Finance*, 65(1), 87–121.
 - Directive 2009/65/EC (UCITS), Article 52: the 5/10/40 diversification rule for funds.
+- Investment Company Act of 1940, section 5(b)(1): at most 5% in one issuer for a diversified US fund.
+- ERISA section 407(a): at most 10% of a US pension plan in the employer's own shares.
+- FINRA (2022). Concentrate on Concentration Risk. Investor Insights.
+- Bessembinder, H. (2018). Do stocks outperform Treasury bills? *Journal of Financial Economics*, 129(3), 440–457.
+- Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.
 - U.S. Securities and Exchange Commission, EDGAR company tickers, submissions and XBRL frames (public float) APIs.
 - OpenFIGI, Open Symbology API (Bloomberg; FIGI under the MIT licence).
 

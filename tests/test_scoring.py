@@ -518,6 +518,22 @@ def test_chart_data_sector():
     statuses = dict(zip(bars["category"], bars["status"]))
     assert statuses["Information Technology"] == RED
     assert statuses["Diversified"] == GREEN  # exempt, never coloured
+    counted = dict(zip(bars["category"], bars["counted"]))
+    assert counted["Information Technology"] and not counted["Diversified"]
+
+
+def test_limit_phrase():
+    assert scoring.limit_phrase(RED, True, 0.30) == "Over the 30% limit"
+    assert scoring.limit_phrase(YELLOW, True, 0.30) == "Close to the 30% limit"
+    assert scoring.limit_phrase(GREEN, True, 0.10) == "Below the 10% limit"
+    assert scoring.limit_phrase(GREEN, False, 0.30) == "Not counted towards the limit"
+    assert scoring.limit_phrase(GREEN, True, None) == ""  # currency and region have no limit
+
+
+def test_only_documented_limits_have_a_source():
+    sources = {r.key: r.source for r in sample("andrei.csv").limits}
+    assert "EU law" in sources["asset"]
+    assert sources["sector"] == ""  # still an example
 
 
 def test_chart_data_region_has_no_limit():

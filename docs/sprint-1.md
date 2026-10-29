@@ -22,7 +22,7 @@
 | S1-10 | PHC-16 | Story | E2 | Type or paste positions and get the details filled in | 5 | Done | 28 Oct |
 | S1-11 | PHC-17 | Story | E2 | Upload a CSV straight from Excel, even with only names and values | 2 | Done | 28 Oct |
 | S1-12 | PHC-18 | Task | E5 | Polish: official GICS names, interface details, one-click start, screenshots | 3 | Done | 28 Oct |
-| S1-13 | PHC-19 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | To do | – |
+| S1-13 | PHC-19 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | In progress | – |
 | S1-14 | PHC-20 | Task | E5 | Reread and explain the code | 2 | To do | – |
 | S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
 | S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | Done | 29 Oct |
@@ -33,8 +33,9 @@
 | S1-22 | PHC-28 | Story | E4 | Ask a neutral question when one region holds a large share | 2 | To do | – |
 | S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | Done | 29 Oct |
 | S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
+| S1-25 | PHC-31 | Story | E3 | Keep chart labels off the limit line and make the tooltips easier to read | 2 | Done | 29 Oct |
 
-S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. Anything not Done by 2 Nov goes back to the Product Backlog.
+S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. S1-13 is half done: the single-position thresholds now have sources ([decision D2](decisions.md)); the sector thresholds are still examples. Anything not Done by 2 Nov goes back to the Product Backlog.
 
 ## Product Backlog (not in this Sprint)
 
@@ -53,7 +54,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | Start | 42 | – | – | 42 | 42 |
 | 27 Oct | 42 | – | 26 | 16 | 36 |
 | 28 Oct | 45 | 3 (S1-16) | 10 | 9 | 30 |
-| 29 Oct | 60 | 15 (S1-18 to S1-24) | 13 | 11 | 24 |
+| 29 Oct | 62 | 17 (S1-18 to S1-25) | 15 | 11 | 24 |
 | 30 Oct | | | | | 18 |
 | 31 Oct | | | | | 12 |
 | 1 Nov | | | | | 6 |
@@ -157,6 +158,12 @@ As an investor, I want to be asked whether a large share in one region is intent
 As an investor, I want to see what is inside each bar, so that I know which holdings create an exposure.
 - Given my portfolio, when I click or hover the Industrials bar (28.9%), then I see the stocks in it, with their weights.
 - Given the Currency or Region chart, when I do the same, then it works the same way.
+
+**S1-25 – Keep chart labels off the limit line and make the tooltips easier to read**
+As an investor, I want the charts to read cleanly, so that a value near the limit is easy to see and compare.
+- Given my portfolio, when I open the Sector chart, then "28.9%" sits inside the Industrials bar, not on the dotted "Limit 30%" line.
+- Given any bar, when I hover over it, then a card shows its share first, then where it stands against the limit (for example "Close to the 30% limit"), then the positions in it, lined up.
+- Given a bar near the top or bottom of the chart, when I hover over it, then the card is not cut off.
 
 ## Sprint Review (2 Nov)
 

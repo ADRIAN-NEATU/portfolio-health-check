@@ -1,7 +1,7 @@
 """Thresholds and texts used by Portfolio Health Check.
 
-EXAMPLE VALUES ONLY: every number and text below is a placeholder until it is
-replaced with the rules from the author's thesis.
+EXAMPLE VALUES unless a comment gives a source: they are placeholders until
+they are replaced with the rules from the author's thesis.
 
 All shares are fractions of the total portfolio value (0.30 means 30%).
 """
@@ -23,12 +23,22 @@ LIMITS = {
     },
     "asset": {
         "label": "Single position",
-        # Same thresholds as the UCITS 5/10/40 rule for funds
-        # (Directive 2009/65/EC, art. 52). Here the rule covers company risk
-        # only: stocks and single-sector ETFs.
-        "yellow_from": 0.05,  # EXAMPLE
-        "limit": 0.10,  # EXAMPLE
+        # Documented, not an example (decision D2, docs/decisions.md). No regulator
+        # sets a limit for an individual investor, so these are the limits the law
+        # sets for diversified funds:
+        #   EU:  UCITS, Directive 2009/65/EC, art. 52: at most 10% in one issuer,
+        #        and holdings over 5% together at most 40% of the fund.
+        #   US:  Investment Company Act 1940, section 5(b)(1): a diversified fund
+        #        holds at most 5% in one issuer (for 75% of its assets).
+        # Here the rule covers company risk only: stocks and single-sector ETFs.
+        "yellow_from": 0.05,
+        "limit": 0.10,
         "why": "A single company's bad news can move your whole portfolio.",  # EXAMPLE
+        "source": (
+            "Why 5% and 10%: EU law lets a fund put at most 10% in one company, "
+            "and US law caps a diversified fund at 5%. These are fund rules, used "
+            "here as a reference for one investor."
+        ),
     },
 }
 # Currency is not a scored limit (decision of 29 Oct 2026, see docs/decisions.md):

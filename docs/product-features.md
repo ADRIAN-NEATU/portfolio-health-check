@@ -20,7 +20,8 @@ What a user can see and do in Portfolio Health Check.
 | | See each limit as OK, Watch or Over limit, next to its threshold, with "Why it matters" | Done | 27 Oct |
 | | Broad funds, bonds and cash do not count against the sector and single-position limits | Done | 27 Oct |
 | | See every warning, the most serious first | Done | 27 Oct |
-| | Thresholds come from my thesis (today they are example values) | To do | – |
+| | Single-position thresholds (5% and 10%) come with sources: the limits EU and US law set for diversified funds | Done | 29 Oct |
+| | Sector thresholds come from my thesis (today they are example values) | To do | – |
 | **At a glance** | See the score in a coloured ring with a one-sentence verdict | Done | 27 Oct |
 | | See up to three findings that matter most, each pointing to the tab with the details | Done | 27 Oct |
 | | See your investor profile: Conservative, Balanced or Dynamic | Done | 27 Oct |
@@ -37,6 +38,7 @@ What a user can see and do in Portfolio Health Check.
 | | Click a stock to see its sector, size, region and weight | Done | 27 Oct |
 | **Charts** | See bars by sector, currency, position or region, largest first, with the limit as a dotted line | Done | 27 Oct |
 | | Hover over a bar to see the positions inside it, or click it to list them all | Done | 29 Oct |
+| | Values never sit on the limit line, and tooltips show the share, where it stands against the limit and the positions, lined up | Done | 29 Oct |
 | | Read what "Diversified" and "n/a" mean, under the Sector chart and in the tables | Done | 29 Oct |
 | | See every position in a table, with values in lei and weights in % | Done | 27 Oct |
 | **Design** | Calm, report-like look: colour only where there is a problem | Done | 27 Oct |

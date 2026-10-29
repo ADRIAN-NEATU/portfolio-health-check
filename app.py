@@ -144,6 +144,8 @@ def inject_css() -> None:
   z-index: 20; background: var(--text); color: #FFFFFF; font-size: .8rem; line-height: 1.45;
   padding: .6rem .75rem; border-radius: 8px; transition: opacity .15s; }
 .phc-why:hover .phc-tip, .phc-why:focus .phc-tip { visibility: visible; opacity: 1; }
+.phc-tip-source { display: block; margin-top: .45rem; padding-top: .45rem;
+  border-top: 1px solid rgba(255, 255, 255, .2); color: #CBD3DE; }
 .phc-limit-value { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
 .phc-big { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
 .phc-of { color: var(--text-2); font-size: .9rem; }
@@ -244,7 +246,17 @@ def inject_css() -> None:
 [data-testid="stExpander"] summary:hover { color: var(--text); }
 
 [data-testid="stPlotlyChart"] .main-svg { background: transparent !important; }
+/* A tooltip near the top or bottom bar may reach past the chart's edge. */
+[data-testid="stElementContainer"]:has([data-testid="stPlotlyChart"]),
+[data-testid="stPlotlyChart"] .js-plotly-plot, [data-testid="stPlotlyChart"] .main-svg {
+  overflow: visible !important; }
 [data-testid="stPlotlyChart"] .bglayer .bg { fill: transparent !important; }
+/* Chart tooltips as small cards: a wide stroke in the card colour adds padding and
+   rounds the corners, the shadows draw the edge. */
+[data-testid="stPlotlyChart"] .hoverlayer .hovertext path { stroke-width: 16px !important;
+  stroke-linejoin: round; filter: drop-shadow(0 0 1px rgba(20, 33, 61, .3))
+  drop-shadow(0 6px 14px rgba(20, 33, 61, .12)); }
+[data-testid="stPlotlyChart"] text { font-variant-numeric: tabular-nums; }
 [data-testid="stDataFrame"] { border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
   background: var(--card); }
 [data-testid="stDownloadButton"] button, .st-key-type_positions button { width: 100%; border-radius: 8px;
@@ -295,8 +307,10 @@ def chart_template() -> go.layout.Template:
             legend=dict(font=dict(color=COLORS["text-2"], size=12), bgcolor="rgba(0,0,0,0)"),
             hoverlabel=dict(
                 bgcolor=COLORS["card"],
-                bordercolor=COLORS["border"],
-                font=dict(family=FONT, size=12, color=COLORS["text"]),
+                bordercolor=COLORS["card"],  # the CSS draws the edge and the shadow
+                font=dict(family=FONT, size=13, color=COLORS["text"]),
+                align="left",
+                showarrow=False,
             ),
         )
     )
@@ -445,20 +459,56 @@ def cap_chart(comparison) -> go.Figure:
     return fig
 
 
-def members_hover(members: list[tuple[str, float]], shown: int = 8) -> str:
-    """The positions inside a bar, for its tooltip: the largest eight, then a count."""
-    lines = [f"{escape(name)}  {scoring.fmt_pct(weight)}" for name, weight in members[:shown]]
-    if len(members) > shown:
-        lines.append(f"and {len(members) - shown} more")
+def aligned_pcts(weights: list[float]) -> list[str]:
+    """Percentages padded on the left so they line up in a tooltip: a figure space
+    is as wide as a digit, a punctuation space as wide as the decimal point."""
+    texts = [scoring.fmt_pct(weight) for weight in weights]
+    digits = [sum(c.isdigit() for c in text) for text in texts]
+    dots = [text.count(".") for text in texts]
+    return [
+        "\u2007" * (max(digits) - d) + "\u2008" * (max(dots) - p) + text
+        for text, d, p in zip(texts, digits, dots)
+    ]
+
+
+def bar_hover(category: str, weight: float, phrase: str, members: list | None, shown: int = 8) -> str:
+    """Tooltip of one bar: its share first, then how it stands against the limit and,
+    for a sector, currency or region, the positions in it (the largest eight, then a count)."""
+    muted = f'<span style="color:{COLORS["text-2"]}">'
+    lines = [
+        f"{muted}{escape(category)}</span>",
+        f'<span style="font-size:17px"><b>{scoring.fmt_pct(weight)}</b></span>{muted} of your portfolio</span>',
+    ]
+    if phrase:
+        lines.append(f"{muted}{phrase}</span>")
+    if members:
+        lines.append("")
+        pcts = aligned_pcts([w for _, w in members[:shown]])
+        lines += [f"{muted}{pct}</span>\u2003{escape(name)}" for pct, (name, _) in zip(pcts, members)]
+        if len(members) > shown:
+            lines.append(f"{muted}and {len(members) - shown} more</span>")
     return "<br>".join(lines)
 
 
+# Share of the chart's width a value label needs next to its bar, on a phone.
+LABEL_ROOM = 0.25
+
+
 def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figure:
-    hover = "<b>%{y}</b>: %{text}<extra></extra>"
-    customdata = None
-    if members:
-        customdata = [members_hover(members.get(category, [])) for category in bars["category"]]
-        hover = "<b>%{y}</b>: %{text}<br><br>%{customdata}<extra></extra>"
+    span = max(bars["weight"].max(), limit or 0) * 1.15
+    # A label beside a bar that ends just before the limit would sit on the dotted
+    # line: it goes inside the bar's end instead. If it doesn't fit there, Plotly
+    # hides it and the tooltip still shows the value.
+    inside = [limit is not None and 0 <= limit - w < LABEL_ROOM * span for w in bars["weight"]]
+    hover = [
+        bar_hover(
+            row.category,
+            row.weight,
+            scoring.limit_phrase(row.status, row.counted, limit),
+            members.get(row.category, []) if members else None,
+        )
+        for row in bars.itertuples()
+    ]
     fig = go.Figure(
         go.Bar(
             x=bars["weight"],
@@ -466,17 +516,18 @@ def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figu
             orientation="h",
             marker_color=[BAR_COLORS[status] for status in bars["status"]],
             text=[scoring.fmt_pct(weight) for weight in bars["weight"]],
-            textposition="outside",
+            textposition=["inside" if i else "outside" for i in inside],
+            insidetextanchor="end",
+            insidetextfont=dict(color=COLORS["text"]),
             cliponaxis=False,
-            customdata=customdata,
-            hovertemplate=hover,
+            customdata=hover,
+            hovertemplate="%{customdata}<extra></extra>",
         )
     )
-    top = max(bars["weight"].max(), limit or 0)
     fig.update_layout(
         height=70 + 30 * len(bars),
         margin=dict(l=4, r=40, t=30, b=8),
-        xaxis=dict(visible=False, range=[0, top * 1.15]),
+        xaxis=dict(visible=False, range=[0, span]),
         yaxis=dict(autorange="reversed"),
     )
     if limit is not None:
@@ -729,11 +780,13 @@ def limit_card(result: scoring.LimitResult) -> str:
     mark = result.limit / scale * 100
     category = escape(result.category) if result.category else "Funds, bonds and cash are exempt"
     bar_class = "" if result.status == GREEN else result.status
+    source = f'<span class="phc-tip-source">{escape(result.source)}</span>' if result.source else ""
     return (
         '<div class="phc-card phc-limit">'
         '<div class="phc-limit-head">'
         f'<span class="phc-limit-name">{escape(result.label)}</span>'
-        f'<span class="phc-why" tabindex="0">Why it matters<span class="phc-tip">{escape(result.why)}</span></span>'
+        f'<span class="phc-why" tabindex="0">Why it matters<span class="phc-tip">{escape(result.why)}'
+        f"{source}</span></span>"
         "</div>"
         '<div class="phc-limit-value">'
         f'<span class="phc-big phc-num">{scoring.fmt_pct(result.weight)}</span>'
@@ -889,7 +942,8 @@ def positions_tab(analysis: scoring.Analysis) -> None:
 def footer() -> None:
     st.html(
         '<div class="phc-footer">Analysis, not investment advice. '
-        "Thresholds are examples until replaced with the author's thesis rules.</div>"
+        "Single-position thresholds follow EU and US fund rules; sector thresholds are "
+        "examples until replaced with the author's thesis rules.</div>"
     )
 
 
