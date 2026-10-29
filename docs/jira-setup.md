@@ -78,7 +78,7 @@ From the Daily Scrum on 28 Oct:
 |---|---|---|---|---|---|---|---|
 | S1-17 | Story | Search bar with suggestions as you type a name or ticker | E2 Introducerea portofoliului | 3 | – | – | sprint-1.md › S1-17 |
 
-From the Daily Scrum on 29 Oct: create these in the Product Backlog, without a version or label. If you pull one into Sprint 1, give it the version `v0.1 – MVP` and the label `must`.
+From the Daily Scrum on 29 Oct: all seven go into Sprint 1. Import [jira-import-29-oct.csv](jira-import-29-oct.csv) the same way as before (don't map Doc ID or Epic), set each Parent from the table below, then drag the seven into the Sprint.
 
 | # | Type | Summary | Parent (epic) | Story points | Description |
 |---|---|---|---|---|---|

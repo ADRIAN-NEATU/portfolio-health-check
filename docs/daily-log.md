@@ -64,4 +64,5 @@ Five minutes at the end of each working day.
   - New S1-23: see which positions make up each bar in the charts.
   - New S1-24: review how the currency and sector limits are calculated. S1-16 (RON) waits for it.
   - S1-13: the weights stay as placeholders for now, to be checked against the literature later.
+  - S1-18 to S1-24 pulled into Sprint 1 (+15 points). Whatever is not Done by 2 Nov goes back to the Product Backlog.
 - _Daily Scrum: 13 min 30 s._

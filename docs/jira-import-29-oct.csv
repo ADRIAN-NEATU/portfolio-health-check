@@ -1,0 +1,31 @@
+Doc ID,Summary,Issue Type,Epic,Story Points,Fix Version,Labels,Description
+S1-18,"Explain ""behaves like N equal positions"" in plain words",Story,E3 Analiza diversificării,1,v0.1 – MVP,must,"As an investor, I want this insight in plain words, so that I understand why 22 positions count as about 13.
+
+Acceptance criteria:
+- Given ""Diversified"", when I read the insight, then one simple sentence says why: a few large positions weigh more than many small ones."
+S1-19,Replace the stress test with simple exposure figures by sector and region,Story,E3 Analiza diversificării,2,v0.1 – MVP,must,"As an investor who isn't good with numbers, I want my exposure as simple percentages, so that I don't have to work out what a fall would mean.
+
+Acceptance criteria:
+- Given ""Tech-heavy"", when I read the insights, then I see ""45% of your money is in Information Technology"" instead of a fall scenario.
+- Given a portfolio with regions, when I read the insights, then I see my largest region in %."
+S1-20,"Colour each insight by what it means: good, watch, worth asking",Story,E3 Analiza diversificării,3,v0.1 – MVP,must,"As an investor, I want each insight marked by what it means, so that I see at a glance what is fine and what deserves a look.
+
+Acceptance criteria:
+- Given ""Diversified"", when I read ""You cover 11 of 11 GICS sectors..."", then it is marked as good.
+- Given a portfolio with a red limit, when I read the related insight, then it is marked to watch.
+- Each colour always comes with a word, never colour alone."
+S1-21,"Explain ""n/a"" and ""Diversified"" in the charts",Story,E3 Analiza diversificării,1,v0.1 – MVP,must,"As an investor, I want to know what these labels mean, so that the charts don't confuse me.
+
+Acceptance criteria:
+- Given the Sector chart, when I see ""Diversified"" or ""n/a"", then a short note says: Diversified = broad funds (ETFs) spread over many sectors; n/a = bonds and cash, which have no sector."
+S1-22,Ask a neutral question when one region holds a large share,Story,E4 Avertismente și scor,2,v0.1 – MVP,must,"As an investor, I want to be asked whether a large share in one region is intentional, so that I notice it without being told what to buy.
+
+Acceptance criteria:
+- Given my portfolio (68% in the US), when it opens, then a neutral note asks whether that is intentional.
+- Given any portfolio, the note never tells me what to buy or sell."
+S1-23,See which positions make up each bar in the charts,Story,E3 Analiza diversificării,3,v0.1 – MVP,must,"As an investor, I want to see what is inside each bar, so that I know which holdings create an exposure.
+
+Acceptance criteria:
+- Given my portfolio, when I click or hover the Industrials bar (28.9%), then I see the stocks in it, with their weights.
+- Given the Currency or Region chart, when I do the same, then it works the same way."
+S1-24,Review how the currency and sector limits are calculated,Task,E4 Avertismente și scor,3,v0.1 – MVP,must,Decide how currency risk should be measured for a lei investor (what holding US stocks means) and check that results such as Tech-heavy make sense. S1-16 (RON) waits for this.
