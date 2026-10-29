@@ -1,6 +1,8 @@
-# Putting Sprint 1 on the Jira board
+# Putting a Sprint on the Jira board
 
 About 10–15 minutes. Project **PHC** (Scrum). Epics E1–E6 and version v0.1 already exist.
+
+**Sprint 1: done on 29 Oct 2026.** Jira accepted 27 Oct as the start date, and the comments came in with the import. The Jira key of each item is in [sprint-1.md](sprint-1.md).
 
 ## 1. Rename the version
 Releases (or Versions) → **v0.1** → ••• → Edit:
@@ -80,3 +82,14 @@ From the Daily Scrum on 28 Oct:
 - Fill in the two last sections of [sprint-1.md](sprint-1.md).
 - On the board, click **Complete sprint**. Items that are not Done go back to the Product Backlog or to the next Sprint.
 - If the Sprint Goal is met: Releases → **v0.1 – MVP** → **Release**.
+
+## Burndown
+Jira draws a live burndown that follows the cards: Backlog → the chart icon at the top right (Insights), or Reports → Burndown chart, with Sprint 1 – MVP selected and story points as the estimate. Items added to the Sprint raise the line. For Sprint 1, Jira shows all the Day 1–2 work on 29 Oct, because the cards were moved to Done that day. The burndown in [sprint-1.md](sprint-1.md) keeps the real days.
+
+## Lessons from setting up Sprint 1
+- **Summary:** type the title, not the document ID ("S1-01").
+- **Work type:** check the icon. A green bookmark is a Story; a blue tick box is a Task.
+- **Import:** don't map **Doc ID** (Jira would use it as the key) or **Epic** (Parent needs the epic's key, such as PHC-1).
+- **Epics:** set them after the import: Ctrl+click the items, then right-click → Parent.
+- **Version:** rename it before importing, so the names match exactly.
+- **Keys:** Jira keys (PHC-x) follow the order of creation, not priority. Order the backlog by drag & drop, most important at the top.

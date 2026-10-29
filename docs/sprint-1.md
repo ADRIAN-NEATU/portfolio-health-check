@@ -4,33 +4,61 @@
 - **Dates:** Tuesday 27 Oct – Monday 2 Nov 2026
 - **Increment (release):** v0.1 – MVP
 - Day 1 was built on my previous laptop and moved to this one on 28 Oct.
+- **Jira:** Sprint 1 set up on 29 Oct, with dates 27 Oct – 2 Nov. The Jira column links each item to its card.
 
 ## Sprint Backlog
 
-| ID | Type | Epic | Title | Points | Status | Done on |
-|---|---|---|---|---|---|---|
-| S1-01 | Task | E1 | Set up the project and write the example rules | 2 | Done | 27 Oct |
-| S1-02 | Task | E5 | Create 8 sample portfolios and a CSV template | 2 | Done | 27 Oct |
-| S1-03 | Story | E2 | Load a sample portfolio or my own CSV | 3 | Done | 27 Oct |
-| S1-04 | Story | E4 | See my concentration score and warnings | 5 | Done | 27 Oct |
-| S1-05 | Story | E4 | See the essentials at a glance | 3 | Done | 27 Oct |
-| S1-06 | Story | E3 | Read my profile and key insights | 3 | Done | 27 Oct |
-| S1-07 | Story | E3 | Explore my portfolio in charts and a positions table | 2 | Done | 27 Oct |
-| S1-08 | Story | E6 | Compare my stocks' company sizes with the market | 3 | Done | 27 Oct |
-| S1-09 | Task | E5 | Automated tests and README | 3 | Done | 27 Oct |
-| S1-10 | Story | E2 | Type or paste positions and get the details filled in | 5 | Done | 28 Oct |
-| S1-11 | Story | E2 | Upload a CSV straight from Excel, even with only names and values | 2 | Done | 28 Oct |
-| S1-12 | Task | E5 | Polish: official GICS names, interface details, one-click start, screenshots | 3 | Done | 28 Oct |
-| S1-13 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | To do | – |
-| S1-14 | Task | E5 | Reread and explain the code | 2 | To do | – |
-| S1-15 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
-| S1-16 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | To do | – |
+| ID | Jira | Type | Epic | Title | Points | Status | Done on |
+|---|---|---|---|---|---|---|---|
+| S1-01 | PHC-7 | Task | E1 | Set up the project and write the example rules | 2 | Done | 27 Oct |
+| S1-02 | PHC-9 | Task | E5 | Create 8 sample portfolios and a CSV template | 2 | Done | 27 Oct |
+| S1-03 | PHC-8 | Story | E2 | Load a sample portfolio or my own CSV | 3 | Done | 27 Oct |
+| S1-04 | PHC-10 | Story | E4 | See my concentration score and warnings | 5 | Done | 27 Oct |
+| S1-05 | PHC-11 | Story | E4 | See the essentials at a glance | 3 | Done | 27 Oct |
+| S1-06 | PHC-12 | Story | E3 | Read my profile and key insights | 3 | Done | 27 Oct |
+| S1-07 | PHC-13 | Story | E3 | Explore my portfolio in charts and a positions table | 2 | Done | 27 Oct |
+| S1-08 | PHC-14 | Story | E6 | Compare my stocks' company sizes with the market | 3 | Done | 27 Oct |
+| S1-09 | PHC-15 | Task | E5 | Automated tests and README | 3 | Done | 27 Oct |
+| S1-10 | PHC-16 | Story | E2 | Type or paste positions and get the details filled in | 5 | Done | 28 Oct |
+| S1-11 | PHC-17 | Story | E2 | Upload a CSV straight from Excel, even with only names and values | 2 | Done | 28 Oct |
+| S1-12 | PHC-18 | Task | E5 | Polish: official GICS names, interface details, one-click start, screenshots | 3 | Done | 28 Oct |
+| S1-13 | PHC-19 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | To do | – |
+| S1-14 | PHC-20 | Task | E5 | Reread and explain the code | 2 | To do | – |
+| S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
+| S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | To do | – |
 
 Added to the Product Backlog at the Daily Scrum on 28 Oct, for after v0.1 (not in this Sprint):
 
-| ID | Type | Epic | Title | Points | Status | Done on |
-|---|---|---|---|---|---|---|
-| S1-17 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | To do | – |
+| ID | Jira | Type | Epic | Title | Points | Status | Done on |
+|---|---|---|---|---|---|---|---|
+| S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | To do | – |
+
+## Burndown
+
+Story points left at the end of each day, updated at every Daily Scrum. Days 1–2 come from the Daily Scrum log. Jira's own burndown shows them on 29 Oct, the day the cards were moved to Done.
+
+| Day | Scope | Added | Done | Points left | Ideal |
+|---|---|---|---|---|---|
+| Start | 42 | – | – | 42 | 42 |
+| 27 Oct | 42 | – | 26 | 16 | 36 |
+| 28 Oct | 45 | 3 (S1-16) | 10 | 9 | 30 |
+| 29 Oct | 45 | | | 9 | 24 |
+| 30 Oct | | | | | 18 |
+| 31 Oct | | | | | 12 |
+| 1 Nov | | | | | 6 |
+| 2 Nov | | | | | 0 |
+
+- **Scope:** all points in the Sprint. It grows when work is added.
+- **Ideal:** the starting 42 points spread evenly over 7 days (6 a day).
+
+```mermaid
+xychart-beta
+    title "Sprint 1 burndown: bars = points left, line = ideal"
+    x-axis ["Start", "27 Oct", "28 Oct", "29 Oct"]
+    y-axis "Story points" 0 --> 45
+    bar [42, 16, 9, 9]
+    line [42, 36, 30, 24]
+```
 
 ## User stories and acceptance criteria
 

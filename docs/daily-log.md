@@ -35,3 +35,14 @@ Five minutes at the end of each working day.
   - New S1-16: don't count RON as a currency risk for someone who earns in lei (planned for Day 3).
   - Updated S1-13: the thresholds and weights will also be documented and simplified (no new item).
   - New S1-17: search bar with suggestions as you type (after v0.1).
+
+## Day 3 – 29 Oct
+
+- **Done:**
+  - Set up Sprint 1 in Jira: 17 items with epics, points and the v0.1 – MVP version. 16 are in the Sprint and 1 is in the Product Backlog.
+  - Started the Sprint with its goal and dates (27 Oct – 2 Nov). Moved the 12 finished items to Done, with their comments.
+  - Added a burndown chart to the Sprint document.
+- **Next:** to be filled in at today's Daily Scrum
+- **Impediments:** to be filled in at today's Daily Scrum
+- **My feedback:** to be filled in at today's Daily Scrum
+- **Product Backlog changes:** to be filled in at today's Daily Scrum
