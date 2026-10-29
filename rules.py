@@ -30,13 +30,10 @@ LIMITS = {
         "limit": 0.10,  # EXAMPLE
         "why": "A single company's bad news can move your whole portfolio.",  # EXAMPLE
     },
-    "currency": {
-        "label": "Currency",
-        "yellow_from": 0.56,  # EXAMPLE
-        "limit": 0.70,  # EXAMPLE
-        "why": "If that currency weakens against the leu, your portfolio loses value in lei.",  # EXAMPLE
-    },
 }
+# Currency is not a scored limit (decision of 29 Oct 2026, see docs/decisions.md):
+# over long horizons it matters less for stocks than company and sector risk,
+# so it is shown as an exposure note instead (FOREIGN_CURRENCY_NOTE below).
 
 # The 11 official GICS sectors (not an example: this is the standard).
 GICS_SECTORS = (
@@ -103,6 +100,10 @@ LARGE_NOTE_SHARE = 0.90  # EXAMPLE
 
 # Region note: one region (Global excluded) above this share of the portfolio.
 SINGLE_REGION_NOTE = 0.80  # EXAMPLE
+
+# Currency note: one foreign currency (anything but RON) above this share of the
+# portfolio. Same value as the old currency limit's yellow threshold.
+FOREIGN_CURRENCY_NOTE = 0.56  # EXAMPLE
 
 # Stress test: drop applied to the largest sector.
 STRESS_DROP = 0.20  # EXAMPLE

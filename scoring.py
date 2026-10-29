@@ -35,7 +35,7 @@ SAMPLE_PORTFOLIOS = {
     ),
     "all_in_ron.csv": (
         "All in RON",
-        "Stocks, bonds, a fund and a deposit, all denominated in lei.",
+        "Stocks, bonds, a fund and a deposit, all in lei: no foreign currency at all.",
     ),
     "beginner_3_stocks.csv": (
         "Beginner with 3 stocks",
@@ -138,7 +138,7 @@ STATUS_LABELS = {GREEN: "OK", YELLOW: "Watch", RED: "Over limit"}
 STATUS_RANK = {RED: 0, YELLOW: 1, GREEN: 2}
 
 # Word that starts a warning, e.g. "Position Apple: 8% (limit 10%)".
-WARNING_PREFIX = {"sector": "Sector", "asset": "Position", "currency": "Currency"}
+WARNING_PREFIX = {"sector": "Sector", "asset": "Position"}
 
 # Dimensions offered in the Charts tab.
 CHART_DIMENSIONS = {
@@ -541,6 +541,14 @@ def limit_weights(df: pd.DataFrame, key: str) -> pd.Series:
     return shares.sort_values(ascending=False, kind="stable")
 
 
+def largest_foreign_currency(df: pd.DataFrame) -> tuple[str, float]:
+    """Largest single currency other than RON; ("", 0.0) if everything is in RON."""
+    currencies = weights(df, "currency").drop(HOME_CURRENCY, errors="ignore")
+    if currencies.empty:
+        return "", 0.0
+    return currencies.index[0], float(currencies.iloc[0])
+
+
 def largest_region(df: pd.DataFrame) -> tuple[str, float]:
     """Largest single region, Global excluded; ("", 0.0) if there is none."""
     regions = weights(df, "region").drop(GLOBAL_REGION, errors="ignore")
@@ -686,6 +694,17 @@ def exposure_notes(df: pd.DataFrame, has_region: bool) -> list[Note]:
                 "Charts › Region",
             )
         )
+    currency, share = largest_foreign_currency(df)
+    if share > rules.FOREIGN_CURRENCY_NOTE + EPS:
+        notes.append(
+            Note(
+                "currency",
+                f"{fmt_pct(share)} of your portfolio is in {currency}. If {currency} falls "
+                "against the leu, these holdings lose value in lei. Over long periods this "
+                "tends to matter less than company and sector risk.",
+                "Charts › Currency",
+            )
+        )
     return notes
 
 
@@ -693,10 +712,9 @@ def insights_for(
     df: pd.DataFrame, limits: list[LimitResult], notes: list[Note], has_region: bool
 ) -> list[Insight]:
     """Plain-language facts. "Watch" when the same dimension already has a
-    yellow or red limit (or the region note); "Info" otherwise."""
+    yellow or red limit (or a region or currency note); "Info" otherwise."""
     flagged = {r.key for r in limits if r.status != GREEN}
-    if any(n.key == "region" for n in notes):
-        flagged.add("region")
+    flagged |= {n.key for n in notes if n.key in ("region", "currency")}
 
     def label(key: str) -> str:
         return "Watch" if key in flagged else "Info"

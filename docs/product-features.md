@@ -16,7 +16,7 @@ What a user can see and do in Portfolio Health Check.
 | | Complete a CSV that only has names and values, in one click | Done | 28 Oct |
 | | Start your own portfolio from any sample ("Edit these positions") and save it as a CSV | Done | 28 Oct |
 | | Start the app on Windows with a double-click | Done | 28 Oct |
-| **Score and limits** | Get one score from 0 to 100, built from three limits: sector, single position and currency | Done | 27 Oct |
+| **Score and limits** | Get one score from 0 to 100, built from two limits: sector and single position (currency was a third limit until 29 Oct) | Done | 27 Oct |
 | | See each limit as OK, Watch or Over limit, next to its threshold, with "Why it matters" | Done | 27 Oct |
 | | Broad funds, bonds and cash do not count against the sector and single-position limits | Done | 27 Oct |
 | | See every warning, the most serious first | Done | 27 Oct |
@@ -33,6 +33,7 @@ What a user can see and do in Portfolio Health Check.
 | **Exposure notes** | Compare your stocks' company sizes with the US market | Done | 27 Oct |
 | | Get a note when small companies are well above the market share, or when almost everything is a large company | Done | 27 Oct |
 | | Get a note when one region holds most of your portfolio | Done | 27 Oct |
+| | Get a note when one foreign currency holds most of your portfolio; the leu never counts | Done | 29 Oct |
 | | Click a stock to see its sector, size, region and weight | Done | 27 Oct |
 | **Charts** | See bars by sector, currency, position or region, largest first, with the limit as a dotted line | Done | 27 Oct |
 | | See every position in a table, with values in lei and weights in % | Done | 27 Oct |

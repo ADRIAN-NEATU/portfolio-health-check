@@ -675,7 +675,7 @@ def start_screen() -> None:
             "Choose a portfolio",
             "Pick a sample in the side panel, upload a CSV, or type your positions.",
         ),
-        ("See your score", "One number from 0 to 100, built from three concentration limits."),
+        ("See your score", "One number from 0 to 100, built from two concentration limits."),
         ("Read the details", "Limits, stocks, charts and every position, one tab each."),
     ]
     cards = "".join(
@@ -825,10 +825,9 @@ def charts_tab(analysis: scoring.Analysis) -> None:
     show_chart(bar_chart(bars, limit))
     if dimension in ("sector", "asset"):
         st.html('<div class="phc-muted">Broad ETFs, bonds and cash are exempt from this limit and stay grey.</div>')
-    if dimension == "region":
-        for note in analysis.notes:
-            if note.key == "region":
-                st.html(note_card(note.text))
+    for note in analysis.notes:
+        if note.key == dimension:  # the region and currency notes sit under their charts
+            st.html(note_card(note.text))
 
 
 def positions_tab(analysis: scoring.Analysis) -> None:

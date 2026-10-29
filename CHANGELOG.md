@@ -2,6 +2,10 @@
 
 ## v0.1 – MVP (in progress)
 
+### 29 Oct 2026
+- Currency is no longer part of the score. When one foreign currency holds most of your portfolio, a note explains what that means in lei. Money in lei never counts as a currency risk.
+- The score now comes from two limits: sector and single position.
+
 ### 28 Oct 2026
 - You can type or paste your positions straight into the app.
 - Type only a name or ticker and its value: sector, type, size, currency and region fill in by themselves. They come from a built-in list of about 220 well-known stocks and funds, and from free, open sources (the US regulator's public company database, SEC EDGAR, and OpenFIGI).

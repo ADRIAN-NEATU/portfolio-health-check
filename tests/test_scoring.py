@@ -16,7 +16,6 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 SECTOR = rules.LIMITS["sector"]
 ASSET = rules.LIMITS["asset"]
-CURRENCY = rules.LIMITS["currency"]
 
 
 def make(rows, region=True):
@@ -37,16 +36,16 @@ def sample(file_name):
 # Sample portfolios: every expected result fixed explicitly
 # ---------------------------------------------------------------------------
 
-# file -> (sector, asset, currency, score, profile, notes)
+# file -> (sector, asset, score, profile, notes)
 EXPECTED = {
-    "diversified.csv": (GREEN, GREEN, GREEN, 100, "Dynamic", []),
-    "tech_heavy.csv": (RED, GREEN, GREEN, 83, "Dynamic", []),
-    "all_in_ron.csv": (GREEN, GREEN, RED, 85, "Balanced", []),
-    "beginner_3_stocks.csv": (GREEN, RED, GREEN, 73, "Balanced", []),
-    "conservative_saver.csv": (GREEN, GREEN, GREEN, 100, "Conservative", []),
-    "small_cap_fan.csv": (GREEN, GREEN, GREEN, 100, "Dynamic", ["small_cap"]),
-    "one_global_etf.csv": (GREEN, GREEN, RED, 85, "Dynamic", []),
-    "andrei.csv": (GREEN, YELLOW, RED, 81, "Dynamic", ["large_cap", "region"]),
+    "diversified.csv": (GREEN, GREEN, 100, "Dynamic", []),
+    "tech_heavy.csv": (RED, GREEN, 75, "Dynamic", []),
+    "all_in_ron.csv": (GREEN, GREEN, 100, "Balanced", []),
+    "beginner_3_stocks.csv": (GREEN, RED, 60, "Balanced", []),
+    "conservative_saver.csv": (GREEN, GREEN, 100, "Conservative", []),
+    "small_cap_fan.csv": (GREEN, GREEN, 100, "Dynamic", ["small_cap"]),
+    "one_global_etf.csv": (GREEN, GREEN, 100, "Dynamic", ["currency"]),
+    "andrei.csv": (GREEN, YELLOW, 94, "Dynamic", ["large_cap", "region", "currency"]),
 }
 
 
@@ -59,14 +58,14 @@ def test_every_sample_is_listed():
 def test_sample_limit_statuses(file_name):
     analysis = sample(file_name)
     statuses = tuple(r.status for r in analysis.limits)
-    assert [r.key for r in analysis.limits] == ["sector", "asset", "currency"]
-    assert statuses == EXPECTED[file_name][:3]
+    assert [r.key for r in analysis.limits] == ["sector", "asset"]
+    assert statuses == EXPECTED[file_name][:2]
 
 
 @pytest.mark.parametrize("file_name", EXPECTED)
 def test_sample_score_profile_and_notes(file_name):
     analysis = sample(file_name)
-    _, _, _, score, profile, notes = EXPECTED[file_name]
+    _, _, score, profile, notes = EXPECTED[file_name]
     assert analysis.score == score
     assert analysis.profile.name == profile
     assert [n.key for n in analysis.notes] == notes
@@ -100,14 +99,12 @@ def test_tech_heavy_sector_is_technology_45_percent():
 
 def test_andrei_at_a_glance():
     analysis = sample("andrei.csv")
-    assert analysis.verdict == "2 issues. The most serious: currency (USD 100%)."
+    assert analysis.verdict == "1 issue: single position (Apple 8%)."
     assert [(row.status, row.tab) for row in analysis.glance] == [
-        (RED, "Overview"),
         (YELLOW, "Overview"),
         ("", "Stocks"),
     ]
-    assert analysis.glance[0].text == "Currency USD: 100% (limit 70%)"
-    assert analysis.glance[1].text == "Position Apple: 8% (limit 10%) and 6 more"
+    assert analysis.glance[0].text == "Position Apple: 8% (limit 10%) and 6 more"
 
 
 def test_one_global_etf_region_is_global():
@@ -160,7 +157,7 @@ def test_graded_score(weight, expected):
 
 
 def test_overall_score_is_rounded_mean():
-    # sector 100, asset 88 (8%), currency 80 (70%) -> 89.33 -> 89
+    # sector 100, asset 88 (8%) -> 94; currency is a note, not a limit
     df = make(
         [
             ("A", 8, "Information Technology", "stock", "large", "USD", "US"),
@@ -169,8 +166,8 @@ def test_overall_score_is_rounded_mean():
         ]
     )
     analysis = scoring.analyze(df)
-    assert [round(r.score, 2) for r in analysis.limits] == [100, 88, 80]
-    assert analysis.score == 89
+    assert [round(r.score, 2) for r in analysis.limits] == [100, 88]
+    assert analysis.score == 94
 
 
 def test_round_half_up():
@@ -203,7 +200,6 @@ def test_warnings_sorted_red_then_yellow_then_size():
     )
     texts = [w.text for w in scoring.analyze(df).warnings]
     assert texts == [
-        "Currency USD: 100% (limit 70%)",
         "Position A: 12% (limit 10%)",
         "Position C: 9% (limit 10%)",
         "Position B: 6% (limit 10%)",
@@ -283,12 +279,13 @@ def stocks_by_cap(small, mid, large, region_share=0.5):
         ("Large Co", large, "Health Care", "stock", "large", "RON", "Romania"),
     ]
     rows = [r for r in rows if r[1] > 0]
-    rows.append(("Fund", 300, "Diversified", "ETF", "n/a", "EUR", "Global"))
+    rows.append(("Fund", 300, "Diversified", "ETF", "n/a", "RON", "Global"))
     return make(rows)
 
 
-def note_keys(df, has_region=True):
-    return [n.key for n in scoring.exposure_notes(df, has_region)]
+def note_keys(df, has_region=True, ignore=("currency",)):
+    """Notes raised for a portfolio; the currency note is left out unless asked for."""
+    return [n.key for n in scoring.exposure_notes(df, has_region) if n.key not in ignore]
 
 
 def test_small_cap_note():
@@ -328,6 +325,38 @@ def test_single_region_note():
 def test_global_does_not_trigger_region_note():
     df = make([("World", 100, "Diversified", "ETF", "n/a", "USD", "Global")])
     assert note_keys(df) == []
+
+
+def foreign_share(usd_percent):
+    return make(
+        [
+            ("US fund", usd_percent, "Diversified", "ETF", "n/a", "USD", "US"),
+            ("Deposit", 100 - usd_percent, "n/a", "cash", "n/a", "RON", "Romania"),
+        ]
+    )
+
+
+def test_currency_is_a_note_not_a_limit():
+    analysis = scoring.analyze(foreign_share(90))
+    assert [r.key for r in analysis.limits] == ["sector", "asset"]
+    note = next(n for n in analysis.notes if n.key == "currency")
+    assert note.headline == "90% of your portfolio is in USD."
+    assert "lose value in lei" in note.text
+    other = next(i for i in analysis.insights if i.key == "other_currencies")
+    assert other.label == "Watch"
+
+
+def test_currency_note_threshold_and_ron():
+    assert "currency" in note_keys(foreign_share(57), ignore=())
+    assert "currency" not in note_keys(foreign_share(56), ignore=())  # exactly the threshold
+    all_ron = make([("Deposit", 100, "n/a", "cash", "n/a", "RON", "Romania")])
+    assert "currency" not in note_keys(all_ron, ignore=())  # RON is never a currency risk
+
+
+def test_currency_chart_has_no_limit_line():
+    bars, limit = scoring.chart_data(sample("andrei.csv"), "currency")
+    assert limit is None
+    assert set(bars["status"]) == {GREEN}
 
 
 def test_portfolio_without_stocks():

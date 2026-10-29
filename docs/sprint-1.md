@@ -25,16 +25,16 @@
 | S1-13 | PHC-19 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | To do | – |
 | S1-14 | PHC-20 | Task | E5 | Reread and explain the code | 2 | To do | – |
 | S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
-| S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | To do | – |
-| S1-18 | – | Story | E3 | Explain "behaves like N equal positions" in plain words | 1 | To do | – |
-| S1-19 | – | Story | E3 | Replace the stress test with simple exposure figures by sector and region | 2 | To do | – |
-| S1-20 | – | Story | E3 | Colour each insight by what it means: good, watch, worth asking | 3 | To do | – |
-| S1-21 | – | Story | E3 | Explain "n/a" and "Diversified" in the charts | 1 | To do | – |
-| S1-22 | – | Story | E4 | Ask a neutral question when one region holds a large share | 2 | To do | – |
-| S1-23 | – | Story | E3 | See which positions make up each bar in the charts | 3 | To do | – |
-| S1-24 | – | Task | E4 | Review how the currency and sector limits are calculated | 3 | To do | – |
+| S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | Done | 29 Oct |
+| S1-18 | PHC-24 | Story | E3 | Explain "behaves like N equal positions" in plain words | 1 | To do | – |
+| S1-19 | PHC-25 | Story | E3 | Replace the stress test with simple exposure figures by sector and region | 2 | To do | – |
+| S1-20 | PHC-26 | Story | E3 | Colour each insight by what it means: good, watch, worth asking | 3 | To do | – |
+| S1-21 | PHC-27 | Story | E3 | Explain "n/a" and "Diversified" in the charts | 1 | To do | – |
+| S1-22 | PHC-28 | Story | E4 | Ask a neutral question when one region holds a large share | 2 | To do | – |
+| S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | To do | – |
+| S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
 
-S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. Anything not Done by 2 Nov goes back to the Product Backlog.
+S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. Anything not Done by 2 Nov goes back to the Product Backlog.
 
 ## Product Backlog (not in this Sprint)
 
@@ -53,7 +53,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | Start | 42 | – | – | 42 | 42 |
 | 27 Oct | 42 | – | 26 | 16 | 36 |
 | 28 Oct | 45 | 3 (S1-16) | 10 | 9 | 30 |
-| 29 Oct | 60 | 15 (S1-18 to S1-24) | | 24 | 24 |
+| 29 Oct | 60 | 15 (S1-18 to S1-24) | 6 | 18 | 24 |
 | 30 Oct | | | | | 18 |
 | 31 Oct | | | | | 12 |
 | 1 Nov | | | | | 6 |
@@ -67,7 +67,7 @@ xychart-beta
     title "Sprint 1 burndown: bars = points left, line = ideal"
     x-axis ["Start", "27 Oct", "28 Oct", "29 Oct"]
     y-axis "Story points" 0 --> 45
-    bar [42, 16, 9, 24]
+    bar [42, 16, 9, 18]
     line [42, 36, 30, 24]
 ```
 
@@ -81,14 +81,14 @@ As an investor, I want to open a sample or upload my own CSV, so that I can anal
 
 **S1-04 – See my concentration score and warnings**
 As an investor, I want one score from 0 to 100 built from three limits, so that I see at once how concentrated I am.
-- Given "Tech-heavy", when it opens, then the score is 83 and the Sector card shows Information Technology 45%, "Over limit".
+- Given "Tech-heavy", when it opens, then the score is 75 and the Sector card shows Information Technology 45%, "Over limit".
 - Given "Diversified", when it opens, then the score is 100 and the warnings read "No warnings: every limit is below its yellow threshold."
 - Given "Andrei", when I open "See all warnings", then the remaining warnings appear, red ones first.
 
 **S1-05 – See the essentials at a glance**
 As an investor, I want the most important findings first, so that I understand my situation in under a minute.
-- Given "Andrei", when it opens, then the ring shows 81 in red and the verdict reads "2 issues. The most serious: currency (USD 100%)."
-- Given "Andrei", when it opens, then at most three rows appear (currency, positions, large-cap note), each naming the tab with the details.
+- Given "Andrei", when it opens, then the ring shows 94 in yellow and the verdict reads "1 issue: single position (Apple 8%)."
+- Given "Andrei", when it opens, then at most three rows appear (positions, large-cap note), each naming the tab with the details.
 
 **S1-06 – Read my profile and key insights**
 As an investor, I want my profile and plain-language insights, so that I understand what my numbers mean.
@@ -122,7 +122,7 @@ As an investor, I want to upload the file Excel gives me, so that I don't have t
 **S1-16 – Don't count RON as a currency risk for someone who earns in lei**
 As an investor who earns in lei, I want my RON holdings not to count as a currency risk, so that the score only warns about real currency exposure.
 - Given "All in RON", when it opens, then holding RON is not shown as a currency problem.
-- Given "Andrei" (100% in USD), when it opens, then the currency limit is still "Over limit".
+- Given "Andrei" (100% in USD), when it opens, then a note says that 100% of the portfolio is in USD (currency is a note since decision D1).
 
 **S1-17 – Search bar with suggestions as you type a name or ticker** (after v0.1)
 As an investor, I want suggestions while I type, so that I pick the right company without knowing its exact name.
