@@ -12,6 +12,7 @@ import plotly.io as pio
 import streamlit as st
 
 import lookup
+import rules
 import scoring
 from scoring import GREEN, ORANGE, RED, YELLOW
 
@@ -960,7 +961,44 @@ def positions_tab(analysis: scoring.Analysis) -> None:
     show_table(analysis.positions[columns], {"value": scoring.fmt_ron, "weight": scoring.fmt_pct})
 
 
+@st.dialog("Before you start", width="large", dismissible=False)
+def about_dialog() -> None:
+    """What the app is and how the score is calculated: once per visit, and from the footer."""
+    sector, asset = rules.LIMITS["sector"], rules.LIMITS["asset"]
+    pct = scoring.fmt_pct
+    st.markdown(
+        f"""
+**Just math, not investment advice.** Portfolio Health Check shows how concentrated a portfolio
+is, using only the numbers you enter. It does not recommend buying, selling or holding anything,
+and it does not know your goals, income or situation.
+
+**How the score is calculated**
+- Each position's weight is its value divided by the total of the portfolio.
+- Two limits look at the largest share: one sector (full score below {pct(sector["yellow_from"])},
+  limit {pct(sector["limit"])}) and one single position (full score below
+  {pct(asset["yellow_from"])}, limit {pct(asset["limit"])}).
+- Each limit scores from 20 to 100, and the score is the average of the two.
+- Broad funds, bonds and cash don't count towards the limits, but they are part of the total.
+- The limits are the ones EU and US law set for funds, used here as a reference. The Watch
+  thresholds and the sector margin are example values.
+
+**What it can't see**
+- It does not look inside funds: a broad fund counts as diversified, although even the world
+  stock market is about {pct(round(rules.WORLD_TECH_SHARE, 2))} technology (MSCI ACWI, 30 Sep 2026).
+- Details looked up online come from public sources and may be wrong: check them.
+
+**Your data.** Your portfolio stays on your computer. If online lookup is on, only names and
+tickers are sent to SEC EDGAR and OpenFIGI.
+"""
+    )
+    if st.button("I understand", type="primary"):
+        st.session_state.understood = True
+        st.rerun()
+
+
 def footer() -> None:
+    if st.button("How the score works", key="about", type="tertiary", icon=":material/info:"):
+        about_dialog()
     st.html(
         '<div class="phc-footer">Analysis, not investment advice. '
         "Both limits follow EU and US fund rules; the Watch thresholds and the sector "
@@ -977,6 +1015,8 @@ def main() -> None:
     inject_css()
     init_state()
     header()
+    if not st.session_state.get("understood"):
+        about_dialog()
 
     chosen = choose_portfolio()
     portfolio = None

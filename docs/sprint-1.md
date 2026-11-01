@@ -34,12 +34,14 @@
 | S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | Done | 29 Oct |
 | S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
 | S1-25 | PHC-31 | Story | E3 | Keep chart labels off the limit line and make the tooltips easier to read | 2 | Done | 29 Oct |
+| S1-26 | – | Story | E5 | See what the app is and how the score is calculated before I start | 1 | Done | 1 Nov |
 
 S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. On 1 Nov:
 - S1-13 was finished: both limits now come from documented rules ([D2](decisions.md) single position, [D3](decisions.md) sector).
 - S1-22 became a comparison with the world market ([D4](decisions.md)).
 - S1-20 is done with a provisional decision ([D5](decisions.md)).
 - The project is on GitHub (S1-15).
+- S1-26 was added and done: a "Before you start" window that says the app is just math, not investment advice, and how the score is calculated. It replaces the idea of score tips, which came too close to advice.
 
 Anything not Done by 2 Nov goes back to the Product Backlog.
 
@@ -50,6 +52,7 @@ Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or no
 | ID | Jira | Type | Epic | Title | Points | Added |
 |---|---|---|---|---|---|---|
 | S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
+| S1-27 | – | Story | E3 | See what my index funds hold: sectors, countries and overlap with my stocks | 5 | 1 Nov |
 
 ## Burndown
 
@@ -63,7 +66,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | 29 Oct | 62 | 17 (S1-18 to S1-25) | 15 | 11 | 24 |
 | 30 Oct | 62 | – | 0 | 11 | 18 |
 | 31 Oct | 62 | – | 0 | 11 | 12 |
-| 1 Nov | 62 | – | 9 (S1-13, S1-15, S1-20, S1-22) | 2 | 6 |
+| 1 Nov | 63 | 1 (S1-26) | 10 (S1-13, S1-15, S1-20, S1-22, S1-26) | 2 | 6 |
 | 2 Nov | | | | | 0 |
 
 - **Scope:** all points in the Sprint. It grows when work is added.
@@ -171,6 +174,18 @@ As an investor, I want the charts to read cleanly, so that a value near the limi
 - Given my portfolio, when I open the Sector chart, then every value sits inside the end of its bar ("28.9%" in Industrials), never on the dotted "Limit 30%" line. A bar too short for its value shows it in the tooltip.
 - Given any bar, when I hover over it, then a card shows its share first, then where it stands against the limit (for example "Close to the 30% limit"), then the positions in it, lined up.
 - Given a bar near the top or bottom of the chart, when I hover over it, then the card is not cut off.
+
+**S1-26 – See what the app is and how the score is calculated before I start**
+As an investor, I want to know what the app does and doesn't do before I use it, so that I don't mistake the score for advice.
+- Given I open the app, when it loads, then a "Before you start" window says it is just math, not investment advice, and how the score is calculated.
+- Given the window, when I press Escape, then it stays open until I click "I understand".
+- Given any screen, when I click "How the score works" at the bottom, then the window opens again.
+
+**S1-27 – See what my index funds hold: sectors, countries and overlap with my stocks** (after v0.1)
+As an investor with index funds (S&P 500, Nasdaq-100, world), I want to see what they hold, so that I know my real exposure without the score punishing funds for being funds.
+- Given an S&P 500 fund and Apple held directly, when I open the analysis, then I see my Apple exposure through both.
+- Given any fund, the score does not change: what a fund holds is shown as information.
+- Data only from sources whose terms allow it, with their date.
 
 ## Sprint Review (2 Nov)
 

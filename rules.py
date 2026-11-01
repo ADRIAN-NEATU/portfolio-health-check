@@ -126,6 +126,9 @@ SINGLE_REGION_NOTE = 0.80  # EXAMPLE
 # D4). Source: MSCI ACWI Index factsheet (USD), 30 Sep 2026: large and mid-size
 # companies in 23 developed and 24 emerging markets. Update it with the factsheet.
 WORLD_MARKET_SHARE = {"US": 0.6}  # placeholder: the provider's figure was removed (D8)
+# Information Technology in the same index and factsheet: shown in the "Before you
+# start" dialog, to say why broad funds are not looked inside.
+WORLD_TECH_SHARE = 0.3  # placeholder: the provider's figure was removed (D8)
 WORLD_MARKET_SOURCE = (
     "Source: MSCI ACWI Index factsheet, 30 Sep 2026. The index covers large and "
     "mid-size companies in 23 developed and 24 emerging markets; the United States "

@@ -8,6 +8,7 @@
 - "Why it matters" on the Sector card says where 25% comes from.
 - When most of your money is in the US, the Regions insight compares it with the US share of the world stock market (a provider figure, removed by D8). A (?) shows the source.
 - Insights whose limit is OK are now marked Good, in green (provisional).
+- A "Before you start" window explains, before you begin, that the app is just math and not investment advice, and how the score is calculated. "How the score works" at the bottom opens it again.
 - The project is on GitHub.
 
 ### 29 Oct 2026

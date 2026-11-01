@@ -48,6 +48,7 @@ What a user can see and do in Portfolio Health Check.
 | | Works on a phone-sized screen | Done | 27 Oct |
 | | Sample portfolios as cards, chart choices as pills, cleaner tabs and tables | Done | 28 Oct |
 | | A footer says it is analysis, not investment advice | Done | 27 Oct |
+| | A "Before you start" window says it is just math, not advice, and how the score is calculated; "How the score works" opens it again | Done | 1 Nov |
 | **Quality** | Automated tests check every limit, score and sample portfolio | Done | 27 Oct |
 | | Each test portfolio is built around one main risk | Done | 27 Oct |
 | | Sector names follow the official GICS standard | Done | 28 Oct |
