@@ -90,10 +90,46 @@ SECTOR_ALIASES = {
 # Sectors that never count towards the sector limit.
 SECTOR_EXEMPT = ("Diversified", "n/a")  # EXAMPLE
 
-# Positions that never count towards the single-position limit:
-# bonds, cash, and broad ETFs (an ETF whose sector is BROAD_ETF_SECTOR).
-ASSET_EXEMPT_TYPES = ("bond", "cash")  # EXAMPLE
+# Positions that never count towards the single-position limit: government bonds
+# ("bond"), cash, precious metals, and broad ETFs (an ETF whose sector is
+# BROAD_ETF_SECTOR). Government bonds: a fund may hold up to 100% in them (UCITS,
+# art. 54). Corporate bonds do count: their risk is the company's (decision D7).
+# Precious metals are not companies; they are shown as information only (D7).
+ASSET_EXEMPT_TYPES = ("bond", "cash", "precious metal")
 BROAD_ETF_SECTOR = "Diversified"  # EXAMPLE
+
+# ---------------------------------------------------------------------------
+# What index funds hold (decision D6)
+# ---------------------------------------------------------------------------
+# data/index_funds.csv (index, kind, name, weight, sector): sector weights, US share
+# and largest companies of each index. The project ships WITHOUT it: the figures we
+# had came from index providers whose terms don't allow redistribution (decision D8).
+# Without the file, every broad fund simply counts as diversified. Public-domain
+# figures from SEC N-PORT filings are planned. An ETF whose sector is
+# BROAD_ETF_SECTOR is matched to an index by its name, first pattern first; S&P 500
+# funds use the "MSCI USA" figures and FTSE All-World funds the "MSCI ACWI" ones.
+INDEX_NAME_PATTERNS = (
+    (r"nasdaq[ -]?100", "Nasdaq-100"),
+    (r"s&p ?500|msci usa", "MSCI USA"),
+    (r"all[- ]world|acwi|all country world|total world", "MSCI ACWI"),
+    (r"msci world", "MSCI World"),
+    (r"emerging|msci em\b|em imi", "MSCI Emerging Markets"),  # not MSCI EMU (euro area)
+)
+# Funds whose name has one of these words follow another index (small caps, a
+# factor, a sector), so they are not matched.
+INDEX_NAME_EXCLUDE = (
+    r"small cap|dividend|equal weight|momentum|quality|value|growth|min(imum)? vol|esg|sri|"
+    r"islamic|sector|information technology|health care|financials|energy"
+)
+# Indices narrower than the market they come from, because they leave sectors out:
+# the Nasdaq-100 holds no financial companies (its published methodology). Their funds
+# count towards the sector limit by what they hold; funds on a whole market
+# (a country, a region, the world) stay diversified.
+NARROW_INDICES = ("Nasdaq-100",)
+INDEX_SOURCE = (
+    "Funds are counted as copies of their index, using the figures in "
+    "data/index_funds.csv. Only the largest companies of each index are listed."
+)
 
 # ---------------------------------------------------------------------------
 # Investor profile, from the share of bonds + cash
@@ -109,12 +145,11 @@ DYNAMIC_BELOW = 0.30  # EXAMPLE
 # ---------------------------------------------------------------------------
 # Market cap segments used in the data:
 #   large > $10bn, mid $2-10bn, small < $2bn.
-# Source: CRSP US Total Market Index, cap segments (factsheet; small includes
-# micro). Approximate, to be checked against the current factsheet.
-REFERENCE_CAP_MIX = {"large": 0.7, "mid": 0.15, "small": 0.15}  # EXAMPLE (the provider's figures were removed, D8)
+# There is no market reference: the figures we had came from an index provider
+# whose terms don't allow reproducing them (decision D8).
 
-# Small-cap note: small caps above this multiple of the reference share.
-SMALL_NOTE_MULTIPLE = 2  # EXAMPLE
+# Small-cap note: small caps above this share of the stocks.
+SMALL_NOTE_SHARE = 0.28  # EXAMPLE
 
 # Large-cap note: large caps above this share of the stocks.
 LARGE_NOTE_SHARE = 0.90  # EXAMPLE
@@ -122,17 +157,16 @@ LARGE_NOTE_SHARE = 0.90  # EXAMPLE
 # Region note: one region (Global excluded) above this share of the portfolio.
 SINGLE_REGION_NOTE = 0.80  # EXAMPLE
 
-# Share of a region in the world stock market, for the Regions insight (decision
-# D4). Source: MSCI ACWI Index factsheet (USD), 30 Sep 2026: large and mid-size
-# companies in 23 developed and 24 emerging markets. Update it with the factsheet.
-WORLD_MARKET_SHARE = {"US": 0.6}  # placeholder: the provider's figure was removed (D8)
-# Information Technology in the same index and factsheet: shown in the "Before you
-# start" dialog, to say why broad funds are not looked inside.
-WORLD_TECH_SHARE = 0.3  # placeholder: the provider's figure was removed (D8)
+# Share of a region in the value of all listed companies in the world, for the
+# Regions insight (decisions D4, D8). Source: World Bank, World Development
+# Indicators, CM.MKT.LCAP.CD (market capitalization of listed domestic companies),
+# 2025: United States $68.94 trillion of $141.30 trillion. Licence CC BY 4.0, which
+# allows reuse with attribution. Update it once a year.
+WORLD_MARKET_SHARE = {"US": 0.4879}
 WORLD_MARKET_SOURCE = (
-    "Source: MSCI ACWI Index factsheet, 30 Sep 2026. The index covers large and "
-    "mid-size companies in 23 developed and 24 emerging markets; the United States "
-    "is the largest part of it."
+    "Source: World Bank, World Development Indicators, market capitalization of listed "
+    "domestic companies, 2025: United States $68.9 trillion of $141.3 trillion "
+    "worldwide. Licence: CC BY 4.0."
 )
 
 # Currency note: one foreign currency (anything but RON) above this share of the

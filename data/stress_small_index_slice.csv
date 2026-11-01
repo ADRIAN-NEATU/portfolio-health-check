@@ -1,0 +1,7 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Apple,1900,Information Technology,stock,large,USD,US
+JPMorgan Chase,1900,Financials,stock,large,USD,US
+Coca-Cola,1900,Consumer Staples,stock,large,USD,US
+Exxon Mobil,1900,Energy,stock,large,USD,US
+Johnson & Johnson,1900,Health Care,stock,large,USD,US
+iShares Core S&P 500 UCITS ETF,500,Diversified,ETF,n/a,USD,US

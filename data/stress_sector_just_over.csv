@@ -1,0 +1,13 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Caterpillar,450,Industrials,stock,large,USD,US
+Honeywell,450,Industrials,stock,large,USD,US
+Union Pacific,450,Industrials,stock,large,USD,US
+Siemens,450,Industrials,stock,large,EUR,Europe
+Schneider Electric,450,Industrials,stock,large,EUR,Europe
+Airbus,450,Industrials,stock,large,EUR,Europe
+Apple,460,Information Technology,stock,large,USD,US
+JPMorgan Chase,460,Financials,stock,large,USD,US
+Johnson & Johnson,460,Health Care,stock,large,USD,US
+Procter & Gamble,460,Consumer Staples,stock,large,USD,US
+Exxon Mobil,460,Energy,stock,large,USD,US
+Vanguard FTSE All-World UCITS ETF,5000,Diversified,ETF,n/a,EUR,Global

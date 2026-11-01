@@ -1,0 +1,10 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Exxon Mobil,443,Energy,stock,large,USD,US
+Chevron,443,Energy,stock,large,USD,US
+ConocoPhillips,443,Energy,stock,large,USD,US
+Shell,443,Energy,stock,large,GBP,Europe
+TotalEnergies,443,Energy,stock,large,EUR,Europe
+BP,443,Energy,stock,large,GBP,Europe
+OMV Petrom,442,Energy,stock,large,RON,Romania
+Vanguard FTSE All-World UCITS ETF,6000,Diversified,ETF,n/a,EUR,Global
+Romanian government bond 2030,900,n/a,bond,n/a,RON,Romania

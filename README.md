@@ -6,14 +6,14 @@ Portfolio Health Check is a local web tool that shows an individual investor, in
 
 ## Quick start on Windows
 
-1. Install Python 3.10 or newer from [python.org](https://www.python.org/downloads/) and tick "Add python.exe to PATH".
+1. Install Python 3.12 or newer from [python.org](https://www.python.org/downloads/) and tick "Add python.exe to PATH".
 2. Double-click **`start.bat`**.
 
 The first time, it sets everything up (about a minute). After that, it starts at once. The app opens in your browser at http://localhost:8501. Keep the black window open while you use the app, and close it to stop the app.
 
 ## Three ways to enter a portfolio
 
-1. **Try a sample:** pick one of the eight portfolios in the side panel. "Edit these positions" turns any of them into a starting point for your own.
+1. **Try a sample:** pick one of the eight sample portfolios in the side panel, or one of the ten "Stress tests" below them, each built to sit right on a threshold. "Edit these positions" turns any of them into a starting point for your own.
 2. **Type or paste:** click "Type or paste positions" and enter a name or ticker and its value in lei. Sector, type, market cap, currency and region fill in by themselves (see below), and whatever cannot be found is chosen from drop-down lists. You can also paste rows copied from Excel or Google Sheets (name, then value). "Download as CSV" keeps them for next time.
 3. **Upload a CSV:** the format is below. Files saved by Excel with Romanian settings work as they are, with `;` between columns and a decimal comma (1.234,56). Common spellings are accepted too ("Stock", "Large cap", "USA"). A file with only names and values is enough: the app offers to fill in the missing details.
 
@@ -39,7 +39,7 @@ Add a row to the built-in list to teach the app a new stock or fund.
 
 ## Install and run by hand
 
-Requires Python 3.10 or newer.
+Requires Python 3.12 or newer. `requirements.txt` pins the exact versions the app was tested with (tested on Python 3.12 and 3.15).
 
 ```bash
 python -m venv .venv
@@ -61,19 +61,23 @@ The score is the average of two limit scores (sector and single position), round
 
 | Limit | Watch from | Limit | Just over up to | Not counted |
 |---|---|---|---|---|
-| Sector | 20% | 25% | 30% | Diversified, n/a |
-| Single position | 5% | 10% | – | broad ETFs, bonds, cash |
+| Sector | 20% | 25% | 30% | broad funds (Diversified), n/a |
+| Single position | 5% | 10% | – | broad ETFs, government bonds, cash, precious metals |
 
 All thresholds live in [rules.py](rules.py). No regulator sets a limit for an individual investor, so the two limits are the ones set for funds, used here as a reference:
 - **Single position, 5% and 10%:** the limits EU and US law set for diversified funds ([decision D2](docs/decisions.md)).
 - **Sector, 25%:** the US regulator treats a fund with 25% or more in one industry as concentrated ([decision D3](docs/decisions.md)). The sector Watch threshold (20%) and the 5-point margin are examples.
 
+**Funds.** A broad fund counts as diversified: it doesn't count towards the limits, so it never lowers the score. Its weight still matters: a fund of 5% barely changes a portfolio of five stocks, while a fund of 50% halves every stock's weight (see the "Five stocks" stress tests). The app can also count index funds by what they hold, from a table of index figures (`data/index_funds.csv`), but it ships without that table: the figures we had came from index providers whose terms don't allow redistribution ([decision D8](docs/decisions.md)). Public-domain figures, from the holdings US funds file with the SEC, are planned.
+
+**Bonds and precious metals.** Government bonds and cash don't count towards the limits. A corporate bond counts towards the single-position limit, like a position in the company. Precious metals are shown in the profile and in an insight, but don't count towards the limits ([decision D7](docs/decisions.md)).
+
 ## Informative dimensions (not scored)
 
 - **Asset classes:** the share of bonds and cash sets a profile (Conservative, Balanced or Dynamic). There is no right mix: it depends on the investor's profile, so it is described, not scored.
-- **Market cap:** the stocks' small / mid / large split is compared with the US market. A note appears when small caps are well above the market share or when almost everything is large cap. As with asset classes, the right mix depends on the investor, so it does not affect the score.
+- **Market cap:** the stocks' small / mid / large split is shown. A note appears when small caps are more than 28% of the stocks or when almost everything is large cap. As with asset classes, the right mix depends on the investor, so it does not affect the score.
 - **Currency:** a note, not a limit ([decision D1](docs/decisions.md)). It appears when one foreign currency holds most of the portfolio. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
-- **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of the world stock market (an index provider's figure, removed by D8), with the source behind a (?) ([decision D4](docs/decisions.md)).
+- **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank, 2025), with the source behind a (?) ([decisions D4, D8](docs/decisions.md)).
 - **Insights:** effective number of positions, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Good (its limit is OK), Watch (its limit or note needs a look) or Info (no limit), and has no effect on the score. The Good label is provisional ([decision D5](docs/decisions.md)).
 
 ## CSV format
@@ -84,8 +88,8 @@ One row per position. Start from [data/template.csv](data/template.csv).
 |---|---|---|
 | asset | any name | |
 | value | number > 0 | always in lei (RON) |
-| sector | an official GICS sector name, `Diversified` or `n/a` | broad ETFs are `Diversified`; single-sector ETFs keep their sector; bonds and cash are `n/a` |
-| asset_type | `stock` / `ETF` / `bond` / `cash` | ETFs are treated as equity; bond ETFs are marked `bond` |
+| sector | an official GICS sector name, `Diversified` or `n/a` | broad ETFs are `Diversified`; single-sector ETFs keep their sector; bonds, cash and precious metals are `n/a` |
+| asset_type | `stock` / `ETF` / `bond` / `corporate bond` / `cash` / `precious metal` | `bond` is a government bond; ETFs are treated as equity; bond ETFs are marked `bond`; `gold` and `silver` are read as `precious metal` |
 | market_cap | `large` / `mid` / `small` / `n/a` | `n/a` for everything that is not a stock; large > $10bn, mid $2–10bn, small < $2bn |
 | currency | `RON`, `USD`, `EUR`, … | the currency of the asset |
 | region | `US` / `Europe` / `Romania` / `Emerging` / `Global` | the region of the company or fund, not of the currency; global ETFs are `Global`; bonds and cash take the region of the issuer or bank |
@@ -97,15 +101,14 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 ## Known limitations
 
 - The Watch thresholds, the sector margin and the note thresholds are EXAMPLES until they are replaced with the rules from the author's bachelor's thesis.
-- ETFs are not broken down into their companies, sectors or regions.
-- The market-cap reference is approximate: CRSP uses cumulative cap bands, while the data here use dollar thresholds.
-- Issuer risk on bonds is not analysed.
+- Funds are not looked inside: an S&P 500 fund and a company you also hold directly are not added together.
+- There is no market reference for company sizes: the figures we had came from an index provider whose terms don't allow reproducing them.
+- A corporate bond and a stock of the same company are not added together, because their names differ.
 - No live prices: values are entered by hand, in lei.
 - The details filled in automatically are approximate: market caps change, sectors come from SIC codes (not GICS), and each fund in the built-in list has one common listing, so if you bought it in another currency, change the currency in the editor.
 
 ## Sources
 
-- CRSP US Total Market Index, factsheet (cap segments). Center for Research in Security Prices.
 - Banz, R. W. (1981). The relationship between return and market value of common stocks. *Journal of Financial Economics*, 9(1), 3–18.
 - Fama, E. F., & French, K. R. (1993). Common risk factors in the returns on stocks and bonds. *Journal of Financial Economics*, 33(1), 3–56.
 - Froot, K. A. (1993). Currency hedging over long horizons. NBER Working Paper 4355.
@@ -114,12 +117,17 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - Investment Company Act of 1940, section 5(b)(1): at most 5% in one issuer for a diversified US fund.
 - ERISA section 407(a): at most 10% of a US pension plan in the employer's own shares.
 - U.S. Securities and Exchange Commission, Guidelines for Form N-1A, Guide 19 (1983): 25% or more in one industry is concentration.
-- MSCI ACWI Index factsheet (USD), 30 Sep 2026: country weights (figure removed from the project, D8).
+- World Bank, World Development Indicators, CM.MKT.LCAP.CD (market capitalization of listed domestic companies), 2025. Licence CC BY 4.0.
+- Directive 2009/65/EC (UCITS), Articles 53 (index funds) and 54 (government bonds).
 - FINRA (2022). Concentrate on Concentration Risk. Investor Insights.
 - Bessembinder, H. (2018). Do stocks outperform Treasury bills? *Journal of Financial Economics*, 129(3), 440–457.
 - Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.
 - U.S. Securities and Exchange Commission, EDGAR company tickers, submissions and XBRL frames (public float) APIs.
 - OpenFIGI, Open Symbology API (Bloomberg; FIGI under the MIT licence).
+
+## Licence and trademarks
+
+The code is under the [MIT licence](LICENSE). GICS®, S&P 500®, Nasdaq-100®, MSCI® and FTSE® are trademarks of their respective owners, used here only to name what they refer to; this project is not affiliated with, endorsed or sponsored by any of them. The sectors in the built-in list are our own assignments, made from public information, not official GICS data.
 
 ## How it was built
 

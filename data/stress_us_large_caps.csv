@@ -1,0 +1,26 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Apple,400,Information Technology,stock,large,USD,US
+Microsoft,400,Information Technology,stock,large,USD,US
+Nvidia,400,Information Technology,stock,large,USD,US
+Broadcom,400,Information Technology,stock,large,USD,US
+Alphabet,400,Communication Services,stock,large,USD,US
+Meta Platforms,400,Communication Services,stock,large,USD,US
+Netflix,400,Communication Services,stock,large,USD,US
+Amazon,400,Consumer Discretionary,stock,large,USD,US
+Tesla,400,Consumer Discretionary,stock,large,USD,US
+Home Depot,400,Consumer Discretionary,stock,large,USD,US
+JPMorgan Chase,400,Financials,stock,large,USD,US
+Berkshire Hathaway,400,Financials,stock,large,USD,US
+Visa,400,Financials,stock,large,USD,US
+Johnson & Johnson,400,Health Care,stock,large,USD,US
+UnitedHealth,400,Health Care,stock,large,USD,US
+Eli Lilly,400,Health Care,stock,large,USD,US
+Procter & Gamble,400,Consumer Staples,stock,large,USD,US
+Coca-Cola,400,Consumer Staples,stock,large,USD,US
+Walmart,400,Consumer Staples,stock,large,USD,US
+Exxon Mobil,400,Energy,stock,large,USD,US
+Chevron,400,Energy,stock,large,USD,US
+Caterpillar,400,Industrials,stock,large,USD,US
+Honeywell,400,Industrials,stock,large,USD,US
+NextEra Energy,400,Utilities,stock,large,USD,US
+Linde,400,Materials,stock,large,USD,US

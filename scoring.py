@@ -22,6 +22,7 @@ DATA_DIR = Path(__file__).parent / "data"
 TEMPLATE_PATH = DATA_DIR / "template.csv"
 # Stocks and funds the editor can fill in by name or ticker (details approximate).
 KNOWN_SECURITIES_PATH = DATA_DIR / "known_securities.csv"
+INDEX_FUNDS_PATH = DATA_DIR / "index_funds.csv"
 
 # Sample portfolios offered in the app: file name -> (display name, description).
 SAMPLE_PORTFOLIOS = {
@@ -59,6 +60,50 @@ SAMPLE_PORTFOLIOS = {
     ),
 }
 
+# Portfolios built to sit right on a threshold or to show one rule at work.
+STRESS_PORTFOLIOS = {
+    "stress_sector_just_over.csv": (
+        "Just over a sector",
+        "27% in industrial companies: 2 points past the 25% limit, inside the safety margin.",
+    ),
+    "stress_exact_limits.csv": (
+        "Exactly at the limits",
+        "One sector at exactly 25% and two stocks at exactly 10%: both limits at their edge.",
+    ),
+    "stress_sector_over_margin.csv": (
+        "Past the safety margin",
+        "31% in energy companies: just beyond the 30% margin, so over the limit.",
+    ),
+    "stress_small_index_slice.csv": (
+        "Five stocks, a little index",
+        "95% in five stocks and 5% in an S&P 500 fund: the fund barely helps.",
+    ),
+    "stress_half_index.csv": (
+        "Five stocks, half index",
+        "Half in five stocks, half in an S&P 500 fund.",
+    ),
+    "stress_corporate_bond.csv": (
+        "One big corporate bond",
+        "15% in one company's bond: it counts like a position in that company.",
+    ),
+    "stress_gold.csv": (
+        "A quarter in gold",
+        "25% in gold, which stays outside the limits, plus a global fund and cash.",
+    ),
+    "stress_government_bonds.csv": (
+        "Government bond ladder",
+        "Five Romanian government bonds, cash and a global fund.",
+    ),
+    "stress_us_large_caps.csv": (
+        "25 US large caps",
+        "Spread evenly over 25 large American companies, all in dollars.",
+    ),
+    "stress_bvb_only.csv": (
+        "Bucharest only",
+        "Thirteen BVB shares, with 40% of the money in utilities.",
+    ),
+}
+
 COLUMNS = ("asset", "value", "sector", "asset_type", "market_cap", "currency", "region")
 OPTIONAL_COLUMNS = ("region",)
 REQUIRED_COLUMNS = tuple(c for c in COLUMNS if c not in OPTIONAL_COLUMNS)
@@ -70,7 +115,9 @@ SECTOR_NAMES = {
     **{alias.lower(): name for alias, name in rules.SECTOR_ALIASES.items()},
 }
 
-ASSET_TYPES = ("stock", "ETF", "bond", "cash")
+# "bond" is a government bond; a corporate bond counts like the company (decision D7).
+ASSET_TYPES = ("stock", "ETF", "bond", "corporate bond", "cash", "precious metal")
+BOND_TYPES = ("bond", "corporate bond")
 CAP_SEGMENTS = ("small", "mid", "large")
 REGIONS = ("US", "Europe", "Romania", "Emerging", "Global")
 HOME_CURRENCY = "RON"
@@ -110,7 +157,17 @@ CATEGORY_NAMES = {
         "shares": "stock",
         "etfs": "ETF",
         "bonds": "bond",
+        "government bond": "bond",
+        "government bonds": "bond",
+        "corporate": "corporate bond",
+        "corporate bonds": "corporate bond",
+        "corp bond": "corporate bond",
         "deposit": "cash",
+        "precious metals": "precious metal",
+        "metal": "precious metal",
+        "metals": "precious metal",
+        "gold": "precious metal",
+        "silver": "precious metal",
     },
     "market_cap": {
         **{c: c for c in CAP_SEGMENTS + ("n/a",)},
@@ -213,7 +270,7 @@ class LimitWarning:
 class Profile:
     name: str
     message: str
-    defensive_share: float  # bonds + cash
+    defensive_share: float  # bonds (government and corporate) + cash
     breakdown: dict[str, float]  # share of each asset type
 
 
@@ -523,7 +580,10 @@ def to_csv(df: pd.DataFrame) -> bytes:
 
 
 def weights(df: pd.DataFrame, column: str) -> pd.Series:
-    """Share of the total value in each category of `column`, largest first."""
+    """Share of the total value in each category of `column`, largest first. For
+    sectors, a fund on a narrow index counts by what it holds."""
+    if column == "sector":
+        df = with_fund_sectors(df)
     shares = df.groupby(column)["value"].sum() / df["value"].sum()
     return shares.sort_values(ascending=False, kind="stable")
 
@@ -539,6 +599,7 @@ def cap_mix(df: pd.DataFrame) -> pd.Series:
 def counted_rows(df: pd.DataFrame, key: str) -> pd.DataFrame:
     """Rows that count towards a limit, exempt categories removed."""
     if key == "sector":
+        df = with_fund_sectors(df)
         return df[~df["sector"].isin(rules.SECTOR_EXEMPT)]
     if key == "asset":
         broad_etf = (df["asset_type"] == "ETF") & (df["sector"] == rules.BROAD_ETF_SECTOR)
@@ -566,6 +627,107 @@ def largest_region(df: pd.DataFrame) -> tuple[str, float]:
     if regions.empty:
         return "", 0.0
     return regions.index[0], float(regions.iloc[0])
+
+
+# ---------------------------------------------------------------------------
+# What index funds hold (decision D6)
+# ---------------------------------------------------------------------------
+
+
+@functools.cache
+def index_funds() -> pd.DataFrame:
+    """Sector weights, US share and largest companies of the indices we know; empty
+    when data/index_funds.csv is missing, as in the published project (D8)."""
+    if not INDEX_FUNDS_PATH.exists():
+        return pd.DataFrame(columns=["index", "kind", "name", "weight", "sector"])
+    return pd.read_csv(INDEX_FUNDS_PATH, keep_default_na=False)
+
+
+def index_part(index: str, kind: str) -> pd.Series:
+    """One part of an index ("sector", "country" or "company") -> its weights."""
+    table = index_funds()
+    rows = table[(table["index"] == index) & (table["kind"] == kind)]
+    return pd.Series(rows["weight"].astype(float).values, index=rows["name"].values)
+
+
+def fund_index(row) -> str:
+    """The index a broad ETF follows, read from its name; "" if we don't know it or
+    have no figures for it."""
+    if row["asset_type"] != "ETF" or row["sector"] != rules.BROAD_ETF_SECTOR:
+        return ""
+    name = str(row["asset"]).lower()
+    if re.search(rules.INDEX_NAME_EXCLUDE, name):
+        return ""
+    index = next((index for pattern, index in rules.INDEX_NAME_PATTERNS if re.search(pattern, name)), "")
+    return index if index in set(index_funds()["index"]) else ""
+
+
+def with_fund_sectors(df: pd.DataFrame) -> pd.DataFrame:
+    """The portfolio with each fund on a narrow index split into its sectors, so it
+    counts towards the sector limit by what it holds. Other rows are unchanged."""
+    rows = []
+    for _, row in df.iterrows():
+        index = fund_index(row)
+        if index not in rules.NARROW_INDICES:
+            rows.append(row)
+            continue
+        for sector, share in index_part(index, "sector").items():
+            part = row.copy()
+            part["sector"] = sector
+            part["value"] = row["value"] * share
+            if "weight" in part:
+                part["weight"] = row["weight"] * share
+            rows.append(part)
+    return pd.DataFrame(rows, columns=df.columns).reset_index(drop=True)
+
+
+def canonical_name(name: str) -> str:
+    """The built-in list's name for a security ("AAPL" -> "Apple"), or the name itself."""
+    found = known_securities().get(match_key(name))
+    return found.name if found else str(name).strip()
+
+
+def funds_insight(df: pd.DataFrame, has_region: bool) -> Insight | None:
+    """What the index funds hold, added to what is held directly: the largest sector,
+    the US share and the largest companies. Information only: never in the score."""
+    funds = [(fund_index(row), row) for _, row in df.iterrows()]
+    funds = [(index, row) for index, row in funds if index]
+    if not funds:
+        return None
+    total = df["value"].sum()
+    direct = df.drop(index=[row.name for _, row in funds])
+    counted = direct[~direct["sector"].isin(rules.SECTOR_EXEMPT)]
+    sectors = counted.groupby("sector")["value"].sum() / total
+    stocks = direct[direct["asset_type"] == "stock"]
+    held = (stocks["value"] / total).groupby(stocks["asset"].map(canonical_name)).sum()
+    us = float(direct.loc[direct["region"] == "US", "value"].sum() / total) if has_region else 0.0
+    through = pd.Series(dtype=float)
+    for index, row in funds:
+        share = row["value"] / total
+        sectors = sectors.add(index_part(index, "sector") * share, fill_value=0)
+        through = through.add(index_part(index, "company") * share, fill_value=0)
+        if has_region:
+            us_part = index_part(index, "country").get("US")
+            us += share * (us_part if us_part is not None else float(row["region"] == "US"))
+
+    sectors = sectors.sort_values(ascending=False, kind="stable")
+    through = through.sort_values(ascending=False, kind="stable")
+    parts = [
+        f"Including what your funds hold, about {fmt_pct(float(sectors.iloc[0]))} of your money "
+        f"is in {sectors.index[0]}" + (f" and about {fmt_pct(us)} in the US." if has_region else ".")
+    ]
+    top = ", ".join(f"{name} {fmt_pct(float(w))}" for name, w in through.head(3).items())
+    parts.append(f"Largest companies through your funds: {top}.")
+    both = (held + through).dropna().sort_values(ascending=False, kind="stable")
+    if not both.empty:
+        name = both.index[0]
+        parts.append(
+            f"{name}: {fmt_pct(float(held[name]))} directly plus {fmt_pct(float(through[name]))} "
+            f"through your funds, about {fmt_pct(float(both.iloc[0]))} in total."
+        )
+    over = not both.empty and float(both.iloc[0]) > rules.LIMITS["asset"]["limit"] + EPS
+    return Insight("funds", "Inside your funds", " ".join(parts), "Watch" if over else "Info",
+                   rules.INDEX_SOURCE)
 
 
 # ---------------------------------------------------------------------------
@@ -664,7 +826,7 @@ def verdict(limits: list[LimitResult]) -> str:
 def profile_for(df: pd.DataFrame) -> Profile:
     by_type = weights(df, "asset_type")
     breakdown = {t: float(by_type.get(t, 0.0)) for t in ASSET_TYPES}
-    defensive = breakdown["bond"] + breakdown["cash"]
+    defensive = sum(breakdown[t] for t in BOND_TYPES) + breakdown["cash"]
     if defensive > rules.CONSERVATIVE_ABOVE + EPS:
         name = "Conservative"
     elif defensive < rules.DYNAMIC_BELOW - EPS:
@@ -679,16 +841,14 @@ def exposure_notes(df: pd.DataFrame, has_region: bool) -> list[Note]:
     caps = cap_mix(df)
     small = float(caps.get("small", 0.0))
     large = float(caps.get("large", 0.0))
-    small_reference = rules.REFERENCE_CAP_MIX["small"]
 
-    if small > rules.SMALL_NOTE_MULTIPLE * small_reference + EPS:
+    if small > rules.SMALL_NOTE_SHARE + EPS:
         notes.append(
             Note(
                 "small_cap",
-                f"Small caps are {fmt_pct(small)} of your stocks vs about "
-                f"{fmt_pct(small_reference)} of the total US market. Historically they "
-                "have been more volatile and less liquid; research is divided on whether "
-                "they earn a higher return. This may be intentional.",
+                f"Small caps are {fmt_pct(small)} of your stocks. Historically they have been "
+                "more volatile and less liquid; research is divided on whether they earn a "
+                "higher return. This may be intentional.",
                 "Stocks",
             )
         )
@@ -806,12 +966,24 @@ def insights_for(
             text += f", and {fmt_pct(global_share)} in global funds." if global_share > EPS else "."
             world = rules.WORLD_MARKET_SHARE.get(region)
             if world is not None:  # a neutral comparison, not a target (decision D4)
-                text += (f" For comparison, {phrase} is {fmt_pct(round(world, 2))} "
-                         "of the world stock market.")
+                text += (f" For comparison, {phrase} is about {fmt_pct(round(world, 2))} of the "
+                         "value of all listed companies in the world.")
                 source = rules.WORLD_MARKET_SOURCE
         else:
             text = "All of your money is in global funds."
         insights.append(Insight("regions", "Regions", text, label("region"), source))
+
+    funds = funds_insight(df, has_region)
+    if funds:
+        insights.append(funds)
+
+    metals = float(weights(df, "asset_type").get("precious metal", 0.0))
+    if metals > EPS:
+        text = (
+            f"{fmt_pct(metals)} of your portfolio is in precious metals. They are not companies, "
+            "so they don't count towards the sector or single-position limits."
+        )
+        insights.append(Insight("precious_metals", "Precious metals", text, "Info"))
 
     return insights
 
@@ -923,17 +1095,19 @@ def limit_phrase(status: str, counted: bool, limit: float | None) -> str:
 
 
 def asset_class_slices(profile: Profile) -> pd.DataFrame:
-    """Donut slices: stocks and ETFs grouped as Equity, then bonds and cash.
-    Empty slices are left out."""
+    """Donut slices: stocks and ETFs grouped as Equity, then bonds, cash and precious
+    metals. Empty slices are left out."""
     b = profile.breakdown
+    bonds = sum(b[t] for t in BOND_TYPES)
     slices = pd.DataFrame(
         {
-            "label": ["Equity", "Bonds", "Cash"],
-            "share": [b["stock"] + b["ETF"], b["bond"], b["cash"]],
+            "label": ["Equity", "Bonds", "Cash", "Precious metals"],
+            "share": [b["stock"] + b["ETF"], bonds, b["cash"], b["precious metal"]],
             "detail": [
                 f"Stocks {fmt_pct(b['stock'])} · ETFs {fmt_pct(b['ETF'])}",
-                f"{fmt_pct(b['bond'])} of your portfolio",
+                f"{fmt_pct(bonds)} of your portfolio",
                 f"{fmt_pct(b['cash'])} of your portfolio",
+                f"{fmt_pct(b['precious metal'])} of your portfolio",
             ],
         }
     )
@@ -944,7 +1118,8 @@ def bar_members(analysis: Analysis, dimension: str) -> dict[str, list[tuple[str,
     """For each bar of a chart (a sector, currency or region), the positions in it
     with their weights, largest first."""
     members = {}
-    for _, row in analysis.positions.iterrows():  # positions are already largest first
+    positions = with_fund_sectors(analysis.positions) if dimension == "sector" else analysis.positions
+    for _, row in positions.iterrows():  # positions are already largest first
         members.setdefault(row[dimension], []).append((row["asset"], float(row["weight"])))
     return members
 
@@ -955,13 +1130,12 @@ def label_explanations(categories) -> list[str]:
     return [text for label, text in LABEL_EXPLANATIONS.items() if label in present]
 
 
-def cap_comparison(analysis: Analysis) -> pd.DataFrame:
-    """Your stocks vs the reference market, per cap segment (small, mid, large)."""
+def cap_shares(analysis: Analysis) -> pd.DataFrame:
+    """Share of your stocks in each cap segment (small, mid, large)."""
     return pd.DataFrame(
         {
             "segment": CAP_SEGMENTS,
             "yours": [float(analysis.cap_mix.get(s, 0.0)) for s in CAP_SEGMENTS],
-            "market": [rules.REFERENCE_CAP_MIX[s] for s in CAP_SEGMENTS],
         }
     )
 

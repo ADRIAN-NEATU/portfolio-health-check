@@ -2,3 +2,4 @@
 __pycache__/
 .pytest_cache/
 notes/
+data/index_funds.csv

@@ -35,6 +35,10 @@
 | S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
 | S1-25 | PHC-31 | Story | E3 | Keep chart labels off the limit line and make the tooltips easier to read | 2 | Done | 29 Oct |
 | S1-26 | – | Story | E5 | See what the app is and how the score is calculated before I start | 1 | Done | 1 Nov |
+| S1-27 | – | Story | E3 | See what my index funds hold: sectors, countries and overlap with my stocks | 5 | Done | 1 Nov |
+| S1-29 | – | Story | E4 | Count corporate bonds as positions and show precious metals | 3 | Done | 1 Nov |
+| S1-30 | – | Story | E5 | Ten stress-test portfolios that sit on the new thresholds | 2 | Done | 1 Nov |
+| S1-31 | – | Task | E5 | Release check: nothing its source doesn't allow, pinned versions, licence | 2 | Done | 1 Nov |
 
 S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. On 1 Nov:
 - S1-13 was finished: both limits now come from documented rules ([D2](decisions.md) single position, [D3](decisions.md) sector).
@@ -42,6 +46,8 @@ S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Spri
 - S1-20 is done with a provisional decision ([D5](decisions.md)).
 - The project is on GitHub (S1-15).
 - S1-26 was added and done: a "Before you start" window that says the app is just math, not investment advice, and how the score is calculated. It replaces the idea of score tips, which came too close to advice.
+- S1-27 and S1-29 were pulled in and done the same day ([D6](decisions.md), [D7](decisions.md)). S1-28 waits for the link to the feedback form.
+- In the release check (S1-31, [D8](decisions.md)), S1-27's index figures were removed: its code stays and waits for public-domain figures. S1-30 added ten stress-test portfolios.
 
 Anything not Done by 2 Nov goes back to the Product Backlog.
 
@@ -52,7 +58,7 @@ Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or no
 | ID | Jira | Type | Epic | Title | Points | Added |
 |---|---|---|---|---|---|---|
 | S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
-| S1-27 | – | Story | E3 | See what my index funds hold: sectors, countries and overlap with my stocks | 5 | 1 Nov |
+| S1-28 | – | Story | E5 | Give feedback through an anonymous form | 1 | 1 Nov |
 
 ## Burndown
 
@@ -66,7 +72,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | 29 Oct | 62 | 17 (S1-18 to S1-25) | 15 | 11 | 24 |
 | 30 Oct | 62 | – | 0 | 11 | 18 |
 | 31 Oct | 62 | – | 0 | 11 | 12 |
-| 1 Nov | 63 | 1 (S1-26) | 10 (S1-13, S1-15, S1-20, S1-22, S1-26) | 2 | 6 |
+| 1 Nov | 75 | 13 (S1-26, S1-27, S1-29, S1-30, S1-31) | 22 (S1-13, S1-15, S1-20, S1-22, S1-26, S1-27, S1-29, S1-30, S1-31) | 2 | 6 |
 | 2 Nov | | | | | 0 |
 
 - **Scope:** all points in the Sprint. It grows when work is added.
@@ -83,6 +89,8 @@ xychart-beta
 
 ## User stories and acceptance criteria
 
+Criteria stay as they were written when each item was done. Where a later decision changed a figure, the new one is in brackets.
+
 **S1-03 – Load a sample portfolio or my own CSV**
 As an investor, I want to open a sample or upload my own CSV, so that I can analyse a portfolio without any setup.
 - Given the start screen, when I pick "Andrei" in the side panel, then the analysis opens under "At a glance · Andrei".
@@ -91,20 +99,20 @@ As an investor, I want to open a sample or upload my own CSV, so that I can anal
 
 **S1-04 – See my concentration score and warnings**
 As an investor, I want one score from 0 to 100 built from three limits, so that I see at once how concentrated I am.
-- Given "Tech-heavy", when it opens, then the score is 75 and the Sector card shows Information Technology 45%, "Over limit".
+- Given "Tech-heavy", when it opens, then the score is 75 (66 since D3) and the Sector card shows Information Technology 45%, "Over limit".
 - Given "Diversified", when it opens, then the score is 100 and the warnings read "No warnings: every limit is below its yellow threshold."
 - Given "Andrei", when I open "See all warnings", then the remaining warnings appear, red ones first.
 
 **S1-05 – See the essentials at a glance**
 As an investor, I want the most important findings first, so that I understand my situation in under a minute.
-- Given "Andrei", when it opens, then the ring shows 94 in yellow and the verdict reads "1 issue: single position (Apple 8%)."
+- Given "Andrei", when it opens, then the ring shows 94 in yellow and the verdict reads "1 issue: single position (Apple 8%)." (91 and 2 issues since D3)
 - Given "Andrei", when it opens, then at most three rows appear (positions, large-cap note), each naming the tab with the details.
 
 **S1-06 – Read my profile and key insights**
 As an investor, I want my profile and plain-language insights, so that I understand what my numbers mean.
 - Given "Conservative saver", when it opens, then the profile reads "Conservative".
-- Given "Tech-heavy", when it opens, then an insight reads "If Information Technology fell 20%, your portfolio would fall about 9%."
-- Given any portfolio, when I read the insights, then each one is marked Info or Watch.
+- Given "Tech-heavy", when it opens, then an insight reads "If Information Technology fell 20%, your portfolio would fall about 9%." (replaced by S1-19)
+- Given any portfolio, when I read the insights, then each one is marked Info or Watch (Good, Info or Watch since D5).
 
 **S1-07 – Explore my portfolio in charts and a positions table**
 As an investor, I want to see my money by sector, currency, position and region, so that I spot where it is concentrated.
@@ -114,7 +122,7 @@ As an investor, I want to see my money by sector, currency, position and region,
 
 **S1-08 – Compare my stocks' company sizes with the market**
 As an investor, I want to compare my stocks' sizes with the US market, so that I know if I lean towards small or large companies.
-- Given "Small-cap fan", when I open Stocks, then a note says small caps are 73.3% of my stocks compared with the US market.
+- Given "Small-cap fan", when I open Stocks, then a note says small caps are 73.3% of my stocks compared with the US market (the market comparison was removed by D8).
 - Given "Andrei", when I click a stock in the table, then a card shows its sector, size, region and weight.
 - Given "Conservative saver", when I open Stocks, then the tab says the portfolio holds no individual stocks.
 
@@ -161,18 +169,18 @@ As an investor, I want to know what these labels mean, so that the charts don't 
 
 **S1-22 – Ask a neutral question when one region holds a large share**
 As an investor, I want to be asked whether a large share in one region is intentional, so that I notice it without being told what to buy.
-- Given my portfolio (68% in the US), when it opens, then the Regions insight compares it with the US share of the world stock market (a provider figure, removed by D8), and a (?) shows the source (decision D4, instead of a question).
+- Given a portfolio with 68% in the US, when it opens, then the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank; D8), and a (?) shows the source (decision D4, instead of a question).
 - Given any portfolio, the insight never tells me what to buy or sell.
 
 **S1-23 – See which positions make up each bar in the charts**
 As an investor, I want to see what is inside each bar, so that I know which holdings create an exposure.
-- Given my portfolio, when I click or hover the Industrials bar (28.9%), then I see the stocks in it, with their weights.
+- Given a portfolio with Industrials at 28.9%, when I click or hover the Industrials bar, then I see the stocks in it, with their weights.
 - Given the Currency or Region chart, when I do the same, then it works the same way.
 
 **S1-25 – Keep chart labels off the limit line and make the tooltips easier to read**
 As an investor, I want the charts to read cleanly, so that a value near the limit is easy to see and compare.
-- Given my portfolio, when I open the Sector chart, then every value sits inside the end of its bar ("28.9%" in Industrials), never on the dotted "Limit 30%" line. A bar too short for its value shows it in the tooltip.
-- Given any bar, when I hover over it, then a card shows its share first, then where it stands against the limit (for example "Close to the 30% limit"), then the positions in it, lined up.
+- Given a portfolio with Industrials at 28.9%, when I open the Sector chart, then every value sits inside the end of its bar ("28.9%" in Industrials), never on the dotted limit line. A bar too short for its value shows it in the tooltip.
+- Given any bar, when I hover over it, then a card shows its share first, then where it stands against the limit (for example "Just over the 25% limit"), then the positions in it, lined up.
 - Given a bar near the top or bottom of the chart, when I hover over it, then the card is not cut off.
 
 **S1-26 – See what the app is and how the score is calculated before I start**
@@ -181,11 +189,28 @@ As an investor, I want to know what the app does and doesn't do before I use it,
 - Given the window, when I press Escape, then it stays open until I click "I understand".
 - Given any screen, when I click "How the score works" at the bottom, then the window opens again.
 
-**S1-27 – See what my index funds hold: sectors, countries and overlap with my stocks** (after v0.1)
+**S1-27 – See what my index funds hold: sectors, countries and overlap with my stocks**
 As an investor with index funds (S&P 500, Nasdaq-100, world), I want to see what they hold, so that I know my real exposure without the score punishing funds for being funds.
 - Given an S&P 500 fund and Apple held directly, when I open the analysis, then I see my Apple exposure through both.
 - Given any fund, the score does not change: what a fund holds is shown as information.
 - Data only from sources whose terms allow it, with their date.
+- Given a Nasdaq-100 fund, when it opens, then its technology share counts towards the sector limit.
+
+**S1-29 – Count corporate bonds as positions and show precious metals**
+As an investor with bonds or gold, I want them counted the way their risk works, so that the score stays fair.
+- Given a corporate bond at 12%, when it opens, then the single-position limit shows it over the limit.
+- Given government bonds or gold, when it opens, then they don't count towards the limits.
+- Given gold, when it opens, then the profile shows a Precious metals slice and an insight explains it.
+
+**S1-30 – Ten stress-test portfolios that sit on the new thresholds**
+As the person testing the app, I want portfolios that sit exactly on each threshold, so that I can see every rule at work.
+- Given the side panel, when I open "Stress tests", then ten portfolios are listed, each with a one-line description.
+- Given "Exactly at the limits", when it opens, then both limits show Watch and the score is 80.
+- Given "Five stocks, a little index", when it opens, then the score is 63: a 5% fund barely helps.
+
+**S1-28 – Give feedback through an anonymous form** (waits for the form link)
+As a user, I want to send feedback without giving my name or email, so that I can say what is unclear.
+- Given any screen, when I click "Give feedback", then an anonymous form opens in a new tab.
 
 ## Sprint Review (2 Nov)
 

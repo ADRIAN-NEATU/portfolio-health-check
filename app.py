@@ -37,8 +37,10 @@ STATUS_COLORS = {GREEN: COLORS["accent"], YELLOW: COLORS["yellow"], ORANGE: COLO
                  RED: COLORS["red"]}
 BAR_COLORS = {GREEN: COLORS["neutral"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
               RED: COLORS["red"]}
-SLICE_COLORS = {"Equity": COLORS["text-2"], "Bonds": COLORS["neutral"], "Cash": COLORS["light"]}
-SLICE_TEXT = {"Equity": "#FFFFFF", "Bonds": COLORS["text"], "Cash": COLORS["text"]}
+SLICE_COLORS = {"Equity": COLORS["text-2"], "Bonds": COLORS["neutral"], "Cash": COLORS["light"],
+                "Precious metals": "#BFB39A"}  # a muted sand, apart from the status yellow
+SLICE_TEXT = {"Equity": "#FFFFFF", "Bonds": COLORS["text"], "Cash": COLORS["text"],
+              "Precious metals": COLORS["text"]}
 
 PLOTLY_CONFIG = {"displayModeBar": False, "displaylogo": False}
 TABS = ["Overview", "Stocks", "Charts", "Positions"]
@@ -212,21 +214,21 @@ def inject_css() -> None:
    Streamlit adds to keyed widgets, not its generated class names. */
 
 /* Sample portfolios: the radio list drawn as selectable cards */
-.st-key-sample [role="radiogroup"] { gap: .5rem; }
-.st-key-sample [role="radiogroup"] > div { position: relative; padding: .7rem .85rem;
+.st-key-sample [role="radiogroup"], .st-key-stress [role="radiogroup"] { gap: .5rem; }
+.st-key-sample [role="radiogroup"] > div, .st-key-stress [role="radiogroup"] > div { position: relative; padding: .7rem .85rem;
   background: var(--card); border: 1px solid var(--border); border-radius: 10px;
   transition: border-color .15s, background .15s; }
-.st-key-sample [role="radiogroup"] > div:hover { border-color: var(--neutral); }
-.st-key-sample [role="radiogroup"] > div:has(input:checked) { border-color: var(--accent);
+.st-key-sample [role="radiogroup"] > div:hover, .st-key-stress [role="radiogroup"] > div:hover { border-color: var(--neutral); }
+.st-key-sample [role="radiogroup"] > div:has(input:checked), .st-key-stress [role="radiogroup"] > div:has(input:checked) { border-color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 4%, white); }
-.st-key-sample [role="radiogroup"] > div:has(input:focus-visible) { outline: 2px solid var(--accent);
+.st-key-sample [role="radiogroup"] > div:has(input:focus-visible), .st-key-stress [role="radiogroup"] > div:has(input:focus-visible) { outline: 2px solid var(--accent);
   outline-offset: 2px; }
-.st-key-sample [data-testid="stRadioOption"] { margin: 0; padding: 0; cursor: pointer; }
-.st-key-sample [data-testid="stRadioOption"]::after { content: ""; position: absolute; inset: 0; z-index: 1; }
-.st-key-sample [data-testid="stRadioOption"] div:has(+ [data-testid="stMarkdownContainer"]) { display: none; }
-.st-key-sample [data-testid="stRadioOption"] p { font-weight: 600; color: var(--text); }
-.st-key-sample [data-testid="stRadioCaption"] { margin: .15rem 0 0; padding: 0; }
-.st-key-sample [data-testid="stRadioCaption"] p { font-size: .82rem; line-height: 1.4; color: var(--text-2); }
+.st-key-sample [data-testid="stRadioOption"], .st-key-stress [data-testid="stRadioOption"] { margin: 0; padding: 0; cursor: pointer; }
+.st-key-sample [data-testid="stRadioOption"]::after, .st-key-stress [data-testid="stRadioOption"]::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.st-key-sample [data-testid="stRadioOption"] div:has(+ [data-testid="stMarkdownContainer"]), .st-key-stress [data-testid="stRadioOption"] div:has(+ [data-testid="stMarkdownContainer"]) { display: none; }
+.st-key-sample [data-testid="stRadioOption"] p, .st-key-stress [data-testid="stRadioOption"] p { font-weight: 600; color: var(--text); }
+.st-key-sample [data-testid="stRadioCaption"], .st-key-stress [data-testid="stRadioCaption"] { margin: .15rem 0 0; padding: 0; }
+.st-key-sample [data-testid="stRadioCaption"] p, .st-key-stress [data-testid="stRadioCaption"] p { font-size: .82rem; line-height: 1.4; color: var(--text-2); }
 
 /* Upload: a card with a dotted border and our own text */
 [data-testid="stFileUploaderDropzone"] { flex-direction: column; align-items: center; gap: .65rem;
@@ -450,32 +452,24 @@ def asset_class_donut(slices) -> go.Figure:
     return fig
 
 
-def cap_chart(comparison) -> go.Figure:
-    segments = [segment.capitalize() for segment in comparison["segment"]]
+def cap_chart(shares) -> go.Figure:
+    segments = [segment.capitalize() for segment in shares["segment"]]
     fig = go.Figure()
-    for name, column, color in [
-        ("Your stocks", "yours", COLORS["text-2"]),
-        ("US market (approx.)", "market", COLORS["neutral"]),
-    ]:
-        fig.add_bar(
-            name=name,
-            x=segments,
-            y=comparison[column],
-            marker_color=color,
-            text=[scoring.fmt_pct(share) for share in comparison[column]],
-            textposition="outside",
-            cliponaxis=False,
-            hovertemplate=f"{name}<br>%{{x}}: %{{text}}<extra></extra>",
-        )
-    top = max(comparison["yours"].max(), comparison["market"].max())
+    fig.add_bar(
+        name="Your stocks",
+        x=segments,
+        y=shares["yours"],
+        marker_color=COLORS["text-2"],
+        text=[scoring.fmt_pct(share) for share in shares["yours"]],
+        textposition="outside",
+        cliponaxis=False,
+        hovertemplate="%{x}: %{text} of your stocks<extra></extra>",
+    )
+    top = shares["yours"].max()
     fig.update_layout(
-        barmode="group",
         bargap=0.55,
-        bargroupgap=0.12,
         height=300,
-        showlegend=True,
-        legend=dict(orientation="h", x=0, y=1.14),
-        margin=dict(l=4, r=4, t=40, b=8),
+        margin=dict(l=4, r=4, t=24, b=8),
         yaxis=dict(visible=False, range=[0, top * 1.2]),
     )
     return fig
@@ -591,9 +585,22 @@ def clear_upload() -> None:
     st.session_state.editing = False
 
 
-def clear_sample() -> None:
-    """A file was uploaded: unselect the sample."""
+def pick_sample() -> None:
+    """A sample was picked: unselect the stress test and drop the uploaded file."""
+    st.session_state.stress = None
+    clear_upload()
+
+
+def pick_stress() -> None:
+    """A stress test was picked: unselect the sample and drop the uploaded file."""
     st.session_state.sample = None
+    clear_upload()
+
+
+def clear_sample() -> None:
+    """A file was uploaded: unselect the sample and the stress test."""
+    st.session_state.sample = None
+    st.session_state.stress = None
     st.session_state.editing = False
 
 
@@ -602,6 +609,7 @@ def start_editing(rows=None) -> None:
     if rows is None:
         rows = st.session_state.get("editor_latest", scoring.empty_positions(EDITOR_BLANK_ROWS))
     st.session_state.sample = None
+    st.session_state.stress = None
     st.session_state.upload_round += 1
     st.session_state.editing = True
     st.session_state.editor_rows = rows.reindex(columns=scoring.COLUMNS).reset_index(drop=True)
@@ -611,7 +619,7 @@ def start_editing(rows=None) -> None:
 
 def choose_portfolio():
     """Sidebar. Returns (source, id, name) of the chosen portfolio, or None."""
-    samples = scoring.SAMPLE_PORTFOLIOS
+    samples, stress_tests = scoring.SAMPLE_PORTFOLIOS, scoring.STRESS_PORTFOLIOS
     with st.sidebar:
         st.html('<div class="phc-side-title">Sample portfolios</div>')
         sample = st.radio(
@@ -621,9 +629,20 @@ def choose_portfolio():
             captions=[description for _, description in samples.values()],
             index=None,
             key="sample",
-            on_change=clear_upload,
+            on_change=pick_sample,
             label_visibility="collapsed",
         )
+        with st.expander("Stress tests", expanded=st.session_state.get("stress") is not None):
+            stress = st.radio(
+                "Stress tests",
+                options=list(stress_tests),
+                format_func=lambda file_name: stress_tests[file_name][0],
+                captions=[description for _, description in stress_tests.values()],
+                index=None,
+                key="stress",
+                on_change=pick_stress,
+                label_visibility="collapsed",
+            )
         st.html('<div class="phc-side-title phc-side-gap">Your portfolio</div>')
         upload = st.file_uploader(
             "Upload a CSV",
@@ -649,6 +668,8 @@ def choose_portfolio():
         return io.BytesIO(upload.getvalue()), upload.file_id, upload.name
     if sample is not None:
         return scoring.DATA_DIR / sample, sample, samples[sample][0]
+    if stress is not None:
+        return scoring.DATA_DIR / stress, stress, stress_tests[stress][0]
     return None
 
 
@@ -876,7 +897,7 @@ def stocks_tab(analysis: scoring.Analysis, portfolio_id: str) -> None:
         return
 
     section("Market cap of your stocks")
-    show_chart(cap_chart(scoring.cap_comparison(analysis)))
+    show_chart(cap_chart(scoring.cap_shares(analysis)))
     notes = [n for n in analysis.notes if n.tab == "Stocks"]
     if notes:
         st.html('<div class="phc-rows">' + "".join(note_card(n.text) for n in notes) + "</div>")
@@ -966,6 +987,15 @@ def about_dialog() -> None:
     """What the app is and how the score is calculated: once per visit, and from the footer."""
     sector, asset = rules.LIMITS["sector"], rules.LIMITS["asset"]
     pct = scoring.fmt_pct
+    # What is said about funds depends on whether index figures are installed (D6, D8).
+    if scoring.index_funds().empty:
+        narrow = ""
+        inside = "It does not look inside funds: a broad fund counts as diversified."
+    else:
+        narrow = (" A fund on a narrower index, like the Nasdaq-100, counts towards the sector"
+                  " limit by what it holds.")
+        inside = ("Funds are counted as copies of their index, and only the largest companies"
+                  " of each index are known.")
     st.markdown(
         f"""
 **Just math, not investment advice.** Portfolio Health Check shows how concentrated a portfolio
@@ -978,13 +1008,15 @@ and it does not know your goals, income or situation.
   limit {pct(sector["limit"])}) and one single position (full score below
   {pct(asset["yellow_from"])}, limit {pct(asset["limit"])}).
 - Each limit scores from 20 to 100, and the score is the average of the two.
-- Broad funds, bonds and cash don't count towards the limits, but they are part of the total.
+- Broad funds, government bonds, cash and precious metals don't count towards the limits, but
+  they are part of the total. A broad fund already spreads your money over hundreds of
+  companies, so it doesn't lower your score.
+- A corporate bond counts like a position in the company.{narrow}
 - The limits are the ones EU and US law set for funds, used here as a reference. The Watch
   thresholds and the sector margin are example values.
 
 **What it can't see**
-- It does not look inside funds: a broad fund counts as diversified, although even the world
-  stock market is about {pct(round(rules.WORLD_TECH_SHARE, 2))} technology (MSCI ACWI, 30 Sep 2026).
+- {inside}
 - Details looked up online come from public sources and may be wrong: check them.
 
 **Your data**

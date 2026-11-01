@@ -1,0 +1,25 @@
+index,kind,name,weight,sector
+MSCI ACWI,sector,Information Technology,0.30,
+MSCI ACWI,sector,Financials,0.40,
+MSCI ACWI,sector,Health Care,0.30,
+MSCI ACWI,country,US,0.60,
+MSCI ACWI,company,Nvidia,0.05,Information Technology
+MSCI ACWI,company,Apple,0.04,Information Technology
+MSCI World,sector,Information Technology,0.30,
+MSCI World,sector,Financials,0.70,
+MSCI World,country,US,0.70,
+MSCI World,company,Apple,0.05,Information Technology
+MSCI USA,sector,Information Technology,0.40,
+MSCI USA,sector,Financials,0.30,
+MSCI USA,sector,Health Care,0.30,
+MSCI USA,country,US,1.0,
+MSCI USA,company,Apple,0.07,Information Technology
+MSCI USA,company,Nvidia,0.06,Information Technology
+MSCI Emerging Markets,sector,Information Technology,0.50,
+MSCI Emerging Markets,sector,Financials,0.50,
+MSCI Emerging Markets,country,US,0.0,
+MSCI Emerging Markets,company,TSMC,0.10,Information Technology
+Nasdaq-100,sector,Information Technology,0.60,
+Nasdaq-100,sector,Communication Services,0.20,
+Nasdaq-100,sector,Consumer Discretionary,0.20,
+Nasdaq-100,company,Apple,0.08,Information Technology

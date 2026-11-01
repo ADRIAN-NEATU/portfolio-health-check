@@ -6,9 +6,14 @@
 - The sector limit is now 25%, the level the US regulator calls concentration. Watch starts at 20%.
 - A sector up to 5 points over its limit shows as Just over, in a darker orange; above that, Over limit in red.
 - "Why it matters" on the Sector card says where 25% comes from.
-- When most of your money is in the US, the Regions insight compares it with the US share of the world stock market (a provider figure, removed by D8). A (?) shows the source.
+- When most of your money is in the US, the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank). A (?) shows the source.
 - Insights whose limit is OK are now marked Good, in green (provisional).
 - A "Before you start" window explains, before you begin, that the app is just math and not investment advice, and how the score is calculated. "How the score works" at the bottom opens it again.
+- Ten "Stress tests" in the side panel: portfolios built to sit right on a threshold, such as a sector just over its limit, both limits at their exact edge, or five stocks with a small index fund.
+- Release check: the index figures and the market-size reference were removed, because their providers don't allow reproducing them. Funds count as diversified, and the small-cap note no longer compares with the US market.
+- The packages are pinned to the versions the app was tested with, and Python 3.12 or newer is needed.
+- The code is under the MIT licence.
+- New position types: `corporate bond`, which counts as a position in the company, and `precious metal` (gold, silver), shown in the profile and outside the limits.
 - The project is on GitHub.
 
 ### 29 Oct 2026

@@ -16,10 +16,13 @@ What a user can see and do in Portfolio Health Check.
 | | Complete a CSV that only has names and values, in one click | Done | 28 Oct |
 | | Start your own portfolio from any sample ("Edit these positions") and save it as a CSV | Done | 28 Oct |
 | | Start the app on Windows with a double-click | Done | 28 Oct |
+| | Try ten stress-test portfolios, each sitting on a threshold | Done | 1 Nov |
 | **Score and limits** | Get one score from 0 to 100, built from two limits: sector and single position (currency was a third limit until 29 Oct) | Done | 27 Oct |
 | | See each limit as OK, Watch or Over limit, next to its threshold, with "Why it matters" | Done | 27 Oct |
 | | A sector just over its limit (up to 5 points) shows as Just over, in a darker orange | Done | 1 Nov |
 | | Broad funds, bonds and cash do not count against the sector and single-position limits | Done | 27 Oct |
+| | A fund on a narrower index (Nasdaq-100) counts towards the sector limit by what it holds, once index figures are installed | Done | 1 Nov |
+| | Corporate bonds count as a position in the company; government bonds don't | Done | 1 Nov |
 | | See every warning, the most serious first | Done | 27 Oct |
 | | Single-position thresholds (5% and 10%) come with sources: the limits EU and US law set for diversified funds | Done | 29 Oct |
 | | Sector limit (25%) comes with a source: the level the US regulator calls concentration | Done | 1 Nov |
@@ -32,9 +35,11 @@ What a user can see and do in Portfolio Health Check.
 | | See your largest sector and your largest region as simple percentages (they replace the stress test) | Done | 29 Oct |
 | | See your share outside RON | Done | 27 Oct |
 | | See how many of the 11 sectors you cover, with global funds counted | Done | 28 Oct |
+| | See what your index funds hold (ready in the code; ships without index figures, D8) | Done | 1 Nov |
+| | Hold precious metals: their own slice in the profile and an insight, outside the limits | Done | 1 Nov |
 | | Each insight is marked Good, Info or Watch (Good is provisional) and never changes the score | Done | 1 Nov |
 | | When most of your money is in the US, compare it with the US share of the world stock market, with the source behind a (?) | Done | 1 Nov |
-| **Exposure notes** | Compare your stocks' company sizes with the US market | Done | 27 Oct |
+| **Exposure notes** | See your stocks' company sizes: small, mid and large (the comparison with the US market was removed by D8) | Done | 27 Oct |
 | | Get a note when small companies are well above the market share, or when almost everything is a large company | Done | 27 Oct |
 | | Get a note when one region holds most of your portfolio | Done | 27 Oct |
 | | Get a note when one foreign currency holds most of your portfolio; the leu never counts | Done | 29 Oct |

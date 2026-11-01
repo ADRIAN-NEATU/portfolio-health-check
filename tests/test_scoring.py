@@ -46,12 +46,24 @@ EXPECTED = {
     "small_cap_fan.csv": (GREEN, GREEN, 100, "Dynamic", ["small_cap"]),
     "one_global_etf.csv": (GREEN, GREEN, 100, "Dynamic", ["currency"]),
     "andrei.csv": (YELLOW, YELLOW, 91, "Dynamic", ["large_cap", "region", "currency"]),
+    # Stress tests: each sits on a threshold or shows one rule at work.
+    "stress_sector_just_over.csv": (ORANGE, GREEN, 88, "Dynamic", ["large_cap", "currency"]),
+    "stress_exact_limits.csv": (YELLOW, YELLOW, 80, "Dynamic", ["large_cap"]),
+    "stress_sector_over_margin.csv": (RED, GREEN, 83, "Dynamic", ["large_cap", "currency"]),
+    "stress_small_index_slice.csv": (GREEN, RED, 63, "Dynamic", ["large_cap", "region", "currency"]),
+    "stress_half_index.csv": (GREEN, YELLOW, 90, "Dynamic", ["large_cap", "region", "currency"]),
+    "stress_corporate_bond.csv": (GREEN, RED, 75, "Balanced", []),
+    "stress_gold.csv": (GREEN, GREEN, 100, "Dynamic", []),
+    "stress_government_bonds.csv": (GREEN, GREEN, 100, "Conservative", []),
+    "stress_us_large_caps.csv": (GREEN, GREEN, 100, "Dynamic", ["large_cap", "region", "currency"]),
+    "stress_bvb_only.csv": (RED, RED, 56, "Dynamic", ["small_cap", "region"]),
 }
 
 
 def test_every_sample_is_listed():
-    files = {p.name for p in scoring.DATA_DIR.glob("*.csv")} - {"template.csv", "known_securities.csv"}
-    assert files == set(scoring.SAMPLE_PORTFOLIOS) == set(EXPECTED)
+    files = {p.name for p in scoring.DATA_DIR.glob("*.csv")} - {
+        "template.csv", "known_securities.csv", "index_funds.csv"}
+    assert files == set(scoring.SAMPLE_PORTFOLIOS) | set(scoring.STRESS_PORTFOLIOS) == set(EXPECTED)
 
 
 @pytest.mark.parametrize("file_name", EXPECTED)
@@ -250,7 +262,9 @@ def test_profile_breakdown():
         ]
     )
     profile = scoring.profile_for(df)
-    assert profile.breakdown == pytest.approx({"stock": 0.4, "ETF": 0.3, "bond": 0.2, "cash": 0.1})
+    assert profile.breakdown == pytest.approx(
+        {"stock": 0.4, "ETF": 0.3, "bond": 0.2, "corporate bond": 0.0, "cash": 0.1, "precious metal": 0.0}
+    )
     assert profile.defensive_share == pytest.approx(0.3)
 
     slices = scoring.asset_class_slices(profile)
@@ -294,10 +308,10 @@ def note_keys(df, has_region=True, ignore=("currency",)):
 
 def test_small_cap_note():
     assert note_keys(stocks_by_cap(30, 30, 40)) == ["small_cap"]
-    assert note_keys(stocks_by_cap(28, 32, 40)) == []  # exactly at the threshold
+    assert note_keys(stocks_by_cap(28, 32, 40)) == []  # exactly the 28% threshold
     note = scoring.exposure_notes(stocks_by_cap(30, 30, 40), True)[0]
-    assert note.text.startswith("Small caps are 30% of your stocks vs about 15% of the total US market.")
-    assert note.headline == "Small caps are 30% of your stocks vs about 15% of the total US market."
+    assert note.text.startswith("Small caps are 30% of your stocks. Historically")
+    assert note.headline == "Small caps are 30% of your stocks."
 
 
 def test_large_cap_note():
@@ -368,7 +382,7 @@ def test_portfolio_without_stocks():
     assert analysis.cap_mix.empty
     assert analysis.notes == []
     assert scoring.stocks_table(analysis).empty
-    assert scoring.cap_comparison(analysis)["yours"].tolist() == [0.0, 0.0, 0.0]
+    assert scoring.cap_shares(analysis)["yours"].tolist() == [0.0, 0.0, 0.0]
 
 
 # ---------------------------------------------------------------------------
@@ -451,7 +465,7 @@ def test_regions(hand_insights):
     insight = hand_insights["regions"]
     assert insight.text == (
         "45% of your money is in the US, and 15% in global funds. "
-        "For comparison, the US is 60% of the world stock market."
+        "For comparison, the US is about 49% of the value of all listed companies in the world."
     )
     assert insight.label == "Info"  # regions have no limit
     assert insight.source == rules.WORLD_MARKET_SOURCE
@@ -817,3 +831,129 @@ def test_template_is_valid():
     df = scoring.load_portfolio(scoring.TEMPLATE_PATH)
     assert list(df.columns) == list(scoring.COLUMNS)
     assert len(df) == 2
+
+
+# ---------------------------------------------------------------------------
+# What index funds hold (D6), corporate bonds and precious metals (D7)
+# ---------------------------------------------------------------------------
+
+SYNTHETIC_INDEX = Path(__file__).parent / "fixtures" / "index_funds_synthetic.csv"
+
+
+@pytest.fixture
+def index_figures(monkeypatch):
+    """Made-up index figures: the project ships no real ones (decision D8)."""
+    monkeypatch.setattr(scoring, "INDEX_FUNDS_PATH", SYNTHETIC_INDEX)
+    scoring.index_funds.cache_clear()
+    yield
+    scoring.index_funds.cache_clear()
+
+
+def test_no_index_figures_are_shipped():
+    scoring.index_funds.cache_clear()
+    assert not scoring.INDEX_FUNDS_PATH.exists()
+    assert scoring.index_funds().empty
+    df = make([fund_row("iShares Nasdaq 100 UCITS ETF"),
+               ("Deposit", 5000, "n/a", "cash", "n/a", "RON", "Romania")])
+    analysis = scoring.analyze(df)
+    assert analysis.score == 100  # without figures, every broad fund is diversified
+    assert "funds" not in {i.key for i in analysis.insights}
+
+
+FIVE = [("Apple", "Information Technology"), ("JPMorgan Chase", "Financials"),
+        ("Coca-Cola", "Consumer Staples"), ("Exxon Mobil", "Energy"), ("Johnson & Johnson", "Health Care")]
+
+
+def fund_row(name, value=5000):
+    return (name, value, "Diversified", "ETF", "n/a", "USD", "US")
+
+
+@pytest.mark.parametrize(
+    "name, index",
+    [
+        ("iShares Core S&P 500 UCITS ETF", "MSCI USA"),
+        ("Vanguard FTSE All-World UCITS ETF", "MSCI ACWI"),
+        ("iShares Core MSCI World UCITS ETF", "MSCI World"),
+        ("iShares Nasdaq 100 UCITS ETF", "Nasdaq-100"),
+        ("iShares Core MSCI EM IMI UCITS ETF", "MSCI Emerging Markets"),
+        ("iShares MSCI World Small Cap UCITS ETF", ""),  # another index
+        ("Vanguard FTSE All-World High Dividend Yield UCITS ETF", ""),
+        ("Amundi MSCI EMU UCITS ETF", ""),  # euro area, not emerging markets
+        ("iShares STOXX Europe 600 UCITS ETF", ""),  # no figures for it yet
+    ],
+)
+def test_fund_index(name, index, index_figures):
+    row = pd.Series({"asset": name, "asset_type": "ETF", "sector": "Diversified"})
+    assert scoring.fund_index(row) == index
+
+
+def test_fund_index_needs_a_broad_etf(index_figures):
+    sector_fund = pd.Series({"asset": "iShares S&P 500 Information Technology Sector UCITS ETF",
+                             "asset_type": "ETF", "sector": "Information Technology"})
+    assert scoring.fund_index(sector_fund) == ""
+
+
+def test_index_figures_format(index_figures):
+    table = scoring.index_funds()
+    for index, rows in table[table["kind"] == "sector"].groupby("index"):
+        assert rows["weight"].sum() == pytest.approx(1, abs=0.001), index
+        assert set(rows["name"]) <= set(rules.GICS_SECTORS), index
+    companies = table[table["kind"] == "company"]
+    assert set(companies["sector"]) <= set(rules.GICS_SECTORS)
+    assert {index for _, index in rules.INDEX_NAME_PATTERNS} <= set(table["index"])
+
+
+def test_broad_fund_still_raises_the_score(index_figures):
+    df = make([(n, 1000, s, "stock", "large", "USD", "US") for n, s in FIVE]
+              + [fund_row("iShares Core S&P 500 UCITS ETF")])
+    analysis = scoring.analyze(df)
+    assert analysis.score == 90  # the fund stays diversified
+    funds = next(i for i in analysis.insights if i.key == "funds")
+    assert "Apple: 10% directly plus 3.5% through your funds, about 13.5% in total." in funds.text
+    assert funds.label == "Watch"  # Apple in total is over the 10% limit
+    assert funds.source == rules.INDEX_SOURCE
+
+
+def test_narrow_fund_counts_by_sector(index_figures):
+    df = make([fund_row("iShares Nasdaq 100 UCITS ETF"),
+               ("Deposit", 5000, "n/a", "cash", "n/a", "RON", "Romania")])
+    analysis = scoring.analyze(df)
+    sector = next(r for r in analysis.limits if r.key == "sector")
+    assert sector.category == "Information Technology"
+    assert sector.weight == pytest.approx(0.5 * 0.60)
+    assert sector.status == ORANGE
+    single = next(r for r in analysis.limits if r.key == "asset")
+    assert single.category == ""  # a fund never counts as one position
+    bars, _ = scoring.chart_data(analysis, "sector")
+    assert "Diversified" not in set(bars["category"])
+    it = scoring.bar_members(analysis, "sector")["Information Technology"]
+    assert it == [("iShares Nasdaq 100 UCITS ETF", pytest.approx(0.5 * 0.60))]
+
+
+def test_funds_insight_without_overlap(index_figures):
+    analysis = sample("tech_heavy.csv")  # an All-World fund and no Nvidia held directly
+    funds = next(i for i in analysis.insights if i.key == "funds")
+    assert funds.text.startswith("Including what your funds hold, about ")
+    assert "Largest companies through your funds: Nvidia" in funds.text
+
+
+def test_corporate_bond_counts_as_one_position():
+    df = make([("Company bond 2030", 30, "n/a", "corporate bond", "n/a", "RON", "Romania"),
+               ("Government bond", 70, "n/a", "bond", "n/a", "RON", "Romania")])
+    analysis = scoring.analyze(df)
+    single = next(r for r in analysis.limits if r.key == "asset")
+    assert (single.category, single.status) == ("Company bond 2030", RED)
+    assert analysis.profile.name == "Conservative"  # both kinds of bond are defensive
+
+
+def test_precious_metals_are_information_only():
+    df = make([("Gold ETC", 30, "n/a", "Gold", "n/a", "USD", "Global"),
+               ("World", 70, "Diversified", "ETF", "n/a", "EUR", "Global")])
+    analysis = scoring.analyze(df)
+    assert analysis.score == 100
+    types = dict(zip(analysis.positions["asset"], analysis.positions["asset_type"]))
+    assert types["Gold ETC"] == "precious metal"  # "Gold" is accepted
+    metals = next(i for i in analysis.insights if i.key == "precious_metals")
+    assert metals.text.startswith("30% of your portfolio is in precious metals.")
+    slices = scoring.asset_class_slices(analysis.profile)
+    assert list(slices["label"]) == ["Equity", "Precious metals"]

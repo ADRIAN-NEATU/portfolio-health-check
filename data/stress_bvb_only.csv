@@ -1,0 +1,14 @@
+asset,value,sector,asset_type,market_cap,currency,region
+Banca Transilvania,1200,Financials,stock,mid,RON,Romania
+BRD Groupe Societe Generale,800,Financials,stock,mid,RON,Romania
+Fondul Proprietatea,500,Financials,stock,small,RON,Romania
+OMV Petrom,1000,Energy,stock,large,RON,Romania
+Romgaz,800,Energy,stock,mid,RON,Romania
+Hidroelectrica,1200,Utilities,stock,large,RON,Romania
+Nuclearelectrica,900,Utilities,stock,mid,RON,Romania
+Transgaz,700,Utilities,stock,small,RON,Romania
+Transelectrica,600,Utilities,stock,small,RON,Romania
+Electrica,600,Utilities,stock,small,RON,Romania
+Digi Communications,800,Communication Services,stock,small,RON,Romania
+One United Properties,500,Real Estate,stock,small,RON,Romania
+Aquila,400,Consumer Staples,stock,small,RON,Romania

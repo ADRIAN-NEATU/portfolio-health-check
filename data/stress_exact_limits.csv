@@ -1,0 +1,10 @@
+asset,value,sector,asset_type,market_cap,currency,region
+JPMorgan Chase,1000,Financials,stock,large,USD,US
+Visa,1000,Financials,stock,large,USD,US
+Goldman Sachs,500,Financials,stock,large,USD,US
+Apple,500,Information Technology,stock,large,USD,US
+Johnson & Johnson,500,Health Care,stock,large,USD,US
+Exxon Mobil,500,Energy,stock,large,USD,US
+Coca-Cola,500,Consumer Staples,stock,large,USD,US
+Caterpillar,500,Industrials,stock,large,USD,US
+Vanguard FTSE All-World UCITS ETF,5000,Diversified,ETF,n/a,EUR,Global

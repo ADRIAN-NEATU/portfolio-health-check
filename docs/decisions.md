@@ -74,6 +74,8 @@
 
 ## D4 – Compare the largest region with the world market (1 Nov 2026)
 
+*Updated by D8: the figure now comes from the World Bank (about 49%), not from an index provider.*
+
 **Context.** S1-22 asked for a neutral question when one region holds a large share. A portfolio with 68% in the US got no note, because the note starts at 80%.
 
 **Decision.** When the largest region is the US, the Regions insight adds a neutral comparison with the world stock market:
@@ -100,4 +102,55 @@ A (?) next to it shows the source on hover. The comparison is not a target and s
 - **Info:** the insight has no limit (currency, regions).
 
 Every label is a word as well as a colour. The question is still open: whether a third, "worth asking" label is needed, and whether green should be stronger.
+
+## D6 – Index funds: diversified, with what they hold shown (1 Nov 2026)
+
+*Updated by D8: the index figures were removed from the project the same day; the code stays and waits for public-domain figures.*
+
+**Context.** The score treated every broad ETF as diversified and never looked inside it. Someone with an S&P 500 or Nasdaq-100 fund holds a lot of technology and the largest US companies, and may hold the same companies directly.
+
+**What we found.**
+- Even the world market is concentrated: in a world index, technology is about a third and the largest company is above 5% (index factsheet, 30 Sep 2026). Counting a world fund by what it holds would put it over the 25% sector limit and above 5% for one company: the score would punish holding the market.
+- EU law gives index funds a higher limit, up to 20% in one company, because indices are concentrated (UCITS, art. 53).
+- Look-through tools (for example Morningstar Portfolio X-Ray) count a fund's holdings in proportion to the money invested in it.
+
+**Decision.**
+- **A fund on a whole market** (a country, a region, the world) stays diversified: it does not count towards the limits.
+- **A fund on a narrower index**, one that leaves sectors out, counts towards the sector limit by what it holds. Today that is the Nasdaq-100, which holds no financial companies. Single-sector ETFs already counted fully.
+- **"Inside your funds"** (information, never in the score): the largest sector and the US share including the funds, the 3 largest companies through them, and the company with the largest total when it is also held directly. It is marked Watch when that total is above the single-position limit.
+- Funds are recognised by name and counted as copies of their index. Data: `data/index_funds.csv`, from the factsheets of 30 Sep 2026. S&P 500 funds use MSCI USA and FTSE All-World funds use MSCI ACWI, as close proxies. Nasdaq uses its own industry groups (ICB); Alphabet and Meta were moved from Technology to Communication Services, where GICS puts them.
+
+**Consequences.**
+- No sample score changes: the samples hold only broad funds.
+- Andrei sees that Apple is 8% directly plus 2.6% through his funds, 10.6% in total.
+- The figures need updating from the factsheets, about every quarter.
+
+**Sources.**
+- MSCI index factsheets (USD), 30 Sep 2026: MSCI ACWI, MSCI World, MSCI USA, MSCI Emerging Markets.
+- Nasdaq, Nasdaq-100 Index factsheet, 30 Sep 2026.
+- Directive 2009/65/EC (UCITS), Article 53.
+
+## D7 – Corporate bonds count; precious metals are information (1 Nov 2026)
+
+**Decision.**
+- **Government bonds** and cash stay outside the limits: EU law lets a fund hold up to 100% in government bonds from at least six issues (UCITS, art. 54).
+- **Corporate bonds** are a new type, `corporate bond`, and count towards the single-position limit: their risk is the company's.
+- **Precious metals** are a new type, `precious metal` (`gold` and `silver` are accepted). They get their own slice in the profile and an insight, and don't count towards the limits, as with currency (D1): they are not companies, and no documented limit exists for one investor.
+- **Crypto-assets** are not supported.
+
+**Sources.**
+- Directive 2009/65/EC (UCITS), Article 54.
+
+## D8 – Nothing in the project that its source doesn't allow (1 Nov 2026)
+
+**Context.** Before the release, every figure in the project was checked against the terms of its source. Index providers don't allow their index data to be reproduced or redistributed without written consent (for MSCI: its terms of use and the terms for its index data).
+
+**Decision.**
+- **Index figures removed.** The table of what index funds hold (MSCI ACWI, World, USA, Emerging Markets and Nasdaq-100) is no longer in the project, and `data/index_funds.csv` is in `.gitignore`. Without it, every broad fund counts as diversified, as before D6. The code stays, tested on made-up figures, and waits for public-domain figures from the holdings US funds file with the SEC (Form N-PORT).
+- **World comparison from the World Bank.** The Regions insight compares the US share with the US share of all listed companies in the world: about 49% in 2025 (World Bank, World Development Indicators, CC BY 4.0, reuse allowed with attribution). It replaces an index provider's figure, which measured something narrower: large and mid-size companies only.
+- **No market reference for company sizes.** The CRSP figures were removed. The small-cap note now starts above 28% of the stocks, the threshold it had in practice, and is an example value.
+- **Licence and trademarks.** The code is under the MIT licence. The README says that GICS, S&P 500, Nasdaq-100, MSCI and FTSE are their owners' trademarks and that the built-in sectors are our own assignments.
+- **Kept, because their sources allow it:** laws and regulators' texts (UCITS, the Investment Company Act, ERISA, SEC guidance, FINRA), research papers cited by name, SEC EDGAR (public domain) and OpenFIGI (MIT licence).
+
+**Also checked.** SEC blocks automated requests that don't identify themselves properly. The app's identification works; adding a web address to it got it blocked, so it stays as it is.
 

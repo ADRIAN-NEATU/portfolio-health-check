@@ -1,6 +1,6 @@
 @echo off
 rem Portfolio Health Check: double-click this file to start the app on Windows.
-rem The first run creates .venv and installs the packages (needs Python 3.10+).
+rem The first run creates .venv and installs the packages (needs Python 3.12+).
 cd /d "%~dp0"
 title Portfolio Health Check
 
@@ -9,7 +9,7 @@ if not exist ".venv\Scripts\python.exe" (
     py -3 -m venv .venv 2>nul || python -m venv .venv
     if not exist ".venv\Scripts\python.exe" (
         echo.
-        echo Python 3.10 or newer is needed. Install it from https://www.python.org/downloads/
+        echo Python 3.12 or newer is needed. Install it from https://www.python.org/downloads/
         echo and tick "Add python.exe to PATH", then double-click this file again.
         pause
         exit /b 1
