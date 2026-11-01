@@ -2,6 +2,14 @@
 
 ## v0.1 – MVP (in progress)
 
+### 1 Nov 2026
+- The sector limit is now 25%, the level the US regulator calls concentration. Watch starts at 20%.
+- A sector up to 5 points over its limit shows as Just over, in a darker orange; above that, Over limit in red.
+- "Why it matters" on the Sector card says where 25% comes from.
+- When most of your money is in the US, the Regions insight compares it with the US share of the world stock market (a provider figure, removed by D8). A (?) shows the source.
+- Insights whose limit is OK are now marked Good, in green (provisional).
+- The project is on GitHub.
+
 ### 29 Oct 2026
 - Currency is no longer part of the score. When one foreign currency holds most of your portfolio, a note explains what that means in lei. Money in lei never counts as a currency risk.
 - The score now comes from two limits: sector and single position.

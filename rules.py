@@ -12,14 +12,25 @@ All shares are fractions of the total portfolio value (0.30 means 30%).
 # Status of a limit, based on its largest non-exempt weight:
 #   OK          below yellow_from
 #   Watch       from yellow_from up to limit (both ends included)
-#   Over limit  above limit
+#   Just over   above limit, up to limit + margin (only for a limit with a margin)
+#   Over limit  above that
 
 LIMITS = {
     "sector": {
         "label": "Sector",
-        "yellow_from": 0.24,  # EXAMPLE
-        "limit": 0.30,  # EXAMPLE
+        # Documented (decision D3, docs/decisions.md): the US regulator (SEC, Guide 19
+        # to Form N-1A) treats a fund with 25% or more of its assets in one industry
+        # as concentrated. The Watch threshold keeps the old ratio to the limit (80%),
+        # and the margin is a safety margin of our own choice.
+        "yellow_from": 0.20,  # EXAMPLE
+        "limit": 0.25,
+        "margin": 0.05,  # EXAMPLE
         "why": "When one sector falls, everything in it tends to fall together.",  # EXAMPLE
+        "source": (
+            "Why 25%: the US regulator (SEC) treats a fund with 25% or more in one "
+            "industry as concentrated. Up to 5 points over it shows as Just over: "
+            "that safety margin is this app's choice."
+        ),
     },
     "asset": {
         "label": "Single position",
@@ -110,6 +121,16 @@ LARGE_NOTE_SHARE = 0.90  # EXAMPLE
 
 # Region note: one region (Global excluded) above this share of the portfolio.
 SINGLE_REGION_NOTE = 0.80  # EXAMPLE
+
+# Share of a region in the world stock market, for the Regions insight (decision
+# D4). Source: MSCI ACWI Index factsheet (USD), 30 Sep 2026: large and mid-size
+# companies in 23 developed and 24 emerging markets. Update it with the factsheet.
+WORLD_MARKET_SHARE = {"US": 0.6}  # placeholder: the provider's figure was removed (D8)
+WORLD_MARKET_SOURCE = (
+    "Source: MSCI ACWI Index factsheet, 30 Sep 2026. The index covers large and "
+    "mid-size companies in 23 developed and 24 emerging markets; the United States "
+    "is the largest part of it."
+)
 
 # Currency note: one foreign currency (anything but RON) above this share of the
 # portfolio. Same value as the old currency limit's yellow threshold.

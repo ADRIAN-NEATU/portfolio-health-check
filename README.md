@@ -53,22 +53,24 @@ The app opens at http://localhost:8501. Run the tests with `pytest`.
 
 ## How to read the score
 
-The score is the average of two limit scores (sector and single position), rounded to a whole number. Each limit scores 100 while its largest weight stays below the yellow threshold, falls linearly from 100 to 80 between the yellow threshold and the limit, and above the limit scores 80 − 60 × min(weight / limit − 1, 1), so never less than 20.
+The score is the average of two limit scores (sector and single position), rounded to a whole number. Each limit scores 100 while its largest weight stays below the yellow threshold, falls linearly from 100 to 80 between the yellow threshold and the limit, and above the limit scores 80 − 60 × min(weight / limit − 1, 1), so never less than 20. The sector limit also has a safety margin: up to 5 points over it, the status is Just over (orange) instead of Over limit (red). The score is the same either way.
 
-| Limit | Watch from | Limit | Not counted |
-|---|---|---|---|
-| Sector | 24% | 30% | Diversified, n/a |
-| Single position | 5% | 10% | broad ETFs, bonds, cash |
+| Limit | Watch from | Limit | Just over up to | Not counted |
+|---|---|---|---|---|
+| Sector | 20% | 25% | 30% | Diversified, n/a |
+| Single position | 5% | 10% | – | broad ETFs, bonds, cash |
 
-All thresholds live in [rules.py](rules.py). The single-position ones (5% and 10%) are the limits EU and US law set for diversified funds, used here as a reference ([decision D2](docs/decisions.md)); no regulator sets one for an individual investor. The sector ones are examples (see Known limitations).
+All thresholds live in [rules.py](rules.py). No regulator sets a limit for an individual investor, so the two limits are the ones set for funds, used here as a reference:
+- **Single position, 5% and 10%:** the limits EU and US law set for diversified funds ([decision D2](docs/decisions.md)).
+- **Sector, 25%:** the US regulator treats a fund with 25% or more in one industry as concentrated ([decision D3](docs/decisions.md)). The sector Watch threshold (20%) and the 5-point margin are examples.
 
 ## Informative dimensions (not scored)
 
 - **Asset classes:** the share of bonds and cash sets a profile (Conservative, Balanced or Dynamic). There is no right mix: it depends on the investor's profile, so it is described, not scored.
 - **Market cap:** the stocks' small / mid / large split is compared with the US market. A note appears when small caps are well above the market share or when almost everything is large cap. As with asset classes, the right mix depends on the investor, so it does not affect the score.
 - **Currency:** a note, not a limit ([decision D1](docs/decisions.md)). It appears when one foreign currency holds most of the portfolio. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
-- **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio.
-- **Insights:** effective number of positions, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Info or Watch and has no effect on the score.
+- **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of the world stock market (an index provider's figure, removed by D8), with the source behind a (?) ([decision D4](docs/decisions.md)).
+- **Insights:** effective number of positions, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Good (its limit is OK), Watch (its limit or note needs a look) or Info (no limit), and has no effect on the score. The Good label is provisional ([decision D5](docs/decisions.md)).
 
 ## CSV format
 
@@ -90,7 +92,7 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 
 ## Known limitations
 
-- The sector thresholds and the note thresholds are EXAMPLES until they are replaced with the rules from the author's bachelor's thesis.
+- The Watch thresholds, the sector margin and the note thresholds are EXAMPLES until they are replaced with the rules from the author's bachelor's thesis.
 - ETFs are not broken down into their companies, sectors or regions.
 - The market-cap reference is approximate: CRSP uses cumulative cap bands, while the data here use dollar thresholds.
 - Issuer risk on bonds is not analysed.
@@ -107,6 +109,8 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - Directive 2009/65/EC (UCITS), Article 52: the 5/10/40 diversification rule for funds.
 - Investment Company Act of 1940, section 5(b)(1): at most 5% in one issuer for a diversified US fund.
 - ERISA section 407(a): at most 10% of a US pension plan in the employer's own shares.
+- U.S. Securities and Exchange Commission, Guidelines for Form N-1A, Guide 19 (1983): 25% or more in one industry is concentration.
+- MSCI ACWI Index factsheet (USD), 30 Sep 2026: country weights (figure removed from the project, D8).
 - FINRA (2022). Concentrate on Concentration Risk. Investor Insights.
 - Bessembinder, H. (2018). Do stocks outperform Treasury bills? *Journal of Financial Economics*, 129(3), 440–457.
 - Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.

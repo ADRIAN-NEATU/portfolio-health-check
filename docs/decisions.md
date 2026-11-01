@@ -36,11 +36,11 @@
   - Over 1926–2016, about 4% of US stocks created all the net gain of the market; more than half did worse than Treasury bills over their life (Bessembinder, 2018). Owning one stock heavily is a bet on being in that 4%.
   - A well-diversified portfolio of randomly chosen stocks needs at least 30–40 of them (Statman, 1987). At equal weights, that is about 2.5–3.3% each, below the 5% Watch threshold.
 
-**Decision.** Keep 5% and 10%, now as documented thresholds rather than examples. The app says where they come from, under "Why it matters" on the Single position card, and says they are fund rules used as a reference.
+**Decision** (confirmed on 1 Nov 2026). Keep 5% and 10%, now as documented thresholds rather than examples. The app says where they come from, under "Why it matters" on the Single position card, and says they are fund rules used as a reference.
 
 **Consequences.**
 - No score changes: the numbers stay the same.
-- The sector thresholds (24% and 30%) remain examples. Finding a source for them is the rest of S1-13.
+- The sector thresholds were still examples on 29 Oct. They got their source on 1 Nov (D3).
 - The footer now says which thresholds are documented and which are examples.
 
 **Sources.**
@@ -50,3 +50,54 @@
 - FINRA (2022). Concentrate on Concentration Risk. Investor Insights, 15 June 2022.
 - Bessembinder, H. (2018). Do stocks outperform Treasury bills? *Journal of Financial Economics*, 129(3), 440–457.
 - Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.
+
+## D3 – The sector limit is 25%, with a safety margin (1 Nov 2026)
+
+**Context.** The sector limit was 30%, with Watch from 24%, both examples (rest of S1-13).
+
+**What the sources say.** The US regulator (SEC) treats a fund that holds 25% or more of its assets in one industry as concentrated. A fund that does not want to be called concentrated may not buy more of an industry once it reaches 25%. The rule comes from Guide 19 to Form N-1A (1983); the guides were withdrawn in 1998, but the SEC staff and funds still apply the 25% test. As with D2, this is a rule for funds, and no regulator sets one for an individual investor.
+
+**Decision.**
+- Limit: **25%** (documented).
+- Watch from **20%**: the same ratio to the limit as before (24/30 = 80%). An example value.
+- **Safety margin of 5 points:** from 25% to 30%, the status is **Just over**, shown in a darker orange; above 30%, **Over limit** in red. The margin is our own choice, an example value.
+- "Why it matters" on the Sector card gives the source and says the margin is the app's choice.
+
+**Consequences.**
+- The score formula is unchanged, now measured from 25%. The margin changes only the status and the colour.
+- Scores change: Tech-heavy 75 → 66 (Information Technology 45%, Over limit), Andrei 94 → 91 (Information Technology 21.5%, Watch). The Beginner portfolio stays at 60, but its sector now shows Watch: Tesla alone is 20% of the portfolio, all in one sector.
+- A real portfolio with Industrials at 28.9% now shows Just over, and its score drops from 85 to 79.
+- S1-13 is done: both limits now come from documented rules. The Watch thresholds and the margin remain examples.
+
+**Sources.**
+- U.S. Securities and Exchange Commission (1983). Guidelines for Form N-1A, Guide 19 (industry concentration), as applied in SEC staff correspondence with funds and in the Sequoia Fund case at the US Court of Appeals for the Second Circuit (2019).
+
+## D4 – Compare the largest region with the world market (1 Nov 2026)
+
+**Context.** S1-22 asked for a neutral question when one region holds a large share. A portfolio with 68% in the US got no note, because the note starts at 80%.
+
+**Decision.** When the largest region is the US, the Regions insight adds a neutral comparison with the world stock market:
+> "68% of your money is in the US. For comparison, the US is 60% of the world stock market."
+
+A (?) next to it shows the source on hover. The comparison is not a target and says nothing about what to buy or sell. The region note threshold (80%) stays as it is.
+
+**Why.** A comparison with a documented figure is easier to judge than an arbitrary threshold, and it stays neutral: the reader decides whether their share is intentional.
+
+**Consequences.**
+- Only the US has a world figure for now, because the factsheet gives country weights. Other regions keep the plain sentence.
+- The figure changes every month: it lives in `rules.py`, with its date, and should be updated from the factsheet.
+
+**Source.**
+- MSCI ACWI Index factsheet (USD), 30 Sep 2026: country weights (figures removed from the project, D8).
+
+## D5 – Insights marked Good when their limit is OK (1 Nov 2026, provisional)
+
+**Context.** S1-20 asked for a colour per insight: good, watch, worth asking. The design so far used colour only where there is a problem.
+
+**Decision (provisional, not final).** Keep Info and Watch, and add **Good**, with a green dot:
+- **Watch:** the insight's limit is not OK, or its region or currency note is shown.
+- **Good:** the insight belongs to a scored limit (sector or single position) and that limit is OK.
+- **Info:** the insight has no limit (currency, regions).
+
+Every label is a word as well as a colour. The question is still open: whether a third, "worth asking" label is needed, and whether green should be stronger.
+

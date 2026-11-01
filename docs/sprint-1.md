@@ -22,20 +22,26 @@
 | S1-10 | PHC-16 | Story | E2 | Type or paste positions and get the details filled in | 5 | Done | 28 Oct |
 | S1-11 | PHC-17 | Story | E2 | Upload a CSV straight from Excel, even with only names and values | 2 | Done | 28 Oct |
 | S1-12 | PHC-18 | Task | E5 | Polish: official GICS names, interface details, one-click start, screenshots | 3 | Done | 28 Oct |
-| S1-13 | PHC-19 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | In progress | – |
+| S1-13 | PHC-19 | Task | E4 | Replace the EXAMPLE thresholds with documented, simpler rules from my thesis | 3 | Done | 1 Nov |
 | S1-14 | PHC-20 | Task | E5 | Reread and explain the code | 2 | To do | – |
-| S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | To do | – |
+| S1-15 | PHC-21 | Task | E5 | Publish the project on GitHub | 1 | Done | 1 Nov |
 | S1-16 | PHC-22 | Story | E4 | Don't count RON as a currency risk for someone who earns in lei | 3 | Done | 29 Oct |
 | S1-18 | PHC-24 | Story | E3 | Explain "behaves like N equal positions" in plain words | 1 | Done | 29 Oct |
 | S1-19 | PHC-25 | Story | E3 | Replace the stress test with simple exposure figures by sector and region | 2 | Done | 29 Oct |
-| S1-20 | PHC-26 | Story | E3 | Colour each insight by what it means: good, watch, worth asking | 3 | To do | – |
+| S1-20 | PHC-26 | Story | E3 | Colour each insight by what it means: good, watch, worth asking | 3 | Done | 1 Nov |
 | S1-21 | PHC-27 | Story | E3 | Explain "n/a" and "Diversified" in the charts | 1 | Done | 29 Oct |
-| S1-22 | PHC-28 | Story | E4 | Ask a neutral question when one region holds a large share | 2 | To do | – |
+| S1-22 | PHC-28 | Story | E4 | Ask a neutral question when one region holds a large share | 2 | Done | 1 Nov |
 | S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | Done | 29 Oct |
 | S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
 | S1-25 | PHC-31 | Story | E3 | Keep chart labels off the limit line and make the tooltips easier to read | 2 | Done | 29 Oct |
 
-S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. S1-13 is half done: the single-position thresholds now have sources ([decision D2](decisions.md)); the sector thresholds are still examples. Anything not Done by 2 Nov goes back to the Product Backlog.
+S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. On 1 Nov:
+- S1-13 was finished: both limits now come from documented rules ([D2](decisions.md) single position, [D3](decisions.md) sector).
+- S1-22 became a comparison with the world market ([D4](decisions.md)).
+- S1-20 is done with a provisional decision ([D5](decisions.md)).
+- The project is on GitHub (S1-15).
+
+Anything not Done by 2 Nov goes back to the Product Backlog.
 
 ## Product Backlog (not in this Sprint)
 
@@ -55,9 +61,9 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | 27 Oct | 42 | – | 26 | 16 | 36 |
 | 28 Oct | 45 | 3 (S1-16) | 10 | 9 | 30 |
 | 29 Oct | 62 | 17 (S1-18 to S1-25) | 15 | 11 | 24 |
-| 30 Oct | | | | | 18 |
-| 31 Oct | | | | | 12 |
-| 1 Nov | | | | | 6 |
+| 30 Oct | 62 | – | 0 | 11 | 18 |
+| 31 Oct | 62 | – | 0 | 11 | 12 |
+| 1 Nov | 62 | – | 9 (S1-13, S1-15, S1-20, S1-22) | 2 | 6 |
 | 2 Nov | | | | | 0 |
 
 - **Scope:** all points in the Sprint. It grows when work is added.
@@ -66,10 +72,10 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 ```mermaid
 xychart-beta
     title "Sprint 1 burndown: bars = points left, line = ideal"
-    x-axis ["Start", "27 Oct", "28 Oct", "29 Oct"]
+    x-axis ["Start", "27 Oct", "28 Oct", "29 Oct", "30 Oct", "31 Oct", "1 Nov"]
     y-axis "Story points" 0 --> 45
-    bar [42, 16, 9, 11]
-    line [42, 36, 30, 24]
+    bar [42, 16, 9, 11, 11, 11, 2]
+    line [42, 36, 30, 24, 18, 12, 6]
 ```
 
 ## User stories and acceptance criteria
@@ -141,9 +147,10 @@ As an investor who isn't good with numbers, I want my exposure as simple percent
 
 **S1-20 – Colour each insight by what it means: good, watch, worth asking**
 As an investor, I want each insight marked by what it means, so that I see at a glance what is fine and what deserves a look.
-- Given "Diversified", when I read "You cover 11 of 11 GICS sectors…", then it is marked as good.
-- Given a portfolio with a red limit, when I read the related insight, then it is marked to watch.
+- Given "Diversified", when I read "You cover 11 of 11 GICS sectors…", then it is marked Good.
+- Given a portfolio with a red limit, when I read the related insight, then it is marked Watch.
 - Each colour always comes with a word, never colour alone.
+- Decision D5 is provisional: whether to add a "worth asking" label is still open.
 
 **S1-21 – Explain "n/a" and "Diversified" in the charts**
 As an investor, I want to know what these labels mean, so that the charts don't confuse me.
@@ -151,8 +158,8 @@ As an investor, I want to know what these labels mean, so that the charts don't 
 
 **S1-22 – Ask a neutral question when one region holds a large share**
 As an investor, I want to be asked whether a large share in one region is intentional, so that I notice it without being told what to buy.
-- Given my portfolio (68% in the US), when it opens, then a neutral note asks whether that is intentional.
-- Given any portfolio, the note never tells me what to buy or sell.
+- Given my portfolio (68% in the US), when it opens, then the Regions insight compares it with the US share of the world stock market (a provider figure, removed by D8), and a (?) shows the source (decision D4, instead of a question).
+- Given any portfolio, the insight never tells me what to buy or sell.
 
 **S1-23 – See which positions make up each bar in the charts**
 As an investor, I want to see what is inside each bar, so that I know which holdings create an exposure.

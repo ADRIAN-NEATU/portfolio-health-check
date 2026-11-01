@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 
 import rules  # noqa: E402
 import scoring  # noqa: E402
-from scoring import GREEN, RED, YELLOW  # noqa: E402
+from scoring import GREEN, ORANGE, RED, YELLOW  # noqa: E402
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -39,13 +39,13 @@ def sample(file_name):
 # file -> (sector, asset, score, profile, notes)
 EXPECTED = {
     "diversified.csv": (GREEN, GREEN, 100, "Dynamic", []),
-    "tech_heavy.csv": (RED, GREEN, 75, "Dynamic", []),
+    "tech_heavy.csv": (RED, GREEN, 66, "Dynamic", []),
     "all_in_ron.csv": (GREEN, GREEN, 100, "Balanced", []),
-    "beginner_3_stocks.csv": (GREEN, RED, 60, "Balanced", []),
+    "beginner_3_stocks.csv": (YELLOW, RED, 60, "Balanced", []),  # Tesla: 20% of one sector
     "conservative_saver.csv": (GREEN, GREEN, 100, "Conservative", []),
     "small_cap_fan.csv": (GREEN, GREEN, 100, "Dynamic", ["small_cap"]),
     "one_global_etf.csv": (GREEN, GREEN, 100, "Dynamic", ["currency"]),
-    "andrei.csv": (GREEN, YELLOW, 94, "Dynamic", ["large_cap", "region", "currency"]),
+    "andrei.csv": (YELLOW, YELLOW, 91, "Dynamic", ["large_cap", "region", "currency"]),
 }
 
 
@@ -99,12 +99,14 @@ def test_tech_heavy_sector_is_technology_45_percent():
 
 def test_andrei_at_a_glance():
     analysis = sample("andrei.csv")
-    assert analysis.verdict == "1 issue: single position (Apple 8%)."
+    assert analysis.verdict == "2 issues. The most serious: single position (Apple 8%)."
     assert [(row.status, row.tab) for row in analysis.glance] == [
+        (YELLOW, "Overview"),
         (YELLOW, "Overview"),
         ("", "Stocks"),
     ]
     assert analysis.glance[0].text == "Position Apple: 8% (limit 10%) and 6 more"
+    assert analysis.glance[1].text == "Sector Information Technology: 21.5% (limit 25%)"
 
 
 def test_one_global_etf_region_is_global():
@@ -122,11 +124,13 @@ def test_one_global_etf_region_is_global():
 @pytest.mark.parametrize(
     "weight, expected",
     [
-        (0.2399, GREEN),
-        (0.24, YELLOW),  # exactly yellow_from
-        (0.27, YELLOW),
-        (0.30, YELLOW),  # exactly the limit
-        (0.3001, RED),  # just above
+        (0.1999, GREEN),
+        (0.20, YELLOW),  # exactly yellow_from
+        (0.23, YELLOW),
+        (0.25, YELLOW),  # exactly the limit
+        (0.2501, ORANGE),  # just above
+        (0.30, ORANGE),  # exactly the limit plus the margin
+        (0.3001, RED),
     ],
 )
 def test_status_boundaries(weight, expected):
@@ -144,11 +148,11 @@ def test_status_tolerates_floating_point_error():
     "weight, expected",
     [
         (0.10, 100),
-        (0.24, 100),  # yellow_from
-        (0.27, 90),  # halfway between yellow_from and limit
-        (0.30, 80),  # limit
-        (0.45, 50),  # 80 - 60 * 0.5
-        (0.60, 20),  # twice the limit
+        (0.20, 100),  # yellow_from
+        (0.225, 90),  # halfway between yellow_from and limit
+        (0.25, 80),  # limit
+        (0.375, 50),  # 80 - 60 * 0.5
+        (0.50, 20),  # twice the limit
         (0.90, 20),  # floor
     ],
 )
@@ -446,9 +450,35 @@ def test_sector_coverage_never_zero_with_global_funds():
 def test_regions(hand_insights):
     insight = hand_insights["regions"]
     assert insight.text == (
-        "45% of your money is in the US, and 15% in global funds."
+        "45% of your money is in the US, and 15% in global funds. "
+        "For comparison, the US is 60% of the world stock market."
     )
-    assert insight.label == "Info"
+    assert insight.label == "Info"  # regions have no limit
+    assert insight.source == rules.WORLD_MARKET_SOURCE
+
+
+def test_regions_without_a_world_figure():
+    df = make([("Bank", 70, "Financials", "stock", "mid", "RON", "Romania"),
+               ("SAP", 30, "Information Technology", "stock", "large", "EUR", "Europe")])
+    insight = next(i for i in scoring.analyze(df).insights if i.key == "regions")
+    assert insight.text == "70% of your money is in Romania."
+    assert insight.source == ""
+
+
+def test_insight_labels():
+    labels = {i.key: i.label for i in sample("diversified.csv").insights}
+    assert labels["effective_positions"] == labels["largest_sector"] == "Good"  # limits OK
+    assert labels["other_currencies"] == labels["regions"] == "Info"  # no limit
+    assert {i.key: i.label for i in sample("tech_heavy.csv").insights}["largest_sector"] == "Watch"
+
+
+def test_just_over_the_sector_limit():
+    df = make([("Bank", 28, "Financials", "stock", "large", "RON", "Romania"),
+               ("World", 72, "Diversified", "ETF", "n/a", "EUR", "Global")])
+    sector = next(r for r in scoring.analyze(df).limits if r.key == "sector")
+    assert sector.status == ORANGE
+    assert scoring.STATUS_LABELS[ORANGE] == "Just over"
+    assert scoring.limit_phrase(ORANGE, True, 0.25) == "Just over the 25% limit"
 
 
 def test_insights_without_sector_exposure():
@@ -530,10 +560,10 @@ def test_limit_phrase():
     assert scoring.limit_phrase(GREEN, True, None) == ""  # currency and region have no limit
 
 
-def test_only_documented_limits_have_a_source():
+def test_documented_limits_have_a_source():
     sources = {r.key: r.source for r in sample("andrei.csv").limits}
     assert "EU law" in sources["asset"]
-    assert sources["sector"] == ""  # still an example
+    assert "SEC" in sources["sector"]
 
 
 def test_chart_data_region_has_no_limit():

@@ -18,10 +18,12 @@ What a user can see and do in Portfolio Health Check.
 | | Start the app on Windows with a double-click | Done | 28 Oct |
 | **Score and limits** | Get one score from 0 to 100, built from two limits: sector and single position (currency was a third limit until 29 Oct) | Done | 27 Oct |
 | | See each limit as OK, Watch or Over limit, next to its threshold, with "Why it matters" | Done | 27 Oct |
+| | A sector just over its limit (up to 5 points) shows as Just over, in a darker orange | Done | 1 Nov |
 | | Broad funds, bonds and cash do not count against the sector and single-position limits | Done | 27 Oct |
 | | See every warning, the most serious first | Done | 27 Oct |
 | | Single-position thresholds (5% and 10%) come with sources: the limits EU and US law set for diversified funds | Done | 29 Oct |
-| | Sector thresholds come from my thesis (today they are example values) | To do | – |
+| | Sector limit (25%) comes with a source: the level the US regulator calls concentration | Done | 1 Nov |
+| | Watch thresholds and the sector margin come from my thesis (today they are example values) | To do | – |
 | **At a glance** | See the score in a coloured ring with a one-sentence verdict | Done | 27 Oct |
 | | See up to three findings that matter most, each pointing to the tab with the details | Done | 27 Oct |
 | | See your investor profile: Conservative, Balanced or Dynamic | Done | 27 Oct |
@@ -30,7 +32,8 @@ What a user can see and do in Portfolio Health Check.
 | | See your largest sector and your largest region as simple percentages (they replace the stress test) | Done | 29 Oct |
 | | See your share outside RON | Done | 27 Oct |
 | | See how many of the 11 sectors you cover, with global funds counted | Done | 28 Oct |
-| | Each insight is marked Info or Watch and never changes the score | Done | 27 Oct |
+| | Each insight is marked Good, Info or Watch (Good is provisional) and never changes the score | Done | 1 Nov |
+| | When most of your money is in the US, compare it with the US share of the world stock market, with the source behind a (?) | Done | 1 Nov |
 | **Exposure notes** | Compare your stocks' company sizes with the US market | Done | 27 Oct |
 | | Get a note when small companies are well above the market share, or when almost everything is a large company | Done | 27 Oct |
 | | Get a note when one region holds most of your portfolio | Done | 27 Oct |
@@ -46,7 +49,7 @@ What a user can see and do in Portfolio Health Check.
 | | Sample portfolios as cards, chart choices as pills, cleaner tabs and tables | Done | 28 Oct |
 | | A footer says it is analysis, not investment advice | Done | 27 Oct |
 | **Quality** | Automated tests check every limit, score and sample portfolio | Done | 27 Oct |
-| | Each test portfolio shows exactly one risk | Done | 27 Oct |
+| | Each test portfolio is built around one main risk | Done | 27 Oct |
 | | Sector names follow the official GICS standard | Done | 28 Oct |
 | | Details come only from free sources whose terms allow it (no Yahoo Finance) | Done | 28 Oct |
 | | README: how to start the app, how to read the score, file format, sources and known limitations | Done | 27 Oct |

@@ -13,7 +13,7 @@ import streamlit as st
 
 import lookup
 import scoring
-from scoring import GREEN, RED, YELLOW
+from scoring import GREEN, ORANGE, RED, YELLOW
 
 # Theme colours, shared by the CSS and the charts.
 COLORS = {
@@ -24,6 +24,7 @@ COLORS = {
     "text-2": "#5B6475",
     "accent": "#1F6F50",
     "yellow": "#D99A1E",
+    "orange": "#D9731F",  # just over a limit: darker than yellow, lighter than red
     "red": "#C8423B",
     "neutral": "#9AA8BC",
     "note": "#6B7280",
@@ -31,8 +32,10 @@ COLORS = {
 }
 FONT = "Inter, 'Segoe UI', sans-serif"
 
-STATUS_COLORS = {GREEN: COLORS["accent"], YELLOW: COLORS["yellow"], RED: COLORS["red"]}
-BAR_COLORS = {GREEN: COLORS["neutral"], YELLOW: COLORS["yellow"], RED: COLORS["red"]}
+STATUS_COLORS = {GREEN: COLORS["accent"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
+                 RED: COLORS["red"]}
+BAR_COLORS = {GREEN: COLORS["neutral"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
+              RED: COLORS["red"]}
 SLICE_COLORS = {"Equity": COLORS["text-2"], "Bonds": COLORS["neutral"], "Cash": COLORS["light"]}
 SLICE_TEXT = {"Equity": "#FFFFFF", "Bonds": COLORS["text"], "Cash": COLORS["text"]}
 
@@ -116,14 +119,19 @@ def inject_css() -> None:
 .phc-pill.red { color: var(--text); background: color-mix(in srgb, var(--red) 8%, white);
   border-color: color-mix(in srgb, var(--red) 30%, white); }
 .phc-pill.red .phc-dot { background: var(--red); }
+.phc-pill.orange { color: var(--text); background: color-mix(in srgb, var(--orange) 9%, white);
+  border-color: color-mix(in srgb, var(--orange) 35%, white); }
+.phc-pill.orange .phc-dot { background: var(--orange); }
 
 /* Rows with a thin coloured bar on the left when they are a problem */
 .phc-rows { display: flex; flex-direction: column; gap: .5rem; }
 .phc-row { position: relative; display: flex; justify-content: space-between; align-items: center;
   gap: 1rem; padding: .7rem 1rem .7rem 1.1rem; background: var(--bg); border-radius: 8px; }
-.phc-row.yellow::before, .phc-row.red::before { content: ""; position: absolute; left: 0; top: 7px;
+.phc-row.yellow::before, .phc-row.orange::before, .phc-row.red::before { content: "";
+  position: absolute; left: 0; top: 7px;
   bottom: 7px; width: 3px; border-radius: 3px; }
 .phc-row.yellow::before { background: var(--yellow); }
+.phc-row.orange::before { background: var(--orange); }
 .phc-row.red::before { background: var(--red); }
 .phc-row-text { line-height: 1.4; }
 .phc-row-tab { color: var(--text-2); font-size: .78rem; white-space: nowrap; }
@@ -153,6 +161,7 @@ def inject_css() -> None:
 .phc-meter { position: relative; height: 6px; background: var(--border); border-radius: 999px; margin: .4rem 0; }
 .phc-meter-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--neutral); }
 .phc-meter-fill.yellow { background: var(--yellow); }
+.phc-meter-fill.orange { background: var(--orange); }
 .phc-meter-fill.red { background: var(--red); }
 .phc-meter-mark { position: absolute; top: -4px; width: 2px; height: 14px; margin-left: -1px;
   background: var(--text); border-radius: 1px; }
@@ -172,6 +181,7 @@ def inject_css() -> None:
 .phc-insight-title { font-size: .75rem; font-weight: 600; color: var(--text-2); text-transform: uppercase;
   letter-spacing: .05em; }
 .phc-insight-text { line-height: 1.45; }
+.phc-insight-text .phc-why { font-size: .8rem; margin-left: .15rem; }
 
 /* Notes, info and errors */
 .phc-note { display: flex; gap: .75rem; align-items: flex-start; color: var(--note); line-height: 1.5; }
@@ -330,6 +340,17 @@ def pill(text: str, status: str = "") -> str:
 
 def status_pill(status: str) -> str:
     return pill(scoring.STATUS_LABELS[status], status)
+
+
+# Pill colour for each insight label (decision D5, provisional).
+INSIGHT_PILLS = {"Good": GREEN, "Watch": YELLOW}
+
+
+def source_tip(source: str) -> str:
+    """A (?) that shows where a figure comes from, on hover or keyboard focus."""
+    if not source:
+        return ""
+    return f' <span class="phc-why" tabindex="0">(?)<span class="phc-tip">{escape(source)}</span></span>'
 
 
 def section(title: str) -> None:
@@ -491,7 +512,7 @@ def bar_hover(category: str, weight: float, phrase: str, members: list | None, s
 
 
 # Ink for a value written on a bar, readable on the bar's colour.
-TEXT_ON_BAR = {GREEN: COLORS["text"], YELLOW: COLORS["text"], RED: "#FFFFFF"}
+TEXT_ON_BAR = {GREEN: COLORS["text"], YELLOW: COLORS["text"], ORANGE: COLORS["text"], RED: "#FFFFFF"}
 
 
 def bar_chart(bars, limit: float | None, members: dict | None = None) -> go.Figure:
@@ -830,8 +851,8 @@ def overview_tab(analysis: scoring.Analysis) -> None:
     cards = "".join(
         '<div class="phc-card phc-insight"><div class="phc-insight-head">'
         f'<span class="phc-insight-title">{escape(i.title)}</span>'
-        f'{pill(i.label, YELLOW if i.label == "Watch" else "")}</div>'
-        f'<div class="phc-insight-text phc-num">{escape(i.text)}</div></div>'
+        f"{pill(i.label, INSIGHT_PILLS.get(i.label, ''))}</div>"
+        f'<div class="phc-insight-text phc-num">{escape(i.text)}{source_tip(i.source)}</div></div>'
         for i in analysis.insights
     )
     st.html(f'<div class="phc-grid">{cards}</div>')
@@ -942,8 +963,8 @@ def positions_tab(analysis: scoring.Analysis) -> None:
 def footer() -> None:
     st.html(
         '<div class="phc-footer">Analysis, not investment advice. '
-        "Single-position thresholds follow EU and US fund rules; sector thresholds are "
-        "examples until replaced with the author's thesis rules.</div>"
+        "Both limits follow EU and US fund rules; the Watch thresholds and the sector "
+        "margin are examples until replaced with the author's thesis rules.</div>"
     )
 
 

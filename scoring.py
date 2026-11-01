@@ -133,9 +133,9 @@ CATEGORY_NAMES = {
     },
 }
 
-GREEN, YELLOW, RED = "green", "yellow", "red"
-STATUS_LABELS = {GREEN: "OK", YELLOW: "Watch", RED: "Over limit"}
-STATUS_RANK = {RED: 0, YELLOW: 1, GREEN: 2}
+GREEN, YELLOW, ORANGE, RED = "green", "yellow", "orange", "red"
+STATUS_LABELS = {GREEN: "OK", YELLOW: "Watch", ORANGE: "Just over", RED: "Over limit"}
+STATUS_RANK = {RED: 0, ORANGE: 1, YELLOW: 2, GREEN: 3}
 
 # Word that starts a warning, e.g. "Position Apple: 8% (limit 10%)".
 WARNING_PREFIX = {"sector": "Sector", "asset": "Position"}
@@ -222,7 +222,8 @@ class Insight:
     key: str
     title: str
     text: str
-    label: str  # "Info" or "Watch"
+    label: str  # "Good", "Info" or "Watch"
+    source: str = ""  # where a figure in the text comes from, shown behind a (?)
 
 
 @dataclass
@@ -242,7 +243,7 @@ class Note:
 class GlanceRow:
     text: str
     tab: str
-    status: str  # RED or YELLOW for a problem, "" for a note or an insight
+    status: str  # RED, ORANGE or YELLOW for a problem, "" for a note or an insight
 
 
 @dataclass
@@ -573,11 +574,14 @@ def largest_region(df: pd.DataFrame) -> tuple[str, float]:
 
 
 def status_for(weight: float, limit: dict) -> str:
-    """Green below yellow_from, yellow up to the limit (ends included), red above."""
+    """Green below yellow_from, yellow up to the limit (ends included), orange up to
+    the limit plus its margin (for a limit that has one), red above."""
     if weight < limit["yellow_from"] - EPS:
         return GREEN
     if weight <= limit["limit"] + EPS:
         return YELLOW
+    if weight <= limit["limit"] + limit.get("margin", 0) + EPS:
+        return ORANGE
     return RED
 
 
@@ -619,7 +623,8 @@ def overall_score(limits: list[LimitResult]) -> int:
 
 
 def by_severity(items: list) -> list:
-    """Red first, then yellow, then by how far over the threshold (lower score first)."""
+    """Red first, then orange, then yellow, then by how far over the threshold
+    (lower score first)."""
     return sorted(items, key=lambda x: (STATUS_RANK[x.status], x.score, -x.weight))
 
 
@@ -722,13 +727,17 @@ def exposure_notes(df: pd.DataFrame, has_region: bool) -> list[Note]:
 def insights_for(
     df: pd.DataFrame, limits: list[LimitResult], notes: list[Note], has_region: bool
 ) -> list[Insight]:
-    """Plain-language facts. "Watch" when the same dimension already has a
-    yellow or red limit (or a region or currency note); "Info" otherwise."""
+    """Plain-language facts. "Watch" when the same dimension already has a limit
+    that is not OK (or a region or currency note), "Good" when its limit is OK,
+    "Info" for a dimension without a limit (decision D5, provisional)."""
     flagged = {r.key for r in limits if r.status != GREEN}
     flagged |= {n.key for n in notes if n.key in ("region", "currency")}
+    scored = {r.key for r in limits}
 
     def label(key: str) -> str:
-        return "Watch" if key in flagged else "Info"
+        if key in flagged:
+            return "Watch"
+        return "Good" if key in scored else "Info"
 
     insights = []
 
@@ -790,12 +799,19 @@ def insights_for(
     if has_region:
         global_share = float(weights(df, "region").get(GLOBAL_REGION, 0.0))
         region, share = largest_region(df)
+        source = ""
         if region:
-            text = f"{fmt_pct(share)} of your money is in {REGION_PHRASES.get(region, region)}"
+            phrase = REGION_PHRASES.get(region, region)
+            text = f"{fmt_pct(share)} of your money is in {phrase}"
             text += f", and {fmt_pct(global_share)} in global funds." if global_share > EPS else "."
+            world = rules.WORLD_MARKET_SHARE.get(region)
+            if world is not None:  # a neutral comparison, not a target (decision D4)
+                text += (f" For comparison, {phrase} is {fmt_pct(round(world, 2))} "
+                         "of the world stock market.")
+                source = rules.WORLD_MARKET_SOURCE
         else:
             text = "All of your money is in global funds."
-        insights.append(Insight("regions", "Regions", text, label("region")))
+        insights.append(Insight("regions", "Regions", text, label("region"), source))
 
     return insights
 
@@ -893,6 +909,7 @@ def chart_data(analysis: Analysis, dimension: str) -> tuple[pd.DataFrame, float 
 LIMIT_PHRASES = {
     GREEN: "Below the {limit} limit",
     YELLOW: "Close to the {limit} limit",
+    ORANGE: "Just over the {limit} limit",
     RED: "Over the {limit} limit",
 }
 
