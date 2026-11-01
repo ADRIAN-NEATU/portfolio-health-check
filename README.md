@@ -55,6 +55,8 @@ The app opens at http://localhost:8501. Run the tests with `pytest`.
 
 The app opens with a short "Before you start" window: the app is just math on the numbers you enter, not investment advice. It also explains the score in a few lines. "How the score works" at the bottom of the page opens it again.
 
+**Your data.** The app runs on your computer and keeps your portfolio only in memory: nothing is written to a file, and it is gone when you close the app. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml).
+
 The score is the average of two limit scores (sector and single position), rounded to a whole number. Each limit scores 100 while its largest weight stays below the yellow threshold, falls linearly from 100 to 80 between the yellow threshold and the limit, and above the limit scores 80 − 60 × min(weight / limit − 1, 1), so never less than 20. The sector limit also has a safety margin: up to 5 points over it, the status is Just over (orange) instead of Over limit (red). The score is the same either way.
 
 | Limit | Watch from | Limit | Just over up to | Not counted |

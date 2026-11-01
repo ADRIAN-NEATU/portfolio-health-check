@@ -987,8 +987,13 @@ and it does not know your goals, income or situation.
   stock market is about {pct(round(rules.WORLD_TECH_SHARE, 2))} technology (MSCI ACWI, 30 Sep 2026).
 - Details looked up online come from public sources and may be wrong: check them.
 
-**Your data.** Your portfolio stays on your computer. If online lookup is on, only names and
-tickers are sent to SEC EDGAR and OpenFIGI.
+**Your data**
+- The app runs on your computer and keeps your portfolio only in its memory: nothing is written
+  to a file, and it is gone when you close the app.
+- To keep positions you typed, use "Download as CSV": the file is saved where you choose.
+- If online lookup is on, only the names and tickers you type are sent to SEC EDGAR and OpenFIGI,
+  never the values. You can turn the lookup off.
+- The app collects no usage statistics.
 """
     )
     if st.button("I understand", type="primary"):
