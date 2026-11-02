@@ -56,6 +56,26 @@ LIMITS = {
 # over long horizons it matters less for stocks than company and sector risk,
 # so it is shown as an exposure note instead (FOREIGN_CURRENCY_NOTE below).
 
+# ---------------------------------------------------------------------------
+# The score (decision D9)
+# ---------------------------------------------------------------------------
+# Three parts of equal weight (our choice), each from 0 to 100:
+#   sector     100 minus a penalty for every sector above its limit
+#   position   the same for every single company above its limit
+#   spread     how many equal stocks the single companies are worth (10,000 / HHI),
+#              out of WELL_DIVERSIFIED_STOCKS
+# The penalty measures each excess in limits and squares it, so a bigger breach
+# costs more than several small ones: a position of 15% (half a limit over) costs
+# 25 points, one of 20% (a full limit over) costs all 100. Watch and Just over are
+# warnings and cost nothing.
+WELL_DIVERSIFIED_STOCKS = 30  # Statman (1987): at least 30 randomly chosen stocks
+
+# Score tiers, best first, with the lowest score of each (our choice).
+SCORE_TIERS = (("A+", 95), ("A", 85), ("B", 70), ("C", 50), ("D", 0))
+# The highest score while a limit is breached, so the tier never contradicts a
+# warning: Just over keeps you out of A+, Over limit out of A (our choice).
+SCORE_CAPS = {"orange": 94, "red": 84}
+
 # The 11 official GICS sectors (not an example: this is the standard).
 GICS_SECTORS = (
     "Energy",

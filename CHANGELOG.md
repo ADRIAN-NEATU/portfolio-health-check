@@ -2,6 +2,12 @@
 
 ## v0.1 – MVP (in progress)
 
+### 2 Nov 2026
+- A new score from three parts: sector, positions and spread. Every sector and company above its limit counts, not only the largest, and a bigger breach costs much more than a small one. The spread part uses the HHI: 30 or more equal stocks score full marks.
+- The score is shown on a gauge with tiers from D to A+, red to green, that animates when a portfolio opens. While a limit is breached, the tier can't be the top one.
+- A new insight shows your concentration index (HHI); its (?) explains it in plain words.
+- The page no longer loads anything from Google.
+
 ### 1 Nov 2026
 - The sector limit is now 25%, the level the US regulator calls concentration. Watch starts at 20%.
 - A sector up to 5 points over its limit shows as Just over, in a darker orange; above that, Over limit in red.

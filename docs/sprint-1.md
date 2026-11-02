@@ -39,6 +39,7 @@
 | S1-29 | – | Story | E4 | Count corporate bonds as positions and show precious metals | 3 | Done | 1 Nov |
 | S1-30 | – | Story | E5 | Ten stress-test portfolios that sit on the new thresholds | 2 | Done | 1 Nov |
 | S1-31 | – | Task | E5 | Release check: nothing its source doesn't allow, pinned versions, licence | 2 | Done | 1 Nov |
+| S1-33 | – | Story | E4 | A score from three parts (sector, positions, spread with the HHI), progressive, in tiers on an animated gauge | 5 | Done | 2 Nov |
 
 S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. On 1 Nov:
 - S1-13 was finished: both limits now come from documented rules ([D2](decisions.md) single position, [D3](decisions.md) sector).
@@ -48,6 +49,8 @@ S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Spri
 - S1-26 was added and done: a "Before you start" window that says the app is just math, not investment advice, and how the score is calculated. It replaces the idea of score tips, which came too close to advice.
 - S1-27 and S1-29 were pulled in and done the same day ([D6](decisions.md), [D7](decisions.md)). S1-28 waits for the link to the feedback form.
 - In the release check (S1-31, [D8](decisions.md)), S1-27's index figures were removed: its code stays and waits for public-domain figures. S1-30 added ten stress-test portfolios.
+
+On 2 Nov, S1-33 replaced the score's formula ([D9](decisions.md)); it also covers S1-32, which was removed from the Product Backlog.
 
 Anything not Done by 2 Nov goes back to the Product Backlog.
 
@@ -59,7 +62,6 @@ Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or no
 |---|---|---|---|---|---|---|
 | S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
 | S1-28 | – | Story | E5 | Give feedback through an anonymous form | 1 | 1 Nov |
-| S1-32 | – | Story | E4 | Note when a portfolio is mostly stocks spread as fewer than 30 equal ones | 1 | 2 Nov |
 
 ## Burndown
 
@@ -74,7 +76,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | 30 Oct | 62 | – | 0 | 11 | 18 |
 | 31 Oct | 62 | – | 0 | 11 | 12 |
 | 1 Nov | 75 | 13 (S1-26, S1-27, S1-29, S1-30, S1-31) | 22 (S1-13, S1-15, S1-20, S1-22, S1-26, S1-27, S1-29, S1-30, S1-31) | 2 | 6 |
-| 2 Nov | | | | | 0 |
+| 2 Nov | 80 | 5 (S1-33) | 5 (S1-33) | 2 | 0 |
 
 - **Scope:** all points in the Sprint. It grows when work is added.
 - **Ideal:** the starting 42 points spread evenly over 7 days (6 a day).
@@ -82,10 +84,10 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 ```mermaid
 xychart-beta
     title "Sprint 1 burndown: bars = points left, line = ideal"
-    x-axis ["Start", "27 Oct", "28 Oct", "29 Oct", "30 Oct", "31 Oct", "1 Nov"]
+    x-axis ["Start", "27 Oct", "28 Oct", "29 Oct", "30 Oct", "31 Oct", "1 Nov", "2 Nov"]
     y-axis "Story points" 0 --> 45
-    bar [42, 16, 9, 11, 11, 11, 2]
-    line [42, 36, 30, 24, 18, 12, 6]
+    bar [42, 16, 9, 11, 11, 11, 2, 2]
+    line [42, 36, 30, 24, 18, 12, 6, 0]
 ```
 
 ## User stories and acceptance criteria

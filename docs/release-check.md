@@ -15,7 +15,7 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 ### ✅ Solid
 - Pick a sample, upload a CSV (also Excel with Romanian settings), download the template; clear messages for a missing column or a bad value.
 - Type or paste positions; details fill in from the built-in list.
-- The score from two limits: sector (limit 25%, the US regulator's concentration level) and single position (5% and 10%, EU and US fund law). Funds, government bonds, cash and precious metals are outside the limits.
+- The score from three parts (D9): sector (limit 25%, the US regulator's concentration level), positions (10%, EU and US fund law) and spread (the HHI against 30 stocks, Statman 1987). Every breach counts and costs more the bigger it is; tiers D to A+ on an animated gauge. Funds, government bonds, cash and precious metals are outside the limits.
 - Statuses OK, Watch, Just over, Over limit, each with a word and a colour.
 - At a glance, warnings in order of severity, limit cards with "Why it matters" and the source.
 - Charts by sector, currency, position and region; values inside the bars; tooltips that list the positions; click a bar to list them.
@@ -34,13 +34,13 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 ### ⚠️ Good but sketchy
 - **Example values**, not from the thesis or a source yet: Watch at 20% (sector) and 5% (position, which is also EU law), the 5-point sector margin, the small-cap note (28%), the region note (80%), the currency note (56%), the profile cut-offs (60% and 30%).
 - **The "Good" label on insights** (D5) is provisional.
+- **The score's own choices** (D9): equal weights of the three parts, the squared penalty, the caps and the tier boundaries.
 - **Online lookup:** legal and free, but sector comes from SIC codes, not GICS, and size from the public float companies report, which is sometimes wrong by orders of magnitude.
 - **Look and feel tied to Streamlit and Plotly internals** (tooltip cards, radio cards, chart overflow): pinned versions protect it; an upgrade may break it.
 
 ### ⏭️ Sprint 2
 - Index funds counted by what they hold ("Inside your funds", Nasdaq-100 by sector): the code is ready, the figures need a public-domain source (SEC Form N-PORT).
 - Give feedback through an anonymous form (S1-28): waits for the form link.
-- A note when a portfolio is mostly individual stocks spread as fewer than 30 equal ones (Statman, 1987): proposed on 2 Nov.
 - Search with suggestions as you type (S1-17).
 - Adding a company's bond and stock together; a yearly refresh of the World Bank figure; browser tests inside the project.
 

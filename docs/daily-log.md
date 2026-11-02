@@ -78,3 +78,4 @@ Five minutes at the end of each working day.
 - **Impediments:** None.
 - **My feedback:** a portfolio made only of stocks should be flagged when it holds too few of them, and say why. Five stocks are already caught by the single-position limit, but 20 to 29 equal stocks score 100.
 - **Product Backlog changes:** New S1-32: a note when a portfolio is mostly individual stocks spread as fewer than 30 equal ones (Statman, 1987), for Sprint 2.
+- **Later the same day:** S1-33 gave the score a new formula, from three parts with the HHI ([D9](decisions.md)), shown on an animated gauge with tiers D to A+. Its spread part covers S1-32, which was removed.

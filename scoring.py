@@ -310,7 +310,10 @@ class Analysis:
     info: list[str]
     limits: list[LimitResult]
     score: int
-    worst_status: str
+    tier: str  # A+, A, B, C or D
+    spread_score: float  # the spread part, 0-100
+    hhi: float  # concentration index of the single companies
+    equal_stocks: float  # the number of equal stocks the HHI is worth
     verdict: str
     warnings: list[LimitWarning]
     profile: Profile
@@ -747,14 +750,38 @@ def status_for(weight: float, limit: dict) -> str:
     return RED
 
 
+def limit_part(shares: pd.Series, limit: float) -> float:
+    """100 minus a penalty for every category above the limit: its excess, measured in
+    limits, squared, so a bigger breach costs more than several small ones."""
+    over = ((shares - limit).clip(lower=0) / limit) ** 2
+    return max(0.0, 100 - 100 * float(over.sum()))
+
+
 def limit_score(weight: float, limit: dict) -> float:
-    """100 up to yellow_from, 100 -> 80 linearly up to the limit, then down to 20."""
-    yellow_from, cap = limit["yellow_from"], limit["limit"]
-    if weight <= yellow_from + EPS:
-        return 100.0
-    if weight <= cap + EPS:
-        return 100 - 20 * (weight - yellow_from) / (cap - yellow_from)
-    return 80 - 60 * min(weight / cap - 1, 1)
+    """The part one category would score on its own (orders the warnings)."""
+    return limit_part(pd.Series([weight]), limit["limit"])
+
+
+# Positions that are one company each, for the spread: funds, government bonds,
+# cash and precious metals add nothing to the HHI.
+COMPANY_TYPES = ("stock", "corporate bond")
+
+
+def spread(df: pd.DataFrame) -> tuple[float, float]:
+    """The HHI of the single companies (each one's share in %, squared, added up) and
+    the number of equal stocks it is worth (10,000 / HHI; infinite with no company)."""
+    companies = df[df["asset_type"].isin(COMPANY_TYPES)]
+    shares = companies.groupby("asset")["value"].sum() / df["value"].sum() * 100
+    hhi = float((shares**2).sum())
+    return hhi, (10_000 / hhi if hhi > EPS else math.inf)
+
+
+def spread_score(equal_stocks: float) -> float:
+    return min(100.0, 100 * equal_stocks / rules.WELL_DIVERSIFIED_STOCKS)
+
+
+def tier_for(score: int) -> str:
+    return next(tier for tier, lowest in rules.SCORE_TIERS if score >= lowest)
 
 
 def evaluate_limits(df: pd.DataFrame) -> list[LimitResult]:
@@ -774,14 +801,15 @@ def evaluate_limits(df: pd.DataFrame) -> list[LimitResult]:
                 category=category,
                 weight=weight,
                 status=status_for(weight, limit),
-                score=limit_score(weight, limit),
+                score=limit_part(shares, limit["limit"]),
             )
         )
     return results
 
 
-def overall_score(limits: list[LimitResult]) -> int:
-    return round_half_up(sum(r.score for r in limits) / len(limits))
+def overall_score(limits: list[LimitResult], spread_part: float) -> int:
+    """The average of the limit parts and the spread part."""
+    return round_half_up((sum(r.score for r in limits) + spread_part) / (len(limits) + 1))
 
 
 def by_severity(items: list) -> list:
@@ -901,24 +929,10 @@ def insights_for(
 
     insights = []
 
+    insights.append(hhi_insight(df))
+
     positions = weights(df, "asset")
     count = len(positions)
-    equal = round_half_up(1 / float((positions**2).sum()))
-    if count == 1:
-        text = "You hold a single position."
-    elif equal >= count:
-        text = f"You hold {count} positions of about equal size."
-    elif equal == 1:
-        text = (
-            f"You hold {count} positions, but one is much bigger than the rest: "
-            "your money is spread as if you held a single position."
-        )
-    else:
-        text = (
-            f"You hold {count} positions of different sizes. Because a few large ones weigh "
-            f"more, your money is spread as if you held {equal} equal positions."
-        )
-    insights.append(Insight("effective_positions", "Effective positions", text, label("asset")))
 
     if count <= 5:
         text = f"With {count} position{'s' if count > 1 else ''}, your top 5 are the whole portfolio."
@@ -988,6 +1002,33 @@ def insights_for(
     return insights
 
 
+HHI_EXPLAINED = (
+    "How it works: take each company's share of your portfolio in %, square it, and add "
+    "them up. One company with all your money gives 10,000; 100 equal companies give 100. "
+    "The lower, the more spread out. Funds, government bonds, cash and precious metals "
+    "count as spread out. Dividing 10,000 by the HHI gives the number of equal stocks it is "
+    "worth. Research finds that a well-diversified portfolio of randomly chosen stocks "
+    "needs at least 30 (Statman, 1987). The HHI is the standard measure of concentration, "
+    "used for example by competition authorities."
+)
+
+
+def hhi_insight(df: pd.DataFrame) -> Insight:
+    """The concentration index of the single companies, in plain words, with a (?)."""
+    hhi, equal = spread(df)
+    target = rules.WELL_DIVERSIFIED_STOCKS
+    if hhi <= EPS:
+        text = ("Your HHI is 0: no single company carries your money, which is all in funds, "
+                "government bonds, cash or precious metals.")
+    else:
+        worth = "more than 100" if equal > 100 else f"about {round_half_up(equal)}"
+        text = (f"Your concentration index (HHI) is {round_half_up(hhi):,}: your companies are "
+                f"spread as if you held {worth} equal stocks. Below {round_half_up(10_000 / target)} "
+                f"means {target} or more, the number research says a well-diversified portfolio needs.")
+    return Insight("hhi", "Concentration index (HHI)", text, "Good" if equal >= target else "Watch",
+                   HHI_EXPLAINED)
+
+
 def at_a_glance(
     limits: list[LimitResult],
     warnings: list[LimitWarning],
@@ -1028,6 +1069,10 @@ def analyze(df: pd.DataFrame) -> Analysis:
     positions = positions.sort_values("value", ascending=False, kind="stable").reset_index(drop=True)
 
     limits = evaluate_limits(df)
+    hhi, equal_stocks = spread(df)
+    spread_part = spread_score(equal_stocks)
+    score = overall_score(limits, spread_part)
+    score = min([score] + [rules.SCORE_CAPS[r.status] for r in limits if r.status in rules.SCORE_CAPS])
     warnings = warnings_for(df)
     notes = exposure_notes(df, has_region)
     insights = insights_for(df, limits, notes, has_region)
@@ -1037,8 +1082,11 @@ def analyze(df: pd.DataFrame) -> Analysis:
         has_region=has_region,
         info=info,
         limits=limits,
-        score=overall_score(limits),
-        worst_status=min((r.status for r in limits), key=STATUS_RANK.get),
+        score=score,
+        tier=tier_for(score),
+        spread_score=spread_part,
+        hhi=hhi,
+        equal_stocks=equal_stocks,
         verdict=verdict(limits),
         warnings=warnings,
         profile=profile_for(df),

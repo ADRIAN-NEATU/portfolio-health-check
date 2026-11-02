@@ -4,7 +4,9 @@ Every number and every piece of text about the portfolio comes from
 scoring.py; this file only lays it out.
 """
 
+import base64
 import io
+import math
 from html import escape
 
 import plotly.graph_objects as go
@@ -34,8 +36,6 @@ COLORS = {
 # System fonts only: a web font from Google would send the user's IP address to Google.
 FONT = "'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif"
 
-STATUS_COLORS = {GREEN: COLORS["accent"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
-                 RED: COLORS["red"]}
 BAR_COLORS = {GREEN: COLORS["neutral"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
               RED: COLORS["red"]}
 SLICE_COLORS = {"Equity": COLORS["text-2"], "Bonds": COLORS["neutral"], "Cash": COLORS["light"],
@@ -140,7 +140,24 @@ def inject_css() -> None:
 .phc-row-tab { color: var(--text-2); font-size: .78rem; white-space: nowrap; }
 
 /* At a glance */
-.phc-verdict { text-align: center; font-weight: 500; line-height: 1.4; margin-top: -.5rem; }
+.phc-verdict { text-align: center; font-weight: 500; line-height: 1.4; margin-top: .4rem; }
+
+/* Score gauge: segments draw in, the needle swings, the number counts up */
+/* \\3C and \\3E are the angle brackets around "integer": st.html drops a style block that
+   contains a less-than sign, so none may appear anywhere in this CSS. */
+@property --phc-n { syntax: "\\3C integer\\3E"; inherits: false; initial-value: 0; }
+.phc-gauge { display: flex; flex-direction: column; align-items: center; gap: .15rem; }
+.phc-gauge img { width: 100%; max-width: 270px; }
+.phc-gauge-score { display: flex; align-items: baseline; gap: .45rem; margin-top: -.3rem; }
+.phc-count { font-size: 2.6rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+  --phc-n: var(--target); counter-reset: phc var(--phc-n); animation: phc-count 1.5s ease-out .5s both; }
+.phc-count::after { content: counter(phc); }
+@keyframes phc-count { from { --phc-n: 0; } to { --phc-n: var(--target); } }
+.phc-tier { align-self: center; padding: .15rem .65rem; border-radius: 999px; font-weight: 700; }
+.phc-parts { color: var(--text-2); font-size: .82rem; }
+@media (prefers-reduced-motion: reduce) {
+  .phc-count { animation: none; }
+}
 .phc-glance-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem;
   flex-wrap: wrap; margin-bottom: .75rem; }
 .phc-glance-label { color: var(--text-2); font-size: .85rem; }
@@ -403,28 +420,74 @@ def rows_html(items: list[tuple[str, str, str]]) -> str:
 # ---------------------------------------------------------------------------
 
 
-def score_ring(score: int, status: str) -> go.Figure:
-    fig = go.Figure(
-        go.Pie(
-            values=[score, 100 - score],
-            hole=0.82,
-            sort=False,
-            direction="clockwise",
-            marker=dict(colors=[STATUS_COLORS[status], COLORS["border"]], line=dict(width=0)),
-            textinfo="none",
-            hoverinfo="skip",
+# Tier colours, red to green, and the ink that reads on each.
+TIER_COLORS = {"D": COLORS["red"], "C": COLORS["orange"], "B": COLORS["yellow"], "A": "#6FA35A",
+               "A+": COLORS["accent"]}
+TIER_TEXT = {"D": "#FFFFFF", "C": COLORS["text"], "B": COLORS["text"], "A": COLORS["text"], "A+": "#FFFFFF"}
+GAUGE_CENTER, GAUGE_RADIUS = (120, 118), 92
+
+
+def gauge_point(score: float, radius: float) -> tuple[float, float]:
+    """Where a score sits on the half circle: 0 far left, 100 far right."""
+    angle = math.pi * (1 - score / 100)
+    cx, cy = GAUGE_CENTER
+    return cx + radius * math.cos(angle), cy - radius * math.sin(angle)
+
+
+def gauge_svg(score: int) -> str:
+    """The half circle as a standalone SVG picture (st.html strips inline SVG), with its
+    own styles: the tier segments draw in one after another, then the needle swings to
+    the score. Still for people who ask for less motion."""
+    tiers = list(reversed(rules.SCORE_TIERS))  # D first, left to right
+    ends = [lowest for _, lowest in tiers[1:]] + [100]
+    parts = []
+    for i, ((tier, lowest), highest) in enumerate(zip(tiers, ends)):
+        (x1, y1), (x2, y2) = gauge_point(lowest + 0.7, GAUGE_RADIUS), gauge_point(highest - 0.7, GAUGE_RADIUS)
+        lx, ly = gauge_point((lowest + highest) / 2, GAUGE_RADIUS + 23)
+        parts.append(
+            f'<path class="seg" d="M {x1:.1f} {y1:.1f} A {GAUGE_RADIUS} {GAUGE_RADIUS} 0 0 1 {x2:.1f} {y2:.1f}" '
+            f'pathLength="100" stroke="{TIER_COLORS[tier]}" style="animation-delay:{i * 0.12:.2f}s"/>'
+            f'<text x="{lx:.1f}" y="{ly + 4:.1f}">{escape(tier)}</text>'
         )
+    cx, cy = GAUGE_CENTER
+    style = (
+        ".seg{fill:none;stroke-width:16;stroke-dasharray:100;stroke-dashoffset:100;"
+        "animation:draw .45s ease-out forwards}"
+        "@keyframes draw{to{stroke-dashoffset:0}}"
+        f"text{{font:700 11px {FONT};fill:{COLORS['text-2']};text-anchor:middle}}"
+        f".needle{{transform-box:view-box;transform-origin:{cx}px {cy}px;"
+        f"transform:rotate({180 * score / 100:.1f}deg);animation:swing 1.5s cubic-bezier(.34,1.25,.64,1) .5s both}}"
+        f"@keyframes swing{{from{{transform:rotate(0deg)}}to{{transform:rotate({180 * score / 100:.1f}deg)}}}}"
+        "@media (prefers-reduced-motion:reduce){.seg,.needle{animation:none}.seg{stroke-dashoffset:0}}"
     )
-    fig.add_annotation(
-        text=str(score), x=0.5, y=0.56, showarrow=False,
-        font=dict(size=46, color=COLORS["text"], weight=600),
+    needle = (
+        f'<g class="needle"><line x1="{cx}" y1="{cy}" x2="{cx - GAUGE_RADIUS + 26}" y2="{cy}" '
+        f'stroke="{COLORS["text"]}" stroke-width="4" stroke-linecap="round"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="7" fill="{COLORS["text"]}"/></g>'
     )
-    fig.add_annotation(
-        text="out of 100", x=0.5, y=0.36, showarrow=False,
-        font=dict(size=13, color=COLORS["text-2"]),
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 132" width="270" height="148">'
+        f"<style>{style}</style>{''.join(parts)}{needle}</svg>"
     )
-    fig.update_layout(height=210, margin=dict(l=0, r=0, t=4, b=4))
-    return fig
+
+
+def score_gauge(analysis: scoring.Analysis) -> str:
+    """The score as a half-circle gauge in tiers, D to A+. The tier segments draw in
+    one after another, the needle swings to the score and the number counts up, once,
+    when a portfolio opens (CSS only; still for people who ask for less motion)."""
+    sector, position = (r.score for r in analysis.limits)
+    tier = analysis.tier
+    picture = base64.b64encode(gauge_svg(analysis.score).encode("utf-8")).decode("ascii")
+    return (
+        f'<div class="phc-gauge" role="img" aria-label="Score {analysis.score} out of 100, tier {tier}">'
+        f'<img src="data:image/svg+xml;base64,{picture}" alt="">'
+        '<div class="phc-gauge-score">'
+        f'<span class="phc-count" style="--target:{analysis.score}"></span><span class="phc-of">/ 100</span>'
+        f'<span class="phc-tier" style="background:{TIER_COLORS[tier]};color:{TIER_TEXT[tier]}">{tier}</span>'
+        "</div>"
+        f'<div class="phc-parts">Sector {round(sector)} · Positions {round(position)} · '
+        f"Spread {round(analysis.spread_score)}</div></div>"
+    )
 
 
 def asset_class_donut(slices) -> go.Figure:
@@ -806,7 +869,7 @@ def at_a_glance(analysis: scoring.Analysis, name: str) -> None:
     with st.container(key="glance"):
         left, right = st.columns([1, 1.7], gap="large", vertical_alignment="center")
         with left:
-            show_chart(score_ring(analysis.score, analysis.worst_status))
+            st.html(score_gauge(analysis))
             st.html(f'<div class="phc-verdict">{escape(analysis.verdict)}</div>')
         with right:
             st.html(
@@ -987,6 +1050,7 @@ def about_dialog() -> None:
     """What the app is and how the score is calculated: once per visit, and from the footer."""
     sector, asset = rules.LIMITS["sector"], rules.LIMITS["asset"]
     pct = scoring.fmt_pct
+    tiers = ", ".join(f"{tier} from {lowest}" for tier, lowest in rules.SCORE_TIERS[:-1]) + ", D below"
     # What is said about funds depends on whether index figures are installed (D6, D8).
     if scoring.index_funds().empty:
         narrow = ""
@@ -1004,10 +1068,16 @@ and it does not know your goals, income or situation.
 
 **How the score is calculated**
 - Each position's weight is its value divided by the total of the portfolio.
-- Two limits look at the largest share: one sector (full score below {pct(sector["yellow_from"])},
-  limit {pct(sector["limit"])}) and one single position (full score below
-  {pct(asset["yellow_from"])}, limit {pct(asset["limit"])}).
-- Each limit scores from 20 to 100, and the score is the average of the two.
+- The score is the average of three parts, each from 0 to 100:
+  - **Sector:** every sector above {pct(sector["limit"])} loses points.
+  - **Positions:** every single company above {pct(asset["limit"])} loses points.
+  - **Spread:** how many equal stocks your companies are worth (from the HHI, see the insight).
+    {rules.WELL_DIVERSIFIED_STOCKS} or more scores 100.
+- The further above a limit, the faster the points go: a company at 15% costs 25 points, one at
+  20% costs all 100. Watch (from {pct(sector["yellow_from"])} and {pct(asset["yellow_from"])}) and
+  Just over are warnings and cost nothing, but while a limit is Just over the score stays below
+  95, and while it is Over limit below 85.
+- Tiers: {tiers}.
 - Broad funds, government bonds, cash and precious metals don't count towards the limits, but
   they are part of the total. A broad fund already spreads your money over hundreds of
   companies, so it doesn't lower your score.

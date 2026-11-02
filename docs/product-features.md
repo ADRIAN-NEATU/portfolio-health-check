@@ -17,7 +17,7 @@ What a user can see and do in Portfolio Health Check.
 | | Start your own portfolio from any sample ("Edit these positions") and save it as a CSV | Done | 28 Oct |
 | | Start the app on Windows with a double-click | Done | 28 Oct |
 | | Try ten stress-test portfolios, each sitting on a threshold | Done | 1 Nov |
-| **Score and limits** | Get one score from 0 to 100, built from two limits: sector and single position (currency was a third limit until 29 Oct) | Done | 27 Oct |
+| **Score and limits** | Get one score from 0 to 100, from three parts: sector, positions and spread (the HHI); every breach counts, the bigger the faster; tiers D to A+ on an animated gauge | Done | 2 Nov |
 | | See each limit as OK, Watch or Over limit, next to its threshold, with "Why it matters" | Done | 27 Oct |
 | | A sector just over its limit (up to 5 points) shows as Just over, in a darker orange | Done | 1 Nov |
 | | Broad funds, bonds and cash do not count against the sector and single-position limits | Done | 27 Oct |

@@ -39,24 +39,24 @@ def sample(file_name):
 # file -> (sector, asset, score, profile, notes)
 EXPECTED = {
     "diversified.csv": (GREEN, GREEN, 100, "Dynamic", []),
-    "tech_heavy.csv": (RED, GREEN, 66, "Dynamic", []),
+    "tech_heavy.csv": (RED, GREEN, 79, "Dynamic", []),
     "all_in_ron.csv": (GREEN, GREEN, 100, "Balanced", []),
-    "beginner_3_stocks.csv": (YELLOW, RED, 60, "Balanced", []),  # Tesla: 20% of one sector
+    "beginner_3_stocks.csv": (YELLOW, RED, 59, "Balanced", []),  # Tesla: 20% of one sector
     "conservative_saver.csv": (GREEN, GREEN, 100, "Conservative", []),
     "small_cap_fan.csv": (GREEN, GREEN, 100, "Dynamic", ["small_cap"]),
     "one_global_etf.csv": (GREEN, GREEN, 100, "Dynamic", ["currency"]),
-    "andrei.csv": (YELLOW, YELLOW, 91, "Dynamic", ["large_cap", "region", "currency"]),
+    "andrei.csv": (YELLOW, YELLOW, 98, "Dynamic", ["large_cap", "region", "currency"]),
     # Stress tests: each sits on a threshold or shows one rule at work.
-    "stress_sector_just_over.csv": (ORANGE, GREEN, 88, "Dynamic", ["large_cap", "currency"]),
-    "stress_exact_limits.csv": (YELLOW, YELLOW, 80, "Dynamic", ["large_cap"]),
-    "stress_sector_over_margin.csv": (RED, GREEN, 83, "Dynamic", ["large_cap", "currency"]),
-    "stress_small_index_slice.csv": (GREEN, RED, 63, "Dynamic", ["large_cap", "region", "currency"]),
-    "stress_half_index.csv": (GREEN, YELLOW, 90, "Dynamic", ["large_cap", "region", "currency"]),
-    "stress_corporate_bond.csv": (GREEN, RED, 75, "Balanced", []),
+    "stress_sector_just_over.csv": (ORANGE, GREEN, 94, "Dynamic", ["large_cap", "currency"]),
+    "stress_exact_limits.csv": (YELLOW, YELLOW, 98, "Dynamic", ["large_cap"]),
+    "stress_sector_over_margin.csv": (RED, GREEN, 84, "Dynamic", ["large_cap", "currency"]),
+    "stress_small_index_slice.csv": (GREEN, RED, 39, "Dynamic", ["large_cap", "region", "currency"]),
+    "stress_half_index.csv": (GREEN, YELLOW, 89, "Dynamic", ["large_cap", "region", "currency"]),
+    "stress_corporate_bond.csv": (GREEN, RED, 84, "Balanced", []),
     "stress_gold.csv": (GREEN, GREEN, 100, "Dynamic", []),
     "stress_government_bonds.csv": (GREEN, GREEN, 100, "Conservative", []),
-    "stress_us_large_caps.csv": (GREEN, GREEN, 100, "Dynamic", ["large_cap", "region", "currency"]),
-    "stress_bvb_only.csv": (RED, RED, 56, "Dynamic", ["small_cap", "region"]),
+    "stress_us_large_caps.csv": (GREEN, GREEN, 94, "Dynamic", ["large_cap", "region", "currency"]),
+    "stress_bvb_only.csv": (RED, RED, 65, "Dynamic", ["small_cap", "region"]),
 }
 
 
@@ -111,14 +111,15 @@ def test_tech_heavy_sector_is_technology_45_percent():
 
 def test_andrei_at_a_glance():
     analysis = sample("andrei.csv")
-    assert analysis.verdict == "2 issues. The most serious: single position (Apple 8%)."
+    # Two Watch warnings cost nothing; the larger weight comes first.
+    assert analysis.verdict == "2 issues. The most serious: sector (Information Technology 21.5%)."
     assert [(row.status, row.tab) for row in analysis.glance] == [
         (YELLOW, "Overview"),
         (YELLOW, "Overview"),
         ("", "Stocks"),
     ]
-    assert analysis.glance[0].text == "Position Apple: 8% (limit 10%) and 6 more"
-    assert analysis.glance[1].text == "Sector Information Technology: 21.5% (limit 25%)"
+    assert analysis.glance[0].text == "Sector Information Technology: 21.5% (limit 25%)"
+    assert analysis.glance[1].text == "Position Apple: 8% (limit 10%) and 6 more"
 
 
 def test_one_global_etf_region_is_global():
@@ -160,20 +161,27 @@ def test_status_tolerates_floating_point_error():
     "weight, expected",
     [
         (0.10, 100),
-        (0.20, 100),  # yellow_from
-        (0.225, 90),  # halfway between yellow_from and limit
-        (0.25, 80),  # limit
-        (0.375, 50),  # 80 - 60 * 0.5
-        (0.50, 20),  # twice the limit
-        (0.90, 20),  # floor
+        (0.20, 100),  # Watch costs nothing
+        (0.25, 100),  # exactly the limit
+        (0.3125, 93.75),  # a quarter of a limit over: 100 - 100 * 0.25**2
+        (0.375, 75),  # half a limit over: 100 - 100 * 0.5**2
+        (0.50, 0),  # a full limit over
+        (0.90, 0),  # never below 0
     ],
 )
-def test_graded_score(weight, expected):
+def test_limit_part_is_progressive(weight, expected):
     assert scoring.limit_score(weight, SECTOR) == pytest.approx(expected)
 
 
+def test_limit_part_adds_every_breach():
+    # Six positions of 15% each: each half a limit over, 6 x 25 = 150 points: nothing left.
+    assert scoring.limit_part(pd.Series([0.15] * 6), 0.10) == 0
+    assert scoring.limit_part(pd.Series([0.15]), 0.10) == pytest.approx(75)
+    assert scoring.limit_part(pd.Series([0.12, 0.12]), 0.10) == pytest.approx(92)
+
+
 def test_overall_score_is_rounded_mean():
-    # sector 100, asset 88 (8%) -> 94; currency is a note, not a limit
+    # sector 100, positions 100 (8% is Watch, free), spread 100 (HHI 64) -> 100
     df = make(
         [
             ("A", 8, "Information Technology", "stock", "large", "USD", "US"),
@@ -182,8 +190,39 @@ def test_overall_score_is_rounded_mean():
         ]
     )
     analysis = scoring.analyze(df)
-    assert [round(r.score, 2) for r in analysis.limits] == [100, 88]
-    assert analysis.score == 94
+    assert [round(r.score, 2) for r in analysis.limits] == [100, 100]
+    assert (analysis.hhi, analysis.spread_score, analysis.score, analysis.tier) == (64, 100, 100, "A+")
+
+
+def test_spread_counts_companies_only():
+    df = make(HAND)
+    hhi, equal = scoring.spread(df)
+    assert hhi == pytest.approx(40**2 + 20**2 + 5**2)  # the fund, bond and cash add nothing
+    assert equal == pytest.approx(10_000 / 2025)
+    assert scoring.spread_score(15) == 50 and scoring.spread_score(45) == 100
+
+
+@pytest.mark.parametrize("score, tier", [(100, "A+"), (95, "A+"), (94, "A"), (85, "A"), (84, "B"),
+                                         (70, "B"), (69, "C"), (50, "C"), (49, "D"), (0, "D")])
+def test_tiers(score, tier):
+    assert scoring.tier_for(score) == tier
+
+
+def test_a_breach_caps_the_score():
+    over = sample("stress_sector_over_margin.csv")  # parts 94, 100, 100 average 98
+    assert over.score == 84 and over.tier == "B"
+    just_over = sample("stress_sector_just_over.csv")  # parts 99, 100, 100
+    assert just_over.score == 94 and just_over.tier == "A"
+
+
+def test_six_stocks_score_below_one():
+    secs = ["Information Technology", "Financials", "Health Care", "Energy", "Industrials", "Consumer Staples"]
+    six = make([(f"S{i}", 15, secs[i], "stock", "large", "USD", "US") for i in range(6)]
+               + [("Cash", 10, "n/a", "cash", "n/a", "RON", "Romania")])
+    one = make([("S1", 15, "Information Technology", "stock", "large", "USD", "US"),
+                ("World", 85, "Diversified", "ETF", "n/a", "EUR", "Global")])
+    assert scoring.analyze(six).score == 42  # was 75, the same as one
+    assert scoring.analyze(one).score == 84  # 92 on average, capped by the breach
 
 
 def test_round_half_up():
@@ -405,13 +444,15 @@ def hand_insights():
     return {i.key: i for i in scoring.analyze(make(HAND)).insights}
 
 
-def test_effective_positions(hand_insights):
-    insight = hand_insights["effective_positions"]
+def test_hhi_insight(hand_insights):
+    insight = hand_insights["hhi"]
     assert insight.text == (
-        "You hold 6 positions of different sizes. Because a few large ones weigh more, "
-        "your money is spread as if you held 4 equal positions."
+        "Your concentration index (HHI) is 2,025: your companies are spread as if you held "
+        "about 5 equal stocks. Below 333 means 30 or more, the number research says a "
+        "well-diversified portfolio needs."
     )
-    assert insight.label == "Watch"  # A is 40%: single-position limit is red
+    assert insight.label == "Watch"
+    assert insight.source.startswith("How it works: take each company's share")
 
 
 def test_top5(hand_insights):
@@ -481,7 +522,7 @@ def test_regions_without_a_world_figure():
 
 def test_insight_labels():
     labels = {i.key: i.label for i in sample("diversified.csv").insights}
-    assert labels["effective_positions"] == labels["largest_sector"] == "Good"  # limits OK
+    assert labels["hhi"] == labels["largest_sector"] == "Good"  # about 69 equal stocks; limits OK
     assert labels["other_currencies"] == labels["regions"] == "Info"  # no limit
     assert {i.key: i.label for i in sample("tech_heavy.csv").insights}["largest_sector"] == "Watch"
 
@@ -498,7 +539,8 @@ def test_just_over_the_sector_limit():
 def test_insights_without_sector_exposure():
     df = make([("World", 100, "Diversified", "ETF", "n/a", "RON", "Global")])
     insights = {i.key: i for i in scoring.analyze(df).insights}
-    assert insights["effective_positions"].text == "You hold a single position."
+    assert insights["hhi"].text.startswith("Your HHI is 0: no single company carries your money")
+    assert insights["hhi"].label == "Good"
     assert insights["top5"].text == "With 1 position, your top 5 are the whole portfolio."
     assert insights["other_currencies"].text == "All of your portfolio is in RON."
     assert insights["sector_coverage"].text == "You hold global funds that span all sectors."
@@ -512,11 +554,8 @@ def test_one_dominant_position():
             ("Small", 3, "Utilities", "stock", "large", "USD", "US"),
         ]
     )
-    insight = next(i for i in scoring.analyze(df).insights if i.key == "effective_positions")
-    assert insight.text == (
-        "You hold 2 positions, but one is much bigger than the rest: "
-        "your money is spread as if you held a single position."
-    )
+    insight = next(i for i in scoring.analyze(df).insights if i.key == "hhi")
+    assert "spread as if you held about 1 equal stocks" in insight.text
 
 
 def test_bar_members():
@@ -546,7 +585,8 @@ def test_bonds_only_covers_zero_sectors():
 
 def test_insights_do_not_change_the_score():
     analysis = scoring.analyze(make(HAND))
-    assert analysis.score == scoring.overall_score(analysis.limits)
+    assert analysis.score == min(scoring.overall_score(analysis.limits, analysis.spread_score),
+                                 rules.SCORE_CAPS["red"])
 
 
 # ---------------------------------------------------------------------------
@@ -907,7 +947,7 @@ def test_broad_fund_still_raises_the_score(index_figures):
     df = make([(n, 1000, s, "stock", "large", "USD", "US") for n, s in FIVE]
               + [fund_row("iShares Core S&P 500 UCITS ETF")])
     analysis = scoring.analyze(df)
-    assert analysis.score == 90  # the fund stays diversified
+    assert analysis.score == 89  # parts 100, 100 (10% is Watch), spread 67 (20 equal stocks)
     funds = next(i for i in analysis.insights if i.key == "funds")
     assert "Apple: 10% directly plus 3.5% through your funds, about 13.5% in total." in funds.text
     assert funds.label == "Watch"  # Apple in total is over the 10% limit

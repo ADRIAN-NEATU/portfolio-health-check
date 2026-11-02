@@ -57,7 +57,23 @@ The app opens with a short "Before you start" window: the app is just math on th
 
 **Your data.** The app runs on your computer and keeps your portfolio only in memory: nothing is written to a file, and it is gone when you close the app. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml).
 
-The score is the average of two limit scores (sector and single position), rounded to a whole number. Each limit scores 100 while its largest weight stays below the yellow threshold, falls linearly from 100 to 80 between the yellow threshold and the limit, and above the limit scores 80 − 60 × min(weight / limit − 1, 1), so never less than 20. The sector limit also has a safety margin: up to 5 points over it, the status is Just over (orange) instead of Over limit (red). The score is the same either way.
+The score (0 to 100, shown on a gauge with tiers D, C, B, A and A+) is the average of three parts, each from 0 to 100 ([decision D9](docs/decisions.md)):
+
+- **Sector:** 100 minus a penalty for every sector above 25%.
+- **Positions:** 100 minus a penalty for every single company above 10%.
+- **Spread:** how many equal stocks your single companies are worth, from the HHI concentration index (10,000 / HHI). 30 or more scores 100, the number research gives for a well-diversified portfolio of randomly chosen stocks (Statman, 1987). Funds, government bonds, cash and precious metals count as spread out.
+
+The penalty grows faster than the breach: each excess is measured in limits and squared. A company at 15% (half a limit over) costs 25 points; one at 20% (a full limit over) costs all 100. Every breach counts, not only the largest, so six companies at 15% score far lower than one. Watch and Just over are warnings and cost nothing, but while a limit is Just over the score stays below 95 (no A+), and while one is Over limit it stays below 85 (no A).
+
+| Tier | Score |
+|---|---|
+| A+ | 95–100 |
+| A | 85–94 |
+| B | 70–84 |
+| C | 50–69 |
+| D | below 50 |
+
+The weights of the three parts, the squared penalty, the caps and the tiers are our choices; the limits and the 30 stocks come from the sources below. The sector limit also has a safety margin: up to 5 points over it, the status is Just over (orange) instead of Over limit (red).
 
 | Limit | Watch from | Limit | Just over up to | Not counted |
 |---|---|---|---|---|
@@ -78,7 +94,7 @@ All thresholds live in [rules.py](rules.py). No regulator sets a limit for an in
 - **Market cap:** the stocks' small / mid / large split is shown. A note appears when small caps are more than 28% of the stocks or when almost everything is large cap. As with asset classes, the right mix depends on the investor, so it does not affect the score.
 - **Currency:** a note, not a limit ([decision D1](docs/decisions.md)). It appears when one foreign currency holds most of the portfolio. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
 - **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank, 2025), with the source behind a (?) ([decisions D4, D8](docs/decisions.md)).
-- **Insights:** effective number of positions, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Good (its limit is OK), Watch (its limit or note needs a look) or Info (no limit), and has no effect on the score. The Good label is provisional ([decision D5](docs/decisions.md)).
+- **Insights:** the concentration index (HHI), with a (?) that explains it, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Good (its limit is OK), Watch (its limit or note needs a look) or Info (no limit), and has no effect on the score. The Good label is provisional ([decision D5](docs/decisions.md)).
 
 ## CSV format
 

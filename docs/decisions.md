@@ -154,3 +154,27 @@ Every label is a word as well as a colour. The question is still open: whether a
 
 **Also checked.** SEC blocks automated requests that don't identify themselves properly. The app's identification works; adding a web address to it got it blocked, so it stays as it is.
 
+## D9 – A score from three parts, with a progressive penalty and tiers (2 Nov 2026)
+
+**Context.** The score looked only at the largest sector and the largest position, and its steps (100, 80, 20) had no source. Six companies at 15% each scored the same as one company at 15% next to a world fund (75 both). Twenty equal stocks scored 100, although research says a well-diversified portfolio needs at least 30.
+
+**Decision.**
+- **Three parts of equal weight**, each 0–100: sector, positions and spread.
+- **Sector and positions:** 100 minus a penalty for every category above its limit (25% and 10%), not only the largest. Each excess is measured in limits and squared, so the penalty grows faster than the breach: half a limit over costs 25 points, a full limit over costs 100.
+- **Spread:** the HHI of the single companies (stocks and corporate bonds; each one's share in %, squared, added up), turned into the number of equal stocks it is worth (10,000 / HHI). 30 or more scores 100 (Statman, 1987). Funds, government bonds, cash and precious metals add nothing.
+- **Watch and Just over cost nothing,** but a breach caps the score: below 95 while a limit is Just over, below 85 while one is Over limit, so the tier never contradicts a warning.
+- **Tiers:** A+ from 95, A from 85, B from 70, C from 50, D below. The score is shown on a half-circle gauge, red to green, that draws in, swings to the score and counts up when a portfolio opens.
+- **The HHI is shown** as an insight, with a (?) that explains it in plain words.
+- **The region note stays:** a portfolio in one region gets the note, as Bucharest only does.
+
+**Our choices, written as such:** the equal weights, squaring the excess, the caps and the tier boundaries. The limits (25%, 10%) and the 30 stocks come from the sources in D2, D3 and Statman (1987).
+
+**Consequences.**
+- Six companies at 15% plus cash: 75 → 42 (D). One company at 15% next to a world fund: 75 → 84 (B).
+- Samples: Tech-heavy 66 → 79, Beginner 60 → 59, Andrei 91 → 98, Bucharest only 56 → 65, Five stocks a little index 63 → 39, 25 US large caps 100 → 94. A real portfolio of about 20 equal stocks with one sector Just over: 79 → 88 (A).
+- The idea in S1-32 (a note below 30 equal stocks) is covered by the spread part.
+
+**Sources.**
+- Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.
+- The HHI (Herfindahl–Hirschman Index) is the standard measure of concentration, used for example in competition law.
+
