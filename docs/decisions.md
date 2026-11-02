@@ -74,12 +74,12 @@
 
 ## D4 – Compare the largest region with the world market (1 Nov 2026)
 
-*Updated by D8: the figure now comes from the World Bank (about 49%), not from an index provider.*
+*Updated by D8: the figure now comes from the World Bank (about 49%), no longer from an index provider.*
 
 **Context.** S1-22 asked for a neutral question when one region holds a large share. A portfolio with 68% in the US got no note, because the note starts at 80%.
 
 **Decision.** When the largest region is the US, the Regions insight adds a neutral comparison with the world stock market:
-> "68% of your money is in the US. For comparison, the US is 60% of the world stock market."
+> "68% of your money is in the US. For comparison, the US is about 49% of the value of all listed companies in the world." (wording since D8)
 
 A (?) next to it shows the source on hover. The comparison is not a target and says nothing about what to buy or sell. The region note threshold (80%) stays as it is.
 
@@ -90,7 +90,7 @@ A (?) next to it shows the source on hover. The comparison is not a target and s
 - The figure changes every month: it lives in `rules.py`, with its date, and should be updated from the factsheet.
 
 **Source.**
-- MSCI ACWI Index factsheet (USD), 30 Sep 2026: country weights (figures removed from the project, D8).
+- First an index factsheet (MSCI ACWI); since D8, World Bank, World Development Indicators (CC BY 4.0).
 
 ## D5 – Insights marked Good when their limit is OK (1 Nov 2026, provisional)
 
@@ -147,7 +147,7 @@ Every label is a word as well as a colour. The question is still open: whether a
 
 **Decision.**
 - **Index figures removed.** The table of what index funds hold (MSCI ACWI, World, USA, Emerging Markets and Nasdaq-100) is no longer in the project, and `data/index_funds.csv` is in `.gitignore`. Without it, every broad fund counts as diversified, as before D6. The code stays, tested on made-up figures, and waits for public-domain figures from the holdings US funds file with the SEC (Form N-PORT).
-- **World comparison from the World Bank.** The Regions insight compares the US share with the US share of all listed companies in the world: about 49% in 2025 (World Bank, World Development Indicators, CC BY 4.0, reuse allowed with attribution). It replaces an index provider's figure, which measured something narrower: large and mid-size companies only.
+- **World comparison from the World Bank.** The Regions insight compares the US share with the US share of all listed companies in the world: about 49% in 2025 (World Bank, World Development Indicators, CC BY 4.0, reuse allowed with attribution). It replaces an index-provider figure, which measured something narrower: large and mid-size companies only.
 - **No market reference for company sizes.** The CRSP figures were removed. The small-cap note now starts above 28% of the stocks, the threshold it had in practice, and is an example value.
 - **Licence and trademarks.** The code is under the MIT licence. The README says that GICS, S&P 500, Nasdaq-100, MSCI and FTSE are their owners' trademarks and that the built-in sectors are our own assignments.
 - **Kept, because their sources allow it:** laws and regulators' texts (UCITS, the Investment Company Act, ERISA, SEC guidance, FINRA), research papers cited by name, SEC EDGAR (public domain) and OpenFIGI (MIT licence).

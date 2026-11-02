@@ -66,3 +66,15 @@ Five minutes at the end of each working day.
   - S1-13: the weights stay as placeholders for now, to be checked against the literature later.
   - S1-18 to S1-24 pulled into Sprint 1 (+15 points). Whatever is not Done by 2 Nov goes back to the Product Backlog.
 - _Daily Scrum: 13 min 30 s._
+
+## Day 7 – 2 Nov (last day of the Sprint)
+
+- **Done since Day 3:**
+  - 29 Oct: values inside the chart bars and card-like tooltips (S1-25). The single-position thresholds got their sources (D2).
+  - 30–31 Oct: no Sprint work.
+  - 1 Nov: the sector limit became 25%, with a safety margin (S1-13, D3). The US share is compared with the world (S1-22, D4). Insights are marked Good, Watch or Info (S1-20, D5). A "Before you start" window was added (S1-26). Index funds can be looked inside (S1-27, D6). Corporate bonds and precious metals are supported (S1-29, D7). Ten stress-test portfolios were added (S1-30). The release check removed everything its source doesn't allow (S1-31, D8).
+  - 2 Nov: the page no longer loads anything from Google (fonts, tab icon). The release check is written up in [release-check.md](release-check.md).
+- **Next:** Sprint Review and Retrospective, then the v0.1 release. I reread the code with my notes (S1-14).
+- **Impediments:** None.
+- **My feedback:** a portfolio made only of stocks should be flagged when it holds too few of them, and say why. Five stocks are already caught by the single-position limit, but 20 to 29 equal stocks score 100.
+- **Product Backlog changes:** New S1-32: a note when a portfolio is mostly individual stocks spread as fewer than 30 equal ones (Statman, 1987), for Sprint 2.

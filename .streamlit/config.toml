@@ -9,9 +9,8 @@ borderColor = "#E3E6EB"
 dataframeBorderColor = "#E3E6EB"
 dataframeHeaderBackgroundColor = "#F7F8FA"
 dataframeHeaderTextColor = "#5B6475"
-# Inter is loaded by the CSS in app.py (Google Fonts); this makes Streamlit's
-# own widgets and tables use it too.
-font = "Inter, sans-serif"
+# System fonts only, the same as the CSS in app.py: nothing is loaded from Google.
+font = "'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif"
 
 [theme.sidebar]
 backgroundColor = "#FFFFFF"

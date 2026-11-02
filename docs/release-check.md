@@ -1,0 +1,74 @@
+# Release check – v0.1 MVP (2 Nov 2026)
+
+Every feature, sorted by how ready it is, and the security and legal checks before the repository goes public.
+
+## Features
+
+| Rating | What it means |
+|---|---|
+| ✅ Solid | Core of the MVP: documented, tested, stable |
+| 👍 Good | Works and is useful; small known limits |
+| ⚠️ Good but sketchy | Works, but rests on example values or data that can be wrong |
+| ⏭️ Sprint 2 | Good idea, not ready for v0.1 |
+| ❌ Dropped | Tried or proposed, then dropped, with the reason |
+
+### ✅ Solid
+- Pick a sample, upload a CSV (also Excel with Romanian settings), download the template; clear messages for a missing column or a bad value.
+- Type or paste positions; details fill in from the built-in list.
+- The score from two limits: sector (limit 25%, the US regulator's concentration level) and single position (5% and 10%, EU and US fund law). Funds, government bonds, cash and precious metals are outside the limits.
+- Statuses OK, Watch, Just over, Over limit, each with a word and a colour.
+- At a glance, warnings in order of severity, limit cards with "Why it matters" and the source.
+- Charts by sector, currency, position and region; values inside the bars; tooltips that list the positions; click a bar to list them.
+- Positions table, Stocks tab with a detail card, profile donut.
+- "Before you start" window (just math, not advice, how the score works, how data is kept) and the footer.
+- Privacy: the page makes no requests outside your computer; the online lookup sends only names and tickers.
+- 235 automated tests; pinned package versions; tested on Python 3.12 and 3.15; one-click start on Windows.
+
+### 👍 Good
+- Insights: effective positions, top 5, largest sector, other currencies, sector coverage, regions.
+- Comparison of the US share with all listed companies in the world (World Bank, about 49%).
+- Currency note (D1) and region note; large-cap note.
+- Corporate bonds count as a position; precious metals shown in the profile and an insight.
+- Ten stress-test portfolios.
+
+### ⚠️ Good but sketchy
+- **Example values**, not from the thesis or a source yet: Watch at 20% (sector) and 5% (position, which is also EU law), the 5-point sector margin, the small-cap note (28%), the region note (80%), the currency note (56%), the profile cut-offs (60% and 30%).
+- **The "Good" label on insights** (D5) is provisional.
+- **Online lookup:** legal and free, but sector comes from SIC codes, not GICS, and size from the public float companies report, which is sometimes wrong by orders of magnitude.
+- **Look and feel tied to Streamlit and Plotly internals** (tooltip cards, radio cards, chart overflow): pinned versions protect it; an upgrade may break it.
+
+### ⏭️ Sprint 2
+- Index funds counted by what they hold ("Inside your funds", Nasdaq-100 by sector): the code is ready, the figures need a public-domain source (SEC Form N-PORT).
+- Give feedback through an anonymous form (S1-28): waits for the form link.
+- A note when a portfolio is mostly individual stocks spread as fewer than 30 equal ones (Statman, 1987): proposed on 2 Nov.
+- Search with suggestions as you type (S1-17).
+- Adding a company's bond and stock together; a yearly refresh of the World Bank figure; browser tests inside the project.
+
+### ❌ Dropped
+- Currency as a scored limit (D1): it punished money held in lei.
+- "If a sector fell 20%" (S1-19): hard to read.
+- Tips on how to raise the score, or "add assets of type X": too close to investment advice.
+- Counting broad funds by what they hold in the score: even the world market would fail the limits.
+- Index-provider figures in the project (D8): their terms don't allow it.
+- Crypto-assets: not supported.
+- Yahoo Finance: its terms don't allow automated extraction.
+- A temporary e-mail, or an e-mail password in the code, for feedback.
+
+## Security and legal checks
+
+| Check | Result |
+|---|---|
+| Passwords, API keys, tokens in any commit | none |
+| Local paths, e-mail or Jira site in the files | none (the e-mail appears only as the commit author) |
+| `notes/` and the real portfolio file | never committed; `notes/` is in `.gitignore` |
+| Index-provider data (MSCI, Nasdaq, CRSP) | not in any file or any commit that will be pushed |
+| Requests from the page to other sites | none (Google Fonts and the Google-hosted tab icon removed on 2 Nov) |
+| Licence | MIT, "as is", in `LICENSE` |
+| Trademarks | GICS, S&P 500, Nasdaq-100, MSCI, FTSE named as their owners' marks in the README |
+| Third-party data | SEC EDGAR (public domain), OpenFIGI (MIT), World Bank (CC BY 4.0, attributed) |
+| Not investment advice | "Before you start" window with "I understand", the footer, no buy or sell recommendations |
+
+**Still the owner's choice:**
+- The author e-mail is visible in every commit. Future commits can use GitHub's private no-reply address.
+- Older commits quote a few index-provider figures as single facts with their source. A full history rewrite before the first push can remove them.
+- The documents mention shares from the author's real portfolio (68% in the US, Industrials 28.9%), without amounts.

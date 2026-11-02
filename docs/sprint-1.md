@@ -59,6 +59,7 @@ Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or no
 |---|---|---|---|---|---|---|
 | S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
 | S1-28 | – | Story | E5 | Give feedback through an anonymous form | 1 | 1 Nov |
+| S1-32 | – | Story | E4 | Note when a portfolio is mostly stocks spread as fewer than 30 equal ones | 1 | 2 Nov |
 
 ## Burndown
 

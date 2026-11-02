@@ -31,7 +31,8 @@ COLORS = {
     "note": "#6B7280",
     "light": "#CBD3DE",  # lighter step of the neutral bars
 }
-FONT = "Inter, 'Segoe UI', sans-serif"
+# System fonts only: a web font from Google would send the user's IP address to Google.
+FONT = "'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif"
 
 STATUS_COLORS = {GREEN: COLORS["accent"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
                  RED: COLORS["red"]}
@@ -80,11 +81,10 @@ def inject_css() -> None:
     """The app's whole look, in a single <style> block."""
     variables = "".join(f"--{name}: {value};" for name, value in COLORS.items())
     css = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 :root { VARIABLES }
 
 /* Page */
-.stApp { background: var(--bg); color: var(--text); font-family: Inter, sans-serif; }
+.stApp { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif; }
 #MainMenu, footer, [data-testid="stMainMenu"], [data-testid="stToolbarActions"],
 [data-testid="stAppDeployButton"], [data-testid="stDecoration"],
 [data-testid="stStatusWidget"] { display: none !important; }
@@ -1046,7 +1046,7 @@ def footer() -> None:
 def main() -> None:
     st.set_page_config(
         page_title="Portfolio Health Check",
-        page_icon=":material/donut_large:",
+        page_icon="📊",  # an emoji: a material icon here would be fetched from Google
         layout="wide",
     )
     inject_css()
