@@ -157,6 +157,18 @@ def inject_css() -> None:
 .phc-good li::before { content: "+"; color: #FFFFFF; background: var(--accent); }
 .phc-look li::before { content: "\\2212"; color: var(--text); background: color-mix(in srgb, var(--yellow) 35%, white); }
 .phc-summary .phc-none { color: var(--text-2); }
+.phc-hhi { margin-top: .3rem; }
+.phc-hhi-bar { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+  height: 8px; border-radius: 999px; overflow: visible; }
+.phc-hhi-bar span:first-child { border-radius: 999px 0 0 999px; }
+.phc-hhi-bar span:nth-child(4) { border-radius: 0 999px 999px 0; }
+.phc-hhi-bar i { position: absolute; top: -5px; width: 4px; height: 18px; margin-left: -2px;
+  background: var(--text); border-radius: 2px; box-shadow: 0 0 0 2px var(--card); }
+.phc-hhi-words { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: .45rem;
+  font-size: .72rem; color: var(--text-2); text-align: center; }
+.phc-hhi-words .on { color: var(--text); font-weight: 700; }
+.phc-hhi-ticks { display: grid; grid-template-columns: repeat(3, 1fr); padding: 0 12.5%;
+  font-size: .68rem; color: var(--text-2); text-align: center; }
 .phc-tier { align-self: center; padding: .15rem .65rem; border-radius: 999px; font-weight: 700; }
 .phc-parts { color: var(--text-2); font-size: .82rem; }
 
@@ -867,6 +879,30 @@ def at_a_glance(analysis: scoring.Analysis, name: str) -> None:
             st.html(summary_html(analysis.summary))
 
 
+# HHI band edges (HHI points) and colours, well spread first.
+HHI_EDGES = (0, 10_000 / 30, 1_000, 2_500, 10_000)
+HHI_COLORS = (COLORS["accent"], "#6FA35A", COLORS["orange"], COLORS["red"])
+HHI_WORDS = ("Well spread", "Partly", "Concentrated", "Very")
+
+
+def hhi_scale(analysis: scoring.Analysis) -> str:
+    """Four equal bands, well spread to very concentrated, with a mark at your HHI."""
+    band = scoring.hhi_band(analysis.equal_stocks)
+    low, high = HHI_EDGES[band], HHI_EDGES[band + 1]
+    within = min(max((analysis.hhi - low) / (high - low), 0.0), 1.0)
+    mark = (band + within) * 25
+    segments = "".join(f'<span style="background:{color}"></span>' for color in HHI_COLORS)
+    words = "".join(f'<span class="{"on" if i == band else ""}">{word}</span>'
+                    for i, word in enumerate(HHI_WORDS))
+    return (
+        '<div class="phc-hhi">'
+        f'<div class="phc-hhi-bar">{segments}<i style="left:{mark:.1f}%"></i></div>'
+        f'<div class="phc-hhi-words">{words}</div>'
+        '<div class="phc-hhi-ticks"><span>333</span><span>1,000</span><span>2,500</span></div>'
+        "</div>"
+    )
+
+
 def summary_html(summary: scoring.Summary) -> str:
     def items(lines: list[str], empty: str) -> str:
         if not lines:
@@ -939,7 +975,8 @@ def overview_tab(analysis: scoring.Analysis) -> None:
         '<div class="phc-card phc-insight"><div class="phc-insight-head">'
         f'<span class="phc-insight-title">{escape(i.title)}</span>'
         f"{pill('Watch', YELLOW) if i.label == 'Watch' else ''}</div>"
-        f'<div class="phc-insight-text phc-num">{escape(i.text)}{source_tip(i.source)}</div></div>'
+        f'<div class="phc-insight-text phc-num">{escape(i.text)}{source_tip(i.source)}</div>'
+        f"{hhi_scale(analysis) if i.key == 'hhi' else ''}</div>"
         for i in analysis.insights
     )
     st.html(f'<div class="phc-grid">{cards}</div>')

@@ -70,6 +70,13 @@ LIMITS = {
 # warnings and cost nothing.
 WELL_DIVERSIFIED_STOCKS = 30  # Statman (1987): at least 30 randomly chosen stocks
 
+# What an HHI means, in bands of "equal stocks" (10,000 / HHI), each from a reason:
+#   30 or more   well spread         Statman (1987)          HHI below 333
+#   10 to 29     partly spread       10 equal = each at the 10% limit     333-1,000
+#   4 to 9       concentrated        4 equal = each at 25%, the sector limit  1,000-2,500
+#   under 4      very concentrated                           HHI above 2,500
+HHI_BANDS = ((30, "well spread"), (10, "partly spread"), (4, "concentrated"), (0, "very concentrated"))
+
 # Score tiers, best first, with the lowest score of each (our choice).
 SCORE_TIERS = (("A+", 95), ("A", 85), ("B", 70), ("C", 50), ("D", 0))
 # The highest score while a limit is breached, so the tier never contradicts a

@@ -923,10 +923,18 @@ HHI_EXPLAINED = (
     "them up. One company with all your money gives 10,000; 100 equal companies give 100. "
     "The lower, the more spread out. Funds, government bonds, cash and precious metals "
     "count as spread out. Dividing 10,000 by the HHI gives the number of equal stocks it is "
-    "worth. Research finds that a well-diversified portfolio of randomly chosen stocks "
-    "needs at least 30 (Statman, 1987). The HHI is the standard measure of concentration, "
-    "used for example by competition authorities."
+    "worth. Below 333 (30 or more equal stocks) is well spread: research finds that a "
+    "well-diversified portfolio of randomly chosen stocks needs at least 30 (Statman, 1987). "
+    "333 to 1,000 (10 to 29) is partly spread: 10 equal stocks would each sit at the 10% "
+    "limit. 1,000 to 2,500 (4 to 9) is concentrated: 4 equal stocks would each be 25%, the "
+    "size of the sector limit. Above 2,500 is very concentrated. The HHI is the standard "
+    "measure of concentration, used for example by competition authorities."
 )
+
+
+def hhi_band(equal_stocks: float) -> int:
+    """Which HHI band a portfolio is in: 0 well spread ... 3 very concentrated."""
+    return next(i for i, (lowest, _) in enumerate(rules.HHI_BANDS) if equal_stocks >= lowest)
 
 
 def hhi_insight(df: pd.DataFrame) -> Insight:
@@ -938,9 +946,9 @@ def hhi_insight(df: pd.DataFrame) -> Insight:
                 "government bonds, cash or precious metals.")
     else:
         worth = "more than 100" if equal > 100 else f"about {round_half_up(equal)}"
+        band = rules.HHI_BANDS[hhi_band(equal)][1]
         text = (f"Your concentration index (HHI) is {round_half_up(hhi):,}: your companies are "
-                f"spread as if you held {worth} equal stocks. Below {round_half_up(10_000 / target)} "
-                f"means {target} or more, the number research says a well-diversified portfolio needs.")
+                f"spread as if you held {worth} equal stocks, which is {band}.")
     return Insight("hhi", "Concentration index (HHI)", text, "Info" if equal >= target else "Watch",
                    HHI_EXPLAINED)
 

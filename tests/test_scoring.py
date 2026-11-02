@@ -433,11 +433,16 @@ def test_hhi_insight(hand_insights):
     insight = hand_insights["hhi"]
     assert insight.text == (
         "Your concentration index (HHI) is 2,025: your companies are spread as if you held "
-        "about 5 equal stocks. Below 333 means 30 or more, the number research says a "
-        "well-diversified portfolio needs."
+        "about 5 equal stocks, which is concentrated."
     )
     assert insight.label == "Watch"
     assert insight.source.startswith("How it works: take each company's share")
+
+
+@pytest.mark.parametrize("equal, band", [(69, 0), (30, 0), (29.9, 1), (10, 1), (9.9, 2), (4, 2), (3.9, 3), (1, 3)])
+def test_hhi_bands(equal, band):
+    # 30+ well spread (Statman); 10+ partly (each at the 10% limit); 4+ concentrated (25% each)
+    assert scoring.hhi_band(equal) == band
 
 
 def test_top5(hand_insights):

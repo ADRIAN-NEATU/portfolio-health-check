@@ -106,7 +106,7 @@ All thresholds live in [rules.py](rules.py). No regulator sets a limit for an in
 - **Market cap:** the stocks' small / mid / large split, shown in the Stocks tab, without a note.
 - **Currency:** the share outside RON is an insight, not a limit ([decision D1](docs/decisions.md)), with what it means in lei. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
 - **Region:** the region of the company or fund, not of the currency. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank, 2025), with the source behind a (?) ([decisions D4, D8](docs/decisions.md)).
-- **Insights:** the concentration index (HHI), with a (?) that explains it, top 5 share, share outside RON, GICS sector coverage and regions. An insight is marked Watch when its limit or the region note needs a look; insights never change the score.
+- **Insights:** the concentration index (HHI), on a scale of four bands (well spread below 333, i.e. 30+ equal stocks; partly spread to 1,000, i.e. 10+; concentrated to 2,500, i.e. 4+; very concentrated above), with a (?) that explains it, top 5 share, share outside RON, GICS sector coverage and regions. An insight is marked Watch when its limit or the region note needs a look; insights never change the score.
 
 ## CSV format
 

@@ -192,4 +192,4 @@ Every label is a word as well as a colour. The question is still open: whether a
 - **"Your data"** now reads true both on a computer and in a shared online copy (Streamlit Community Cloud).
 
 **Consequences.** No score changes. The screen has fewer elements, and the only example values left are the Watch thresholds, the sector margin and the region note.
-
+- **HHI bands (added the same day):** well spread below 333 (30 or more equal stocks, Statman), partly spread to 1,000 (10 equal stocks would each sit at the 10% limit), concentrated to 2,500 (4 equal stocks would each be 25%, the size of the sector limit), very concentrated above. Shown on a small scale under the HHI insight.
