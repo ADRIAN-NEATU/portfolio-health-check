@@ -178,3 +178,18 @@ Every label is a word as well as a colour. The question is still open: whether a
 - Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.
 - The HHI (Herfindahl–Hirschman Index) is the standard measure of concentration, used for example in competition law.
 
+## D10 – A simpler screen, and nothing without a reason (2 Nov 2026)
+
+**Context.** Before the release: the screen should read easily, the animation lagged, and anything without a source or a clear reason should go.
+
+**Decision.**
+- **Summary instead of "What matters most":** two short lists next to the score, "What looks good" (at most three points) and "What to look at" (breaches, warnings, spread below 30 stocks, the region note).
+- **Only the needle moves.** The drawing segments and the counting number were removed: they made the page lag.
+- **Removed, because their thresholds had no source:** the profile labels (Conservative, Balanced, Dynamic, at 60% and 30%), the small-cap note (28%), the large-cap note (90%) and the currency note (56%). The asset mix, the cap mix and the share outside RON are still shown, as facts.
+- **Kept:** the region note (80%, example value), as asked; its text now names the region and its share.
+- **Removed as duplicates:** the "Largest sector" insight (it is on the Sector card and in the summary) and the verdict line under the score (the summary replaces it).
+- **The "Good" label is gone** (it replaces the provisional D5): insights show a pill only when there is something to watch.
+- **"Your data"** now reads true both on a computer and in a shared online copy (Streamlit Community Cloud).
+
+**Consequences.** No score changes. The screen has fewer elements, and the only example values left are the Watch thresholds, the sector margin and the region note.
+

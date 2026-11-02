@@ -54,7 +54,7 @@ LIMITS = {
 }
 # Currency is not a scored limit (decision of 29 Oct 2026, see docs/decisions.md):
 # over long horizons it matters less for stocks than company and sector risk,
-# so it is shown as an exposure note instead (FOREIGN_CURRENCY_NOTE below).
+# so the share in other currencies is shown as an insight instead (D1, D10).
 
 # ---------------------------------------------------------------------------
 # The score (decision D9)
@@ -152,15 +152,6 @@ INDEX_SOURCE = (
 )
 
 # ---------------------------------------------------------------------------
-# Investor profile, from the share of bonds + cash
-# ---------------------------------------------------------------------------
-# above CONSERVATIVE_ABOVE -> Conservative
-# from DYNAMIC_BELOW to CONSERVATIVE_ABOVE (both included) -> Balanced
-# below DYNAMIC_BELOW -> Dynamic
-CONSERVATIVE_ABOVE = 0.60  # EXAMPLE
-DYNAMIC_BELOW = 0.30  # EXAMPLE
-
-# ---------------------------------------------------------------------------
 # Exposure notes (informative, no effect on the score)
 # ---------------------------------------------------------------------------
 # Market cap segments used in the data:
@@ -168,11 +159,7 @@ DYNAMIC_BELOW = 0.30  # EXAMPLE
 # There is no market reference: the figures we had came from an index provider
 # whose terms don't allow reproducing them (decision D8).
 
-# Small-cap note: small caps above this share of the stocks.
-SMALL_NOTE_SHARE = 0.28  # EXAMPLE
 
-# Large-cap note: large caps above this share of the stocks.
-LARGE_NOTE_SHARE = 0.90  # EXAMPLE
 
 # Region note: one region (Global excluded) above this share of the portfolio.
 SINGLE_REGION_NOTE = 0.80  # EXAMPLE
@@ -189,7 +176,4 @@ WORLD_MARKET_SOURCE = (
     "worldwide. Licence: CC BY 4.0."
 )
 
-# Currency note: one foreign currency (anything but RON) above this share of the
-# portfolio. Same value as the old currency limit's yellow threshold.
-FOREIGN_CURRENCY_NOTE = 0.56  # EXAMPLE
 

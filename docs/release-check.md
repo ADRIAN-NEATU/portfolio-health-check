@@ -25,15 +25,14 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 - 235 automated tests; pinned package versions; tested on Python 3.12 and 3.15; one-click start on Windows.
 
 ### 👍 Good
-- Insights: effective positions, top 5, largest sector, other currencies, sector coverage, regions.
+- Insights: concentration index (HHI), top 5, other currencies, sector coverage, regions; the summary "What looks good / What to look at".
 - Comparison of the US share with all listed companies in the world (World Bank, about 49%).
-- Currency note (D1) and region note; large-cap note.
+- Region note.
 - Corporate bonds count as a position; precious metals shown in the profile and an insight.
 - Ten stress-test portfolios.
 
 ### ⚠️ Good but sketchy
-- **Example values**, not from the thesis or a source yet: Watch at 20% (sector) and 5% (position, which is also EU law), the 5-point sector margin, the small-cap note (28%), the region note (80%), the currency note (56%), the profile cut-offs (60% and 30%).
-- **The "Good" label on insights** (D5) is provisional.
+- **Example values**, not from the thesis or a source yet: Watch at 20% (sector), the 5-point sector margin, the region note (80%). The profile labels and the small-cap, large-cap and currency notes were removed (D10).
 - **The score's own choices** (D9): equal weights of the three parts, the squared penalty, the caps and the tier boundaries.
 - **Online lookup:** legal and free, but sector comes from SIC codes, not GICS, and size from the public float companies report, which is sometimes wrong by orders of magnitude.
 - **Look and feel tied to Streamlit and Plotly internals** (tooltip cards, radio cards, chart overflow): pinned versions protect it; an upgrade may break it.

@@ -37,6 +37,17 @@ Only free sources whose terms allow this use, in this order:
 
 Add a row to the built-in list to teach the app a new stock or fund.
 
+## Share it with colleagues (a link)
+
+The app can run for free on [Streamlit Community Cloud](https://share.streamlit.io), straight from the public GitHub repository:
+
+1. Push the project to GitHub (`git push -u origin main`).
+2. Sign in at share.streamlit.io with your GitHub account.
+3. **Create app** → choose the repository `portfolio-health-check`, branch `main`, main file `app.py` → **Deploy**.
+4. In a few minutes the app has an address such as `https://<name>.streamlit.app`: send that link.
+
+Every visitor gets their own session: one person's portfolio is never shown to another. Streamlit Community Cloud keeps its own logs and has its own privacy policy, which applies to the online copy.
+
 ## Install and run by hand
 
 Requires Python 3.12 or newer. `requirements.txt` pins the exact versions the app was tested with (tested on Python 3.12 and 3.15).
@@ -55,7 +66,7 @@ The app opens at http://localhost:8501. Run the tests with `pytest`.
 
 The app opens with a short "Before you start" window: the app is just math on the numbers you enter, not investment advice. It also explains the score in a few lines. "How the score works" at the bottom of the page opens it again.
 
-**Your data.** The app runs on your computer and keeps your portfolio only in memory: nothing is written to a file, and it is gone when you close the app. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml).
+**Your data.** The app keeps your portfolio only in memory while you use it: nothing is written to a file, and it is gone when you close the page. Run on your computer, nothing leaves it; in a shared online copy, the portfolio is held by the hosting service for the time you use it. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml).
 
 The score (0 to 100, shown on a gauge with tiers D, C, B, A and A+) is the average of three parts, each from 0 to 100 ([decision D9](docs/decisions.md)):
 
@@ -90,11 +101,12 @@ All thresholds live in [rules.py](rules.py). No regulator sets a limit for an in
 
 ## Informative dimensions (not scored)
 
-- **Asset classes:** the share of bonds and cash sets a profile (Conservative, Balanced or Dynamic). There is no right mix: it depends on the investor's profile, so it is described, not scored.
-- **Market cap:** the stocks' small / mid / large split is shown. A note appears when small caps are more than 28% of the stocks or when almost everything is large cap. As with asset classes, the right mix depends on the investor, so it does not affect the score.
-- **Currency:** a note, not a limit ([decision D1](docs/decisions.md)). It appears when one foreign currency holds most of the portfolio. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
-- **Region:** the region of the company or fund, not of the currency, so it measures something different from the currency note. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank, 2025), with the source behind a (?) ([decisions D4, D8](docs/decisions.md)).
-- **Insights:** the concentration index (HHI), with a (?) that explains it, top 5 share, largest sector and largest region in %, share outside RON, and GICS sector coverage. Each insight is labelled Good (its limit is OK), Watch (its limit or note needs a look) or Info (no limit), and has no effect on the score. The Good label is provisional ([decision D5](docs/decisions.md)).
+- **Summary:** at the top, "What looks good" (at most three points) and "What to look at", from the same facts as the score.
+- **Asset mix:** stocks, ETFs, bonds, cash and precious metals, shown as they are. There is no right mix, and no label such as "Conservative": the cut-offs had no source ([decision D10](docs/decisions.md)).
+- **Market cap:** the stocks' small / mid / large split, shown in the Stocks tab, without a note.
+- **Currency:** the share outside RON is an insight, not a limit ([decision D1](docs/decisions.md)), with what it means in lei. Over long periods currency moves matter less for stocks than company and sector risk, and the leu never counts, since it is the investor's own currency. The currency is the one the asset is listed in, not the one the company earns in.
+- **Region:** the region of the company or fund, not of the currency. It is shown as a note, not scored: the note appears when one region (Global funds excluded) holds most of the portfolio. When your largest region is the US, the Regions insight compares it with the US share of all listed companies in the world (about 49%, World Bank, 2025), with the source behind a (?) ([decisions D4, D8](docs/decisions.md)).
+- **Insights:** the concentration index (HHI), with a (?) that explains it, top 5 share, share outside RON, GICS sector coverage and regions. An insight is marked Watch when its limit or the region note needs a look; insights never change the score.
 
 ## CSV format
 

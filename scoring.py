@@ -214,21 +214,6 @@ CHART_DIMENSIONS = {
     "region": "Region",
 }
 
-PROFILE_MESSAGES = {
-    "Conservative": (
-        "Most of your money is in bonds and cash: less exposed to stock market "
-        "drops, with lower expected returns."
-    ),
-    "Balanced": (
-        "Your money is split between equity and bonds or cash: moderately exposed "
-        "to stock market drops, with moderate expected returns."
-    ),
-    "Dynamic": (
-        "Most of your money is in stocks and equity funds: more exposed to stock "
-        "market drops, with higher expected returns."
-    ),
-}
-
 # Tolerance for floating-point comparisons (0.8 * 0.8 = 0.6400000000000001).
 EPS = 1e-9
 
@@ -268,8 +253,6 @@ class LimitWarning:
 
 @dataclass
 class Profile:
-    name: str
-    message: str
     defensive_share: float  # bonds (government and corporate) + cash
     breakdown: dict[str, float]  # share of each asset type
 
@@ -279,7 +262,7 @@ class Insight:
     key: str
     title: str
     text: str
-    label: str  # "Good", "Info" or "Watch"
+    label: str  # "Watch" or "Info"
     source: str = ""  # where a figure in the text comes from, shown behind a (?)
 
 
@@ -287,20 +270,13 @@ class Insight:
 class Note:
     key: str
     text: str
-    tab: str  # where the details are shown
-
-    @property
-    def headline(self) -> str:
-        """First sentence of the note, for the short At a glance row."""
-        first = self.text.split(". ")[0]
-        return first if first.endswith(".") else first + "."
 
 
 @dataclass
-class GlanceRow:
-    text: str
-    tab: str
-    status: str  # RED, ORANGE or YELLOW for a problem, "" for a note or an insight
+class Summary:
+    """The short list at the top: what is good and what to look at, in plain words."""
+    good: list[str]
+    look_at: list[str]
 
 
 @dataclass
@@ -314,13 +290,12 @@ class Analysis:
     spread_score: float  # the spread part, 0-100
     hhi: float  # concentration index of the single companies
     equal_stocks: float  # the number of equal stocks the HHI is worth
-    verdict: str
     warnings: list[LimitWarning]
     profile: Profile
     insights: list[Insight]
     notes: list[Note]
     cap_mix: pd.Series  # share of each cap segment within the stocks
-    glance: list[GlanceRow]
+    summary: Summary
 
 
 # ---------------------------------------------------------------------------
@@ -835,17 +810,6 @@ def warnings_for(df: pd.DataFrame) -> list[LimitWarning]:
     return by_severity(found)
 
 
-def verdict(limits: list[LimitResult]) -> str:
-    issues = by_severity([r for r in limits if r.status != GREEN])
-    if not issues:
-        return "No limit breaches."
-    worst = issues[0]
-    detail = f"{worst.label.lower()} ({worst.category} {fmt_pct(worst.weight)})"
-    if len(issues) == 1:
-        return f"1 issue: {detail}."
-    return f"{len(issues)} issues. The most serious: {detail}."
-
-
 # ---------------------------------------------------------------------------
 # Profile, insights and notes (no effect on the score)
 # ---------------------------------------------------------------------------
@@ -855,77 +819,33 @@ def profile_for(df: pd.DataFrame) -> Profile:
     by_type = weights(df, "asset_type")
     breakdown = {t: float(by_type.get(t, 0.0)) for t in ASSET_TYPES}
     defensive = sum(breakdown[t] for t in BOND_TYPES) + breakdown["cash"]
-    if defensive > rules.CONSERVATIVE_ABOVE + EPS:
-        name = "Conservative"
-    elif defensive < rules.DYNAMIC_BELOW - EPS:
-        name = "Dynamic"
-    else:
-        name = "Balanced"
-    return Profile(name, PROFILE_MESSAGES[name], defensive, breakdown)
+    return Profile(defensive, breakdown)
 
 
 def exposure_notes(df: pd.DataFrame, has_region: bool) -> list[Note]:
+    """The region note, the only exposure note left (D10): most of the portfolio in
+    one region."""
     notes = []
-    caps = cap_mix(df)
-    small = float(caps.get("small", 0.0))
-    large = float(caps.get("large", 0.0))
-
-    if small > rules.SMALL_NOTE_SHARE + EPS:
-        notes.append(
-            Note(
-                "small_cap",
-                f"Small caps are {fmt_pct(small)} of your stocks. Historically they have been "
-                "more volatile and less liquid; research is divided on whether they earn a "
-                "higher return. This may be intentional.",
-                "Stocks",
-            )
-        )
-    if large > rules.LARGE_NOTE_SHARE + EPS:
-        notes.append(
-            Note(
-                "large_cap",
-                "Your stocks behave close to a large-cap index, with little exposure to "
-                "mid and small companies.",
-                "Stocks",
-            )
-        )
-    if has_region and largest_region(df)[1] > rules.SINGLE_REGION_NOTE + EPS:
-        notes.append(
-            Note(
+    if has_region:
+        region, share = largest_region(df)
+        if share > rules.SINGLE_REGION_NOTE + EPS:
+            notes.append(Note(
                 "region",
-                "Most of your portfolio depends on one region's economy. This may be "
-                "intentional.",
-                "Charts › Region",
-            )
-        )
-    currency, share = largest_foreign_currency(df)
-    if share > rules.FOREIGN_CURRENCY_NOTE + EPS:
-        notes.append(
-            Note(
-                "currency",
-                f"{fmt_pct(share)} of your portfolio is in {currency}. If {currency} falls "
-                "against the leu, these holdings lose value in lei. Over long periods this "
-                "tends to matter less than company and sector risk.",
-                "Charts › Currency",
-            )
-        )
+                f"{fmt_pct(share)} of your portfolio is in {REGION_PHRASES.get(region, region)}: "
+                "it depends mostly on one region's economy. This may be intentional.",
+            ))
     return notes
 
 
 def insights_for(
     df: pd.DataFrame, limits: list[LimitResult], notes: list[Note], has_region: bool
 ) -> list[Insight]:
-    """Plain-language facts. "Watch" when the same dimension already has a limit
-    that is not OK (or a region or currency note), "Good" when its limit is OK,
-    "Info" for a dimension without a limit (decision D5, provisional)."""
-    flagged = {r.key for r in limits if r.status != GREEN}
-    flagged |= {n.key for n in notes if n.key in ("region", "currency")}
-    scored = {r.key for r in limits}
+    """Plain-language facts, marked "Watch" when the same dimension has a limit that
+    is not OK or the region note, "Info" otherwise."""
+    flagged = {r.key for r in limits if r.status != GREEN} | {n.key for n in notes}
 
     def label(key: str) -> str:
-        if key in flagged:
-            return "Watch"
-        return "Good" if key in scored else "Info"
+        return "Watch" if key in flagged else "Info"
 
     insights = []
 
@@ -940,13 +860,6 @@ def insights_for(
         text = f"Your 5 largest positions make up {fmt_pct(positions.head(5).sum())} of your portfolio."
     insights.append(Insight("top5", "Top 5 positions", text, label("asset")))
 
-    sectors = limit_weights(df, "sector")
-    if sectors.empty:
-        largest = "You have no single-sector exposure outside broad funds, bonds and cash."
-    else:
-        largest = f"{fmt_pct(float(sectors.iloc[0]))} of your money is in {sectors.index[0]}."
-    insights.append(Insight("largest_sector", "Largest sector", largest, label("sector")))
-
     other = 1 - float(weights(df, "currency").get(HOME_CURRENCY, 0.0))
     if other <= EPS:
         text = f"All of your portfolio is in {HOME_CURRENCY}."
@@ -954,7 +867,10 @@ def insights_for(
         text = f"All of your portfolio is in currencies other than {HOME_CURRENCY}."
     else:
         text = f"{fmt_pct(other)} of your portfolio is in currencies other than {HOME_CURRENCY}."
-    insights.append(Insight("other_currencies", "Other currencies", text, label("currency")))
+    if other > EPS:
+        text += (" If they fall against the leu, these holdings lose value in lei; over long "
+                 "periods this tends to matter less than company and sector risk.")
+    insights.append(Insight("other_currencies", "Other currencies", text, "Info"))
 
     covered = len(set(df["sector"]) & set(rules.GICS_SECTORS))
     total = len(rules.GICS_SECTORS)
@@ -1025,34 +941,44 @@ def hhi_insight(df: pd.DataFrame) -> Insight:
         text = (f"Your concentration index (HHI) is {round_half_up(hhi):,}: your companies are "
                 f"spread as if you held {worth} equal stocks. Below {round_half_up(10_000 / target)} "
                 f"means {target} or more, the number research says a well-diversified portfolio needs.")
-    return Insight("hhi", "Concentration index (HHI)", text, "Good" if equal >= target else "Watch",
+    return Insight("hhi", "Concentration index (HHI)", text, "Info" if equal >= target else "Watch",
                    HHI_EXPLAINED)
 
 
-def at_a_glance(
-    limits: list[LimitResult],
-    warnings: list[LimitWarning],
-    notes: list[Note],
-    insights: list[Insight],
-    max_rows: int = 3,
-) -> list[GlanceRow]:
-    """Up to 3 rows: red limits, yellow limits, then one note or the best insight."""
-    rows = []
-    for result in by_severity([r for r in limits if r.status != GREEN]):
-        own = [w for w in warnings if w.key == result.key]
-        text = own[0].text
-        if len(own) > 1:
-            text += f" and {len(own) - 1} more"
-        rows.append(GlanceRow(text, "Overview", result.status))
-    rows = rows[:max_rows]
+# How each limit is named in the summary.
+SUMMARY_NOUNS = {"sector": "sector", "asset": "single company"}
 
-    if len(rows) < max_rows:
-        if notes:
-            rows.append(GlanceRow(notes[0].headline, notes[0].tab, ""))
-        elif insights:
-            best = next((i for i in insights if i.label == "Watch"), insights[0])
-            rows.append(GlanceRow(best.text, "Overview", ""))
-    return rows
+
+def summary_for(df: pd.DataFrame, limits: list[LimitResult], warnings: list[LimitWarning],
+                notes: list[Note], equal_stocks: float) -> Summary:
+    """What is good (at most 3) and what to look at, from the same facts as the score."""
+    good, look_at = [], []
+    for r in by_severity(limits):
+        limit = fmt_pct(r.limit)
+        if r.status == GREEN:
+            if r.category:
+                good.append(f"No {SUMMARY_NOUNS[r.key]} is above the {limit} limit "
+                            f"(the largest: {r.category}, {fmt_pct(r.weight)}).")
+            continue
+        others = len([w for w in warnings if w.key == r.key]) - 1
+        where = "close to" if r.status == YELLOW else "above"
+        more = f" (and {others} more)" if others > 0 else ""
+        look_at.append(f"{r.category} is {fmt_pct(r.weight)} of your money, {where} the {limit} limit{more}.")
+    target = rules.WELL_DIVERSIFIED_STOCKS
+    if equal_stocks == math.inf:
+        good.append("No single company carries your money: it is in funds, bonds, cash or metals.")
+    elif equal_stocks >= target:
+        good.append(f"Your companies are spread as if over {round_half_up(equal_stocks)} equal stocks; "
+                    f"{target} or more counts as well diversified.")
+    else:
+        look_at.append(f"Your companies are spread as if over only {round_half_up(equal_stocks)} "
+                       f"equal stocks; research suggests at least {target}.")
+    broad = float(df.loc[(df["asset_type"] == "ETF") & (df["sector"] == rules.BROAD_ETF_SECTOR),
+                         "value"].sum() / df["value"].sum())
+    if broad > EPS:
+        good.append(f"{fmt_pct(broad)} is in broad funds, which spread money over many companies.")
+    look_at += [n.text.split(":")[0] + ": most of it depends on one region's economy." for n in notes]
+    return Summary(good[:3], look_at)
 
 
 # ---------------------------------------------------------------------------
@@ -1087,13 +1013,12 @@ def analyze(df: pd.DataFrame) -> Analysis:
         spread_score=spread_part,
         hhi=hhi,
         equal_stocks=equal_stocks,
-        verdict=verdict(limits),
         warnings=warnings,
         profile=profile_for(df),
         insights=insights,
         notes=notes,
         cap_mix=cap_mix(df),
-        glance=at_a_glance(limits, warnings, notes, insights),
+        summary=summary_for(df, limits, warnings, notes, equal_stocks),
     )
 
 

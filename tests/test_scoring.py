@@ -36,27 +36,27 @@ def sample(file_name):
 # Sample portfolios: every expected result fixed explicitly
 # ---------------------------------------------------------------------------
 
-# file -> (sector, asset, score, profile, notes)
+# file -> (sector, asset, score, tier, notes)
 EXPECTED = {
-    "diversified.csv": (GREEN, GREEN, 100, "Dynamic", []),
-    "tech_heavy.csv": (RED, GREEN, 79, "Dynamic", []),
-    "all_in_ron.csv": (GREEN, GREEN, 100, "Balanced", []),
-    "beginner_3_stocks.csv": (YELLOW, RED, 59, "Balanced", []),  # Tesla: 20% of one sector
-    "conservative_saver.csv": (GREEN, GREEN, 100, "Conservative", []),
-    "small_cap_fan.csv": (GREEN, GREEN, 100, "Dynamic", ["small_cap"]),
-    "one_global_etf.csv": (GREEN, GREEN, 100, "Dynamic", ["currency"]),
-    "andrei.csv": (YELLOW, YELLOW, 98, "Dynamic", ["large_cap", "region", "currency"]),
+    "diversified.csv": (GREEN, GREEN, 100, "A+", []),
+    "tech_heavy.csv": (RED, GREEN, 79, "B", []),
+    "all_in_ron.csv": (GREEN, GREEN, 100, "A+", []),
+    "beginner_3_stocks.csv": (YELLOW, RED, 59, "C", []),  # Tesla: 20% of one sector
+    "conservative_saver.csv": (GREEN, GREEN, 100, "A+", []),
+    "small_cap_fan.csv": (GREEN, GREEN, 100, "A+", []),
+    "one_global_etf.csv": (GREEN, GREEN, 100, "A+", []),
+    "andrei.csv": (YELLOW, YELLOW, 98, "A+", ["region"]),
     # Stress tests: each sits on a threshold or shows one rule at work.
-    "stress_sector_just_over.csv": (ORANGE, GREEN, 94, "Dynamic", ["large_cap", "currency"]),
-    "stress_exact_limits.csv": (YELLOW, YELLOW, 98, "Dynamic", ["large_cap"]),
-    "stress_sector_over_margin.csv": (RED, GREEN, 84, "Dynamic", ["large_cap", "currency"]),
-    "stress_small_index_slice.csv": (GREEN, RED, 39, "Dynamic", ["large_cap", "region", "currency"]),
-    "stress_half_index.csv": (GREEN, YELLOW, 89, "Dynamic", ["large_cap", "region", "currency"]),
-    "stress_corporate_bond.csv": (GREEN, RED, 84, "Balanced", []),
-    "stress_gold.csv": (GREEN, GREEN, 100, "Dynamic", []),
-    "stress_government_bonds.csv": (GREEN, GREEN, 100, "Conservative", []),
-    "stress_us_large_caps.csv": (GREEN, GREEN, 94, "Dynamic", ["large_cap", "region", "currency"]),
-    "stress_bvb_only.csv": (RED, RED, 65, "Dynamic", ["small_cap", "region"]),
+    "stress_sector_just_over.csv": (ORANGE, GREEN, 94, "A", []),
+    "stress_exact_limits.csv": (YELLOW, YELLOW, 98, "A+", []),
+    "stress_sector_over_margin.csv": (RED, GREEN, 84, "B", []),
+    "stress_small_index_slice.csv": (GREEN, RED, 39, "D", ["region"]),
+    "stress_half_index.csv": (GREEN, YELLOW, 89, "A", ["region"]),
+    "stress_corporate_bond.csv": (GREEN, RED, 84, "B", []),
+    "stress_gold.csv": (GREEN, GREEN, 100, "A+", []),
+    "stress_government_bonds.csv": (GREEN, GREEN, 100, "A+", []),
+    "stress_us_large_caps.csv": (GREEN, GREEN, 94, "A", ["region"]),
+    "stress_bvb_only.csv": (RED, RED, 65, "C", ["region"]),
 }
 
 
@@ -75,11 +75,10 @@ def test_sample_limit_statuses(file_name):
 
 
 @pytest.mark.parametrize("file_name", EXPECTED)
-def test_sample_score_profile_and_notes(file_name):
+def test_sample_score_tier_and_notes(file_name):
     analysis = sample(file_name)
-    _, _, score, profile, notes = EXPECTED[file_name]
-    assert analysis.score == score
-    assert analysis.profile.name == profile
+    _, _, score, tier, notes = EXPECTED[file_name]
+    assert (analysis.score, analysis.tier) == (score, tier)
     assert [n.key for n in analysis.notes] == notes
 
 
@@ -99,27 +98,36 @@ def test_diversified_has_no_warnings_and_at_least_20_positions():
     analysis = sample("diversified.csv")
     assert len(analysis.positions) >= 20
     assert analysis.warnings == []
-    assert analysis.verdict == "No limit breaches."
+    assert analysis.summary.look_at == []
 
 
 def test_tech_heavy_sector_is_technology_45_percent():
     analysis = sample("tech_heavy.csv")
     sector = analysis.limits[0]
     assert (sector.category, sector.weight) == ("Information Technology", pytest.approx(0.45))
-    assert analysis.verdict == "1 issue: sector (Information Technology 45%)."
+    assert analysis.summary.look_at == ["Information Technology is 45% of your money, above the 25% limit."]
 
 
-def test_andrei_at_a_glance():
-    analysis = sample("andrei.csv")
-    # Two Watch warnings cost nothing; the larger weight comes first.
-    assert analysis.verdict == "2 issues. The most serious: sector (Information Technology 21.5%)."
-    assert [(row.status, row.tab) for row in analysis.glance] == [
-        (YELLOW, "Overview"),
-        (YELLOW, "Overview"),
-        ("", "Stocks"),
+def test_andrei_summary():
+    summary = sample("andrei.csv").summary
+    assert summary.good == ["38.5% is in broad funds, which spread money over many companies."]
+    assert summary.look_at == [
+        "Information Technology is 21.5% of your money, close to the 25% limit.",
+        "Apple is 8% of your money, close to the 10% limit (and 6 more).",
+        "Your companies are spread as if over only 28 equal stocks; research suggests at least 30.",
+        "87% of your portfolio is in the US: most of it depends on one region's economy.",
     ]
-    assert analysis.glance[0].text == "Sector Information Technology: 21.5% (limit 25%)"
-    assert analysis.glance[1].text == "Position Apple: 8% (limit 10%) and 6 more"
+
+
+def test_summary_good_side():
+    summary = sample("diversified.csv").summary
+    assert summary.good == [
+        "No sector is above the 25% limit (the largest: Information Technology, 9%).",
+        "No single company is above the 10% limit (the largest: ASML, 3%).",
+        "Your companies are spread as if over 69 equal stocks; 30 or more counts as well diversified.",
+    ]
+    assert sample("conservative_saver.csv").summary.good[0] == (
+        "No single company carries your money: it is in funds, bonds, cash or metals.")
 
 
 def test_one_global_etf_region_is_global():
@@ -275,20 +283,10 @@ def portfolio_with_defensive(share_percent):
     )
 
 
-@pytest.mark.parametrize(
-    "share, expected",
-    [
-        (61, "Conservative"),
-        (60, "Balanced"),
-        (45, "Balanced"),
-        (30, "Balanced"),
-        (29, "Dynamic"),
-    ],
-)
-def test_profile(share, expected):
-    profile = scoring.profile_for(portfolio_with_defensive(share))
-    assert profile.name == expected
-    assert profile.message == scoring.PROFILE_MESSAGES[expected]
+def test_profile_is_the_mix_only():
+    profile = scoring.profile_for(portfolio_with_defensive(45))
+    assert profile.defensive_share == pytest.approx(0.45)
+    assert not hasattr(profile, "name")  # no Conservative / Balanced / Dynamic labels (D10)
 
 
 def test_profile_breakdown():
@@ -345,21 +343,10 @@ def note_keys(df, has_region=True, ignore=("currency",)):
     return [n.key for n in scoring.exposure_notes(df, has_region) if n.key not in ignore]
 
 
-def test_small_cap_note():
-    assert note_keys(stocks_by_cap(30, 30, 40)) == ["small_cap"]
-    assert note_keys(stocks_by_cap(28, 32, 40)) == []  # exactly the 28% threshold
-    note = scoring.exposure_notes(stocks_by_cap(30, 30, 40), True)[0]
-    assert note.text.startswith("Small caps are 30% of your stocks. Historically")
-    assert note.headline == "Small caps are 30% of your stocks."
-
-
-def test_large_cap_note():
-    assert note_keys(stocks_by_cap(0, 9, 91)) == ["large_cap"]
-    assert note_keys(stocks_by_cap(0, 10, 90)) == []  # exactly 90%
-
-
-def test_no_note_for_mid_caps():
-    assert note_keys(stocks_by_cap(0, 100, 0)) == []
+def test_no_market_cap_notes():
+    # The cap mix is shown in the Stocks tab; no unfounded thresholds (D10).
+    for caps in [(30, 30, 40), (0, 9, 91), (0, 100, 0)]:
+        assert note_keys(stocks_by_cap(*caps)) == []
 
 
 def test_single_region_note():
@@ -370,6 +357,9 @@ def test_single_region_note():
         ]
     )
     assert note_keys(df) == ["region"]
+    assert scoring.exposure_notes(df, True)[0].text == (
+        "81% of your portfolio is in the US: it depends mostly on one region's economy. "
+        "This may be intentional.")
     exactly = make(
         [
             ("US fund", 80, "Diversified", "ETF", "n/a", "USD", "US"),
@@ -393,21 +383,16 @@ def foreign_share(usd_percent):
     )
 
 
-def test_currency_is_a_note_not_a_limit():
+def test_currency_is_an_insight_not_a_limit():
     analysis = scoring.analyze(foreign_share(90))
     assert [r.key for r in analysis.limits] == ["sector", "asset"]
-    note = next(n for n in analysis.notes if n.key == "currency")
-    assert note.headline == "90% of your portfolio is in USD."
-    assert "lose value in lei" in note.text
+    assert "currency" not in note_keys(foreign_share(90), ignore=())
     other = next(i for i in analysis.insights if i.key == "other_currencies")
-    assert other.label == "Watch"
-
-
-def test_currency_note_threshold_and_ron():
-    assert "currency" in note_keys(foreign_share(57), ignore=())
-    assert "currency" not in note_keys(foreign_share(56), ignore=())  # exactly the threshold
+    assert other.text.startswith("90% of your portfolio is in currencies other than RON.")
+    assert "lose value in lei" in other.text
     all_ron = make([("Deposit", 100, "n/a", "cash", "n/a", "RON", "Romania")])
-    assert "currency" not in note_keys(all_ron, ignore=())  # RON is never a currency risk
+    ron = next(i for i in scoring.analyze(all_ron).insights if i.key == "other_currencies")
+    assert ron.text == "All of your portfolio is in RON."  # RON is never a currency risk
 
 
 def test_currency_chart_has_no_limit_line():
@@ -459,22 +444,16 @@ def test_top5(hand_insights):
     assert hand_insights["top5"].text == "Your 5 largest positions make up 95% of your portfolio."
 
 
-def test_largest_sector(hand_insights):
-    insight = hand_insights["largest_sector"]
-    assert insight.text == "40% of your money is in Information Technology."
-    assert insight.label == "Watch"
-
-
 def test_other_currencies(hand_insights):
     insight = hand_insights["other_currencies"]
-    assert insight.text == "80% of your portfolio is in currencies other than RON."
-    assert insight.label == "Info"  # USD 45% is below 56%
+    assert insight.text.startswith("80% of your portfolio is in currencies other than RON. If they fall")
+    assert insight.label == "Info"
 
 
-def test_no_stress_test_but_plain_exposure():
-    insights = {i.key: i for i in sample("tech_heavy.csv").insights}
-    assert "stress_test" not in insights
-    assert insights["largest_sector"].text == "45% of your money is in Information Technology."
+def test_no_duplicate_insights():
+    # The largest sector is on the Sector card and in the summary; no stress test (S1-19).
+    keys = {i.key for i in sample("tech_heavy.csv").insights}
+    assert not {"largest_sector", "stress_test", "effective_positions"} & keys
 
 
 def test_sector_coverage_with_global_funds(hand_insights):
@@ -522,9 +501,8 @@ def test_regions_without_a_world_figure():
 
 def test_insight_labels():
     labels = {i.key: i.label for i in sample("diversified.csv").insights}
-    assert labels["hhi"] == labels["largest_sector"] == "Good"  # about 69 equal stocks; limits OK
-    assert labels["other_currencies"] == labels["regions"] == "Info"  # no limit
-    assert {i.key: i.label for i in sample("tech_heavy.csv").insights}["largest_sector"] == "Watch"
+    assert set(labels.values()) == {"Info"}  # nothing to watch, no Good label any more (D10)
+    assert {i.key: i.label for i in sample("tech_heavy.csv").insights}["sector_coverage"] == "Watch"
 
 
 def test_just_over_the_sector_limit():
@@ -540,11 +518,10 @@ def test_insights_without_sector_exposure():
     df = make([("World", 100, "Diversified", "ETF", "n/a", "RON", "Global")])
     insights = {i.key: i for i in scoring.analyze(df).insights}
     assert insights["hhi"].text.startswith("Your HHI is 0: no single company carries your money")
-    assert insights["hhi"].label == "Good"
+    assert insights["hhi"].label == "Info"
     assert insights["top5"].text == "With 1 position, your top 5 are the whole portfolio."
     assert insights["other_currencies"].text == "All of your portfolio is in RON."
     assert insights["sector_coverage"].text == "You hold global funds that span all sectors."
-    assert insights["largest_sector"].text.startswith("You have no single-sector exposure")
 
 
 def test_one_dominant_position():
@@ -983,7 +960,7 @@ def test_corporate_bond_counts_as_one_position():
     analysis = scoring.analyze(df)
     single = next(r for r in analysis.limits if r.key == "asset")
     assert (single.category, single.status) == ("Company bond 2030", RED)
-    assert analysis.profile.name == "Conservative"  # both kinds of bond are defensive
+    assert analysis.profile.defensive_share == pytest.approx(1.0)  # both kinds of bond
 
 
 def test_precious_metals_are_information_only():

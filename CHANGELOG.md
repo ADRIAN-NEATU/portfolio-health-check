@@ -7,6 +7,9 @@
 - The score is shown on a gauge with tiers from D to A+, red to green, that animates when a portfolio opens. While a limit is breached, the tier can't be the top one.
 - A new insight shows your concentration index (HHI); its (?) explains it in plain words.
 - The page no longer loads anything from Google.
+- A simpler screen: next to the score, "What looks good" and "What to look at". Only the needle moves, so the page no longer lags.
+- Removed what had no source: the Conservative / Balanced / Dynamic labels and the small-cap, large-cap and currency notes. The asset mix, the company sizes and the share outside RON are still shown. The region note stays.
+- The README explains how to share the app as a link, on Streamlit Community Cloud.
 
 ### 1 Nov 2026
 - The sector limit is now 25%, the level the US regulator calls concentration. Watch starts at 20%.

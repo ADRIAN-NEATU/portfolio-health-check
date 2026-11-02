@@ -27,22 +27,20 @@ What a user can see and do in Portfolio Health Check.
 | | Single-position thresholds (5% and 10%) come with sources: the limits EU and US law set for diversified funds | Done | 29 Oct |
 | | Sector limit (25%) comes with a source: the level the US regulator calls concentration | Done | 1 Nov |
 | | Watch thresholds and the sector margin come from my thesis (today they are example values) | To do | – |
-| **At a glance** | See the score in a coloured ring with a one-sentence verdict | Done | 27 Oct |
-| | See up to three findings that matter most, each pointing to the tab with the details | Done | 27 Oct |
-| | See your investor profile: Conservative, Balanced or Dynamic | Done | 27 Oct |
+| **At a glance** | See the score on a gauge in tiers, with "What looks good" and "What to look at" next to it | Done | 2 Nov |
+| | See your asset mix: stocks, ETFs, bonds, cash, precious metals (the Conservative / Balanced / Dynamic labels were removed by D10) | Done | 2 Nov |
 | **Insights** | See how your money splits between stocks, ETFs, bonds and cash | Done | 27 Oct |
 | | See how many equal positions your portfolio behaves like (explained in plain words), and the share of the five largest | Done | 27 Oct |
 | | See your largest sector and your largest region as simple percentages (they replace the stress test) | Done | 29 Oct |
 | | See your share outside RON | Done | 27 Oct |
 | | See how many of the 11 sectors you cover, with global funds counted | Done | 28 Oct |
 | | See what your index funds hold (ready in the code; ships without index figures, D8) | Done | 1 Nov |
-| | Hold precious metals: their own slice in the profile and an insight, outside the limits | Done | 1 Nov |
-| | Each insight is marked Good, Info or Watch (Good is provisional) and never changes the score | Done | 1 Nov |
+| | Hold precious metals: their own slice in the asset mix and an insight, outside the limits | Done | 1 Nov |
+| | An insight is marked Watch when it needs a look, and never changes the score | Done | 2 Nov |
 | | When most of your money is in the US, compare it with the US share of the world stock market, with the source behind a (?) | Done | 1 Nov |
 | **Exposure notes** | See your stocks' company sizes: small, mid and large (the comparison with the US market was removed by D8) | Done | 27 Oct |
-| | Get a note when small companies are well above the market share, or when almost everything is a large company | Done | 27 Oct |
 | | Get a note when one region holds most of your portfolio | Done | 27 Oct |
-| | Get a note when one foreign currency holds most of your portfolio; the leu never counts | Done | 29 Oct |
+| | See the share outside RON and what it means in lei; the leu never counts (the currency note was removed by D10) | Done | 2 Nov |
 | | Click a stock to see its sector, size, region and weight | Done | 27 Oct |
 | **Charts** | See bars by sector, currency, position or region, largest first, with the limit as a dotted line | Done | 27 Oct |
 | | Hover over a bar to see the positions inside it, or click it to list them all | Done | 29 Oct |

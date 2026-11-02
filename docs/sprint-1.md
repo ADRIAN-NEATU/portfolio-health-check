@@ -40,6 +40,7 @@
 | S1-30 | – | Story | E5 | Ten stress-test portfolios that sit on the new thresholds | 2 | Done | 1 Nov |
 | S1-31 | – | Task | E5 | Release check: nothing its source doesn't allow, pinned versions, licence | 2 | Done | 1 Nov |
 | S1-33 | – | Story | E4 | A score from three parts (sector, positions, spread with the HHI), progressive, in tiers on an animated gauge | 5 | Done | 2 Nov |
+| S1-34 | – | Story | E3 | A simpler screen: what looks good and what to look at, nothing without a reason | 3 | Done | 2 Nov |
 
 S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. On 1 Nov:
 - S1-13 was finished: both limits now come from documented rules ([D2](decisions.md) single position, [D3](decisions.md) sector).
@@ -76,7 +77,7 @@ Story points left at the end of each day, updated at every Daily Scrum. Days 1�
 | 30 Oct | 62 | – | 0 | 11 | 18 |
 | 31 Oct | 62 | – | 0 | 11 | 12 |
 | 1 Nov | 75 | 13 (S1-26, S1-27, S1-29, S1-30, S1-31) | 22 (S1-13, S1-15, S1-20, S1-22, S1-26, S1-27, S1-29, S1-30, S1-31) | 2 | 6 |
-| 2 Nov | 80 | 5 (S1-33) | 5 (S1-33) | 2 | 0 |
+| 2 Nov | 83 | 8 (S1-33, S1-34) | 8 (S1-33, S1-34) | 2 | 0 |
 
 - **Scope:** all points in the Sprint. It grows when work is added.
 - **Ideal:** the starting 42 points spread evenly over 7 days (6 a day).

@@ -140,27 +140,26 @@ def inject_css() -> None:
 .phc-row-tab { color: var(--text-2); font-size: .78rem; white-space: nowrap; }
 
 /* At a glance */
-.phc-verdict { text-align: center; font-weight: 500; line-height: 1.4; margin-top: .4rem; }
 
 /* Score gauge: segments draw in, the needle swings, the number counts up */
-/* \\3C and \\3E are the angle brackets around "integer": st.html drops a style block that
-   contains a less-than sign, so none may appear anywhere in this CSS. */
-@property --phc-n { syntax: "\\3C integer\\3E"; inherits: false; initial-value: 0; }
+/* st.html drops a style block that contains a less-than sign: none may appear in this CSS. */
 .phc-gauge { display: flex; flex-direction: column; align-items: center; gap: .15rem; }
 .phc-gauge img { width: 100%; max-width: 270px; }
 .phc-gauge-score { display: flex; align-items: baseline; gap: .45rem; margin-top: -.3rem; }
-.phc-count { font-size: 2.6rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
-  --phc-n: var(--target); counter-reset: phc var(--phc-n); animation: phc-count 1.5s ease-out .5s both; }
-.phc-count::after { content: counter(phc); }
-@keyframes phc-count { from { --phc-n: 0; } to { --phc-n: var(--target); } }
+.phc-count { font-size: 2.6rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.phc-summary { display: grid; gap: 1.1rem; }
+.phc-summary h4 { margin: 0 0 .45rem; font-size: .8rem; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--text-2); }
+.phc-summary ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .45rem; }
+.phc-summary li { display: flex; gap: .6rem; line-height: 1.45; font-size: 1rem; }
+.phc-summary li::before { flex: none; width: 1.3rem; height: 1.3rem; border-radius: 50%; display: grid;
+  place-items: center; font-weight: 700; font-size: .85rem; margin-top: .1rem; }
+.phc-good li::before { content: "+"; color: #FFFFFF; background: var(--accent); }
+.phc-look li::before { content: "\\2212"; color: var(--text); background: color-mix(in srgb, var(--yellow) 35%, white); }
+.phc-summary .phc-none { color: var(--text-2); }
 .phc-tier { align-self: center; padding: .15rem .65rem; border-radius: 999px; font-weight: 700; }
 .phc-parts { color: var(--text-2); font-size: .82rem; }
-@media (prefers-reduced-motion: reduce) {
-  .phc-count { animation: none; }
-}
-.phc-glance-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem;
-  flex-wrap: wrap; margin-bottom: .75rem; }
-.phc-glance-label { color: var(--text-2); font-size: .85rem; }
+
 
 /* Limit cards */
 .phc-limit { display: flex; flex-direction: column; gap: .55rem; }
@@ -362,10 +361,6 @@ def status_pill(status: str) -> str:
     return pill(scoring.STATUS_LABELS[status], status)
 
 
-# Pill colour for each insight label (decision D5, provisional).
-INSIGHT_PILLS = {"Good": GREEN, "Watch": YELLOW}
-
-
 def source_tip(source: str) -> str:
     """A (?) that shows where a figure comes from, on hover or keyboard focus."""
     if not source:
@@ -436,29 +431,27 @@ def gauge_point(score: float, radius: float) -> tuple[float, float]:
 
 def gauge_svg(score: int) -> str:
     """The half circle as a standalone SVG picture (st.html strips inline SVG), with its
-    own styles: the tier segments draw in one after another, then the needle swings to
-    the score. Still for people who ask for less motion."""
+    own styles. Only the needle moves, once, to the score; still for people who ask
+    for less motion."""
     tiers = list(reversed(rules.SCORE_TIERS))  # D first, left to right
     ends = [lowest for _, lowest in tiers[1:]] + [100]
     parts = []
-    for i, ((tier, lowest), highest) in enumerate(zip(tiers, ends)):
+    for (tier, lowest), highest in zip(tiers, ends):
         (x1, y1), (x2, y2) = gauge_point(lowest + 0.7, GAUGE_RADIUS), gauge_point(highest - 0.7, GAUGE_RADIUS)
         lx, ly = gauge_point((lowest + highest) / 2, GAUGE_RADIUS + 23)
         parts.append(
             f'<path class="seg" d="M {x1:.1f} {y1:.1f} A {GAUGE_RADIUS} {GAUGE_RADIUS} 0 0 1 {x2:.1f} {y2:.1f}" '
-            f'pathLength="100" stroke="{TIER_COLORS[tier]}" style="animation-delay:{i * 0.12:.2f}s"/>'
+            f'stroke="{TIER_COLORS[tier]}"/>'
             f'<text x="{lx:.1f}" y="{ly + 4:.1f}">{escape(tier)}</text>'
         )
     cx, cy = GAUGE_CENTER
     style = (
-        ".seg{fill:none;stroke-width:16;stroke-dasharray:100;stroke-dashoffset:100;"
-        "animation:draw .45s ease-out forwards}"
-        "@keyframes draw{to{stroke-dashoffset:0}}"
+        ".seg{fill:none;stroke-width:16}"
         f"text{{font:700 11px {FONT};fill:{COLORS['text-2']};text-anchor:middle}}"
         f".needle{{transform-box:view-box;transform-origin:{cx}px {cy}px;"
-        f"transform:rotate({180 * score / 100:.1f}deg);animation:swing 1.5s cubic-bezier(.34,1.25,.64,1) .5s both}}"
+        f"transform:rotate({180 * score / 100:.1f}deg);animation:swing 1s cubic-bezier(.22,1,.36,1) .2s both}}"
         f"@keyframes swing{{from{{transform:rotate(0deg)}}to{{transform:rotate({180 * score / 100:.1f}deg)}}}}"
-        "@media (prefers-reduced-motion:reduce){.seg,.needle{animation:none}.seg{stroke-dashoffset:0}}"
+        "@media (prefers-reduced-motion:reduce){.needle{animation:none}}"
     )
     needle = (
         f'<g class="needle"><line x1="{cx}" y1="{cy}" x2="{cx - GAUGE_RADIUS + 26}" y2="{cy}" '
@@ -482,7 +475,7 @@ def score_gauge(analysis: scoring.Analysis) -> str:
         f'<div class="phc-gauge" role="img" aria-label="Score {analysis.score} out of 100, tier {tier}">'
         f'<img src="data:image/svg+xml;base64,{picture}" alt="">'
         '<div class="phc-gauge-score">'
-        f'<span class="phc-count" style="--target:{analysis.score}"></span><span class="phc-of">/ 100</span>'
+        f'<span class="phc-count">{analysis.score}</span><span class="phc-of">/ 100</span>'
         f'<span class="phc-tier" style="background:{TIER_COLORS[tier]};color:{TIER_TEXT[tier]}">{tier}</span>'
         "</div>"
         f'<div class="phc-parts">Sector {round(sector)} · Positions {round(position)} · '
@@ -870,13 +863,22 @@ def at_a_glance(analysis: scoring.Analysis, name: str) -> None:
         left, right = st.columns([1, 1.7], gap="large", vertical_alignment="center")
         with left:
             st.html(score_gauge(analysis))
-            st.html(f'<div class="phc-verdict">{escape(analysis.verdict)}</div>')
         with right:
-            st.html(
-                '<div class="phc-glance-head"><span class="phc-glance-label">What matters most</span>'
-                f"{pill(analysis.profile.name + ' profile')}</div>"
-                + rows_html([(row.text, f"{escape(row.tab)} ›", row.status) for row in analysis.glance])
-            )
+            st.html(summary_html(analysis.summary))
+
+
+def summary_html(summary: scoring.Summary) -> str:
+    def items(lines: list[str], empty: str) -> str:
+        if not lines:
+            return f'<ul><li class="phc-none">{escape(empty)}</li></ul>'
+        return "<ul>" + "".join(f'<li class="phc-num">{escape(line)}</li>' for line in lines) + "</ul>"
+
+    return (
+        '<div class="phc-summary">'
+        f'<div class="phc-good"><h4>What looks good</h4>{items(summary.good, "Nothing stands out yet.")}</div>'
+        f'<div class="phc-look"><h4>What to look at</h4>{items(summary.look_at, "Nothing: every limit is fine.")}</div>'
+        "</div>"
+    )
 
 
 def limit_card(result: scoring.LimitResult) -> str:
@@ -912,7 +914,7 @@ def overview_tab(analysis: scoring.Analysis) -> None:
     section("Concentration limits")
     st.html('<div class="phc-grid wide">' + "".join(limit_card(r) for r in analysis.limits) + "</div>")
 
-    section("Profile")
+    section("Asset mix")
     profile = analysis.profile
     slices = scoring.asset_class_slices(profile)
     with st.container(key="profile"):
@@ -925,8 +927,8 @@ def overview_tab(analysis: scoring.Analysis) -> None:
                 for label, share, detail in slices.itertuples(index=False)
             )
             st.html(
-                pill(profile.name)
-                + f'<div class="phc-profile-msg">{escape(profile.message)}</div>'
+                '<div class="phc-profile-msg">The bigger the share in stocks and equity funds, the more '
+                "the portfolio moves with the stock market; bonds and cash move less.</div>"
                 + f'<div class="phc-legend">{legend}</div>'
             )
         with chart:
@@ -936,7 +938,7 @@ def overview_tab(analysis: scoring.Analysis) -> None:
     cards = "".join(
         '<div class="phc-card phc-insight"><div class="phc-insight-head">'
         f'<span class="phc-insight-title">{escape(i.title)}</span>'
-        f"{pill(i.label, INSIGHT_PILLS.get(i.label, ''))}</div>"
+        f"{pill('Watch', YELLOW) if i.label == 'Watch' else ''}</div>"
         f'<div class="phc-insight-text phc-num">{escape(i.text)}{source_tip(i.source)}</div></div>'
         for i in analysis.insights
     )
@@ -961,10 +963,6 @@ def stocks_tab(analysis: scoring.Analysis, portfolio_id: str) -> None:
 
     section("Market cap of your stocks")
     show_chart(cap_chart(scoring.cap_shares(analysis)))
-    notes = [n for n in analysis.notes if n.tab == "Stocks"]
-    if notes:
-        st.html('<div class="phc-rows">' + "".join(note_card(n.text) for n in notes) + "</div>")
-
     section("Your stocks")
     st.html('<div class="phc-muted">Select a row to see the details of a stock.</div>')
     event = show_table(
@@ -1090,8 +1088,10 @@ and it does not know your goals, income or situation.
 - Details looked up online come from public sources and may be wrong: check them.
 
 **Your data**
-- The app runs on your computer and keeps your portfolio only in its memory: nothing is written
-  to a file, and it is gone when you close the app.
+- Your portfolio is kept only in the app's memory while you use it: nothing is written to a
+  file, and it is gone when you close the page. On your computer it never leaves it; in the
+  shared online version it is held by the hosting service (Streamlit Community Cloud) for the
+  time you use it.
 - To keep positions you typed, use "Download as CSV": the file is saved where you choose.
 - If online lookup is on, only the names and tickers you type are sent to SEC EDGAR and OpenFIGI,
   never the values. You can turn the lookup off.
