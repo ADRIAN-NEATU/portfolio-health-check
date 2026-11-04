@@ -1,0 +1,11 @@
+Doc ID,Summary,Issue Type,Epic,Story Points,Fix Version,Labels,Description
+S1-26,See what the app is and how the score is calculated before I start,Story,E5 Testare și lansare,1,v0.1 – MVP,must,"A ""Before you start"" window: just math, not advice, how the score works, how the data is kept."
+S1-27,"See what my index funds hold: sectors, countries and overlap with my stocks",Story,E3 Analiza diversificării,5,v0.1 – MVP,must,Code ready; ships without index figures (decision D8).
+S1-29,Count corporate bonds as positions and show precious metals,Story,E4 Avertismente și scor,3,v0.1 – MVP,must,Decision D7.
+S1-30,Ten stress-test portfolios that sit on the new thresholds,Story,E5 Testare și lansare,2,v0.1 – MVP,must,Stress tests section in the side panel.
+S1-31,"Release check: nothing its source doesn't allow, pinned versions, licence",Task,E5 Testare și lansare,2,v0.1 – MVP,must,Decision D8.
+S1-33,"A score from three parts (sector, positions, spread with the HHI), progressive, in tiers on a gauge",Story,E4 Avertismente și scor,5,v0.1 – MVP,must,Decision D9.
+S1-34,"A simpler screen: what looks good and what to look at, nothing without a reason",Story,E3 Analiza diversificării,3,v0.1 – MVP,must,Decision D10.
+S1-28,Give feedback through an anonymous form,Story,E5 Testare și lansare,1,v0.1 – MVP,must,Waits for the form link. Product Backlog.
+REL-01,Recognise the Bucharest ETFs and the largest UCITS ETFs; count BET funds as 20 companies,Story,E2 Introducerea portofoliului,3,v0.1 – MVP,must,Decision D11. Done before the release.
+REL-02,"Count a precious metal as one position, with sources",Story,E4 Avertismente și scor,1,v0.1 – MVP,must,Decision D12. Done before the release.

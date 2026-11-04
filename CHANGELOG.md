@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1 – MVP (in progress)
+## v0.1 – MVP (released 4 Nov 2026)
 
 ### 4 Nov 2026
 - The built-in list knows the ETFs listed in Bucharest (BET, BET-TR, BET-TRN, BET-XT, Croatian and Slovenian index funds, a Romanian government bond fund) and the largest UCITS ETFs: global, US, European, emerging markets, bonds and a money-market fund. The name of TVBETETF is corrected.

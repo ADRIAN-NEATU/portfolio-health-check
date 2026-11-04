@@ -216,15 +216,24 @@ As the person testing the app, I want portfolios that sit exactly on each thresh
 As a user, I want to send feedback without giving my name or email, so that I can say what is unclear.
 - Given any screen, when I click "Give feedback", then an anonymous form opens in a new tab.
 
+## Release preparation (after Sprint 1, 4 Nov)
+
+Done before the v0.1 release, outside the Sprint.
+
+| ID | Jira | Type | Epic | Title | Points | Status | Done on |
+|---|---|---|---|---|---|---|---|
+| REL-01 | – | Story | E2 | Recognise the Bucharest ETFs and the largest UCITS ETFs; count BET funds as 20 companies | 3 | Done | 4 Nov |
+| REL-02 | – | Story | E4 | Count a precious metal as one position, with sources | 1 | Done | 4 Nov |
+
 ## Sprint Review (2 Nov)
 
-- Sprint Goal met? Yes / No
-- Increment delivered:
-- Not Done (back to the Product Backlog):
-- Demo notes:
+- **Sprint Goal met?** Yes. A user loads a portfolio and, in under a minute, sees the score, what looks good, what to look at and the key insights.
+- **Increment delivered:** v0.1 – MVP: samples, CSV upload and editor with automatic details, a score from three documented parts on a gauge from D to A+, charts, tables, the "Before you start" window, ten stress tests. 260+ automated tests.
+- **Not Done (back to the Product Backlog):** S1-14 (reread the code with my notes), S1-17 (search with suggestions), S1-28 (feedback form, waits for the link).
+- **Demo notes:** Andrei (A+ but things to look at), Tech-heavy (sector over the limit), Bucharest only (one region, few companies), the stress tests, typing a few tickers in the editor.
 
 ## Sprint Retrospective (Start / Stop / Continue)
 
-- **Start:**
-- **Stop:**
-- **Continue:**
+- **Start:** Hold the daily every day, even a short one. Check the legal side of every data source before using it, not at the end.
+- **Stop:** Pulling so much new work into the last two days. The Sprint went from 42 to 83 points.
+- **Continue:** Writing down every decision with its source. Testing on my real portfolio and on stress tests. Small commits with tests.

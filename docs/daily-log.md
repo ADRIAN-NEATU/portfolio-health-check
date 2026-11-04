@@ -67,15 +67,72 @@ Five minutes at the end of each working day.
   - S1-18 to S1-24 pulled into Sprint 1 (+15 points). Whatever is not Done by 2 Nov goes back to the Product Backlog.
 - _Daily Scrum: 13 min 30 s._
 
+## Day 4 – 30 Oct
+
+(No daily that day. Written on 4 Nov.)
+
+- **Done:** Nothing on the project. On 29 Oct, after the Day 3 daily, the values in the charts moved inside the bars, the tooltips got nicer, and the 5% and 10% limits got their sources.
+- **Next:** Decide the open points: sector limits, the region question, insight colours.
+- **Impediments:** None
+
+## Day 5 – 31 Oct
+
+(No daily that day. Written on 4 Nov.)
+
+- **Done:** Nothing on the project.
+
+## Day 6 – 1 Nov
+
+(No daily that day. Written on 4 Nov.)
+
+- **Done:**
+  - The sector limit is now 25%, the level the US regulator uses for concentration. Up to 30% it shows as "Just over".
+  - The US share is compared with the whole world, with the source behind a (?).
+  - A "Before you start" window: the app is just math, not advice, how the score works and how my data is kept.
+  - Corporate bonds and gold can be entered. Ten stress-test portfolios to check the limits.
+  - Release check: I removed the index data I'm not allowed to use, fixed the package versions and added the MIT licence.
+- **Next:** Check the screen and the score before the release.
+- **Impediments:** None
+- **My feedback:**
+  - I don't want anything in the project that could get me in legal trouble.
+  - Tips on how to raise the score are too close to advice. Explaining how the score works is enough.
+  - An S&P 500 or a world fund adds diversification. It shouldn't count against you.
+  - Feedback from users should come through an anonymous form, so I don't deal with personal data.
+- **Product Backlog changes:** New S1-28: feedback form (waits for the link). S1-26, S1-27, S1-29, S1-30 and S1-31 pulled in and done the same day.
+
 ## Day 7 – 2 Nov (last day of the Sprint)
 
-- **Done since Day 3:**
-  - 29 Oct: values inside the chart bars and card-like tooltips (S1-25). The single-position thresholds got their sources (D2).
-  - 30–31 Oct: no Sprint work.
-  - 1 Nov: the sector limit became 25%, with a safety margin (S1-13, D3). The US share is compared with the world (S1-22, D4). Insights are marked Good, Watch or Info (S1-20, D5). A "Before you start" window was added (S1-26). Index funds can be looked inside (S1-27, D6). Corporate bonds and precious metals are supported (S1-29, D7). Ten stress-test portfolios were added (S1-30). The release check removed everything its source doesn't allow (S1-31, D8).
-  - 2 Nov: the page no longer loads anything from Google (fonts, tab icon). The release check is written up in [release-check.md](release-check.md).
-- **Next:** Sprint Review and Retrospective, then the v0.1 release. I reread the code with my notes (S1-14).
-- **Impediments:** None.
-- **My feedback:** a portfolio made only of stocks should be flagged when it holds too few of them, and say why. Five stocks are already caught by the single-position limit, but 20 to 29 equal stocks score 100.
-- **Product Backlog changes:** New S1-32: a note when a portfolio is mostly individual stocks spread as fewer than 30 equal ones (Statman, 1987), for Sprint 2.
-- **Later the same day:** S1-33 gave the score a new formula, from three parts with the HHI ([D9](decisions.md)), shown on an animated gauge with tiers D to A+. Its spread part covers S1-32, which was removed.
+- **Done:**
+  - The page no longer loads anything from Google.
+  - New score from three parts: sector, positions and spread (HHI). The more you go over a limit, the more it costs.
+  - The score is shown on a gauge from D to A+. Only the needle moves, the rest made the page lag.
+  - Simpler screen: "What looks good" and "What to look at" next to the score. I removed what had no source. The region note stays.
+  - The HHI has a small scale, so anyone can see what the number means.
+- **Next:** Sprint Review and Retro, then the release. Reread the code with my notes (S1-14).
+- **Impediments:** None
+- **My feedback:**
+  - A portfolio of only stocks should be flagged when it has too few of them, and say why. 20 equal stocks shouldn't get 100.
+  - The score was calculated too simply. Going far over a limit should cost a lot more than going a bit over.
+  - The HHI is important, but people need to understand it.
+  - I want to share the app with my colleagues as a link.
+- **Product Backlog changes:** S1-32 (too few stocks) is covered by the new score and removed. S1-33 and S1-34 done. S1-14 is not done, so it goes back to the Product Backlog.
+
+## Day 8 – 3 Nov
+
+(No daily that day. Written on 4 Nov.)
+
+- **Done:** Nothing on the project.
+
+## Day 9 – 4 Nov (getting ready for the release)
+
+- **Done:**
+  - All 10 ETFs from the Bucharest Stock Exchange and the biggest European ETFs are in the app's list, every ticker checked.
+  - A BET fund now counts as about 20 companies, not as a fully spread fund. It works when you type only the ticker too.
+  - Last legal and stability check: nothing secret goes to GitHub, no outside requests, no errors on 500 random portfolios.
+  - Gold now counts as one position, with sources.
+- **Next:** Sprint Review and Retro with the presentation. Then push, publish on Streamlit and send the link to colleagues.
+- **Impediments:** The release is two days late, because of the extra checks and the ETF list.
+- **My feedback:**
+  - People who invest in BET funds or like ETFs need a good list of ETFs, but everything has to be legal. The biggest ones are enough for the MVP.
+  - I don't see gold as a stock, but with a source it's fine to count it as one position.
+- **Product Backlog changes:** The two Bucharest sector ETFs (energy, and energy and finance) wait for a decision.
