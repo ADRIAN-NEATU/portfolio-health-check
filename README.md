@@ -72,7 +72,7 @@ The score (0 to 100, shown on a gauge with tiers D, C, B, A and A+) is the avera
 
 - **Sector:** 100 minus a penalty for every sector above 25%.
 - **Positions:** 100 minus a penalty for every single company above 10%.
-- **Spread:** how many equal stocks your single companies are worth, from the HHI concentration index (10,000 / HHI). 30 or more scores 100, the number research gives for a well-diversified portfolio of randomly chosen stocks (Statman, 1987). Funds, government bonds, cash and precious metals count as spread out.
+- **Spread:** how many equal stocks your single companies are worth, from the HHI concentration index (10,000 / HHI). 30 or more scores 100, the number research gives for a well-diversified portfolio of randomly chosen stocks (Statman, 1987). Funds, government bonds and cash count as spread out; a precious metal counts as one holding.
 
 The penalty grows faster than the breach: each excess is measured in limits and squared. A company at 15% (half a limit over) costs 25 points; one at 20% (a full limit over) costs all 100. Every breach counts, not only the largest, so six companies at 15% score far lower than one. Watch and Just over are warnings and cost nothing, but while a limit is Just over the score stays below 95 (no A+), and while one is Over limit it stays below 85 (no A).
 
@@ -89,7 +89,7 @@ The weights of the three parts, the squared penalty, the caps and the tiers are 
 | Limit | Watch from | Limit | Just over up to | Not counted |
 |---|---|---|---|---|
 | Sector | 20% | 25% | 30% | broad funds (Diversified), n/a |
-| Single position | 5% | 10% | – | broad ETFs, government bonds, cash, precious metals |
+| Single position | 5% | 10% | – | broad ETFs, government bonds, cash |
 
 All thresholds live in [rules.py](rules.py). No regulator sets a limit for an individual investor, so the two limits are the ones set for funds, used here as a reference:
 - **Single position, 5% and 10%:** the limits EU and US law set for diversified funds ([decision D2](docs/decisions.md)).
@@ -97,7 +97,7 @@ All thresholds live in [rules.py](rules.py). No regulator sets a limit for an in
 
 **Funds.** A broad fund counts as diversified: it doesn't count towards the limits, so it never lowers the score. Its weight still matters: a fund of 5% barely changes a portfolio of five stocks, while a fund of 50% halves every stock's weight (see the "Five stocks" stress tests). The app can also count index funds by what they hold, from a table of index figures (`data/index_funds.csv`), but it ships without that table: the figures we had came from index providers whose terms don't allow redistribution ([decision D8](docs/decisions.md)). Public-domain figures, from the holdings US funds file with the SEC, are planned.
 
-**Bonds and precious metals.** Government bonds and cash don't count towards the limits. A corporate bond counts towards the single-position limit, like a position in the company. Precious metals are shown in the profile and in an insight, but don't count towards the limits ([decision D7](docs/decisions.md)).
+**Bonds and precious metals.** Government bonds and cash don't count towards the limits. A corporate bond counts towards the single-position limit, like a position in the company. A precious metal has no sector, so it stays out of the sector limit, but it counts as one position, in the single-position limit and in the HHI: EU fund law doesn't let a fund hold metals directly, and treats a gold ETC as a debt security of one issuer, under the same 5/10/40 limits ([decision D12](docs/decisions.md)).
 
 ## Informative dimensions (not scored)
 
@@ -149,7 +149,9 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 - ERISA section 407(a): at most 10% of a US pension plan in the employer's own shares.
 - U.S. Securities and Exchange Commission, Guidelines for Form N-1A, Guide 19 (1983): 25% or more in one industry is concentration.
 - World Bank, World Development Indicators, CM.MKT.LCAP.CD (market capitalization of listed domestic companies), 2025. Licence CC BY 4.0.
-- Directive 2009/65/EC (UCITS), Articles 53 (index funds) and 54 (government bonds).
+- Directive 2009/65/EC (UCITS), Articles 53 (index funds) and 54 (government bonds); Article 50(2)(b) (no precious metals) and 50(1) (ETCs as transferable securities).
+- Baur, D. G., & Lucey, B. M. (2010). Is gold a hedge or a safe haven? An analysis of stocks, bonds and gold. *The Financial Review*, 45(2), 217–229.
+- Erb, C. B., & Harvey, C. R. (2013). The golden dilemma. *Financial Analysts Journal*, 69(4), 10–42.
 - FINRA (2022). Concentrate on Concentration Risk. Investor Insights.
 - Bessembinder, H. (2018). Do stocks outperform Treasury bills? *Journal of Financial Economics*, 129(3), 440–457.
 - Statman, M. (1987). How many stocks make a diversified portfolio? *Journal of Financial and Quantitative Analysis*, 22(3), 353–363.

@@ -128,11 +128,14 @@ SECTOR_ALIASES = {
 SECTOR_EXEMPT = ("Diversified", "n/a")  # EXAMPLE
 
 # Positions that never count towards the single-position limit: government bonds
-# ("bond"), cash, precious metals, and broad ETFs (an ETF whose sector is
-# BROAD_ETF_SECTOR). Government bonds: a fund may hold up to 100% in them (UCITS,
-# art. 54). Corporate bonds do count: their risk is the company's (decision D7).
-# Precious metals are not companies; they are shown as information only (D7).
-ASSET_EXEMPT_TYPES = ("bond", "cash", "precious metal")
+# ("bond"), cash, and broad ETFs (an ETF whose sector is BROAD_ETF_SECTOR).
+# Government bonds: a fund may hold up to 100% in them (UCITS, art. 54). Corporate
+# bonds count: their risk is the company's (decision D7). A precious metal counts
+# too (decision D12): EU funds may not hold metals directly (UCITS, art. 50(2)(b)),
+# and a gold ETC is a debt security of one issuer, held under the same 5/10/40
+# limits as any other (art. 50(1), 52). It has no sector, so it stays out of the
+# sector limit.
+ASSET_EXEMPT_TYPES = ("bond", "cash")
 BROAD_ETF_SECTOR = "Diversified"  # EXAMPLE
 
 # ---------------------------------------------------------------------------

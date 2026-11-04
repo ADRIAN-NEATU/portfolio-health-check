@@ -207,3 +207,21 @@ Every label is a word as well as a colour. The question is still open: whether a
 
 **Open.** The two sector ETFs in Bucharest, ETF Energie Patria-Tradeville (PTENGETF, BET-NG: energy and related utilities) and Globinvest Energy & Financials (GIBEFETF, BET-EF), span more than one sector, and their split isn't available without index weights. They are not in the list until their treatment is decided.
 
+## D12 – A precious metal counts as one position (4 Nov 2026)
+
+**Context.** Since D7, precious metals were information only, outside both limits, so a portfolio all in gold scored 100 (A+), although it rests on one price.
+
+**What the sources say.**
+- EU fund law: a UCITS fund may not acquire precious metals or certificates representing them (Directive 2009/65/EC, art. 50(2)(b)). Gold ETCs are built as debt securities of one issuer, which a fund may hold as transferable securities (art. 50(1)), under the same per-issuer limits as any other: 5%, 10%, 40% (art. 52). Issuers describe this structure in their UCITS eligibility notes (for example Invesco Physical Gold ETC).
+- Research: gold behaves differently from stocks. It hedges stocks on average and acts as a safe haven for about 15 trading days after a crash (Baur and Lucey, 2010), but it is a poor inflation hedge over horizons up to 20 years and not a dependable safe haven (Erb and Harvey, 2013).
+
+**Decision.** A precious metal stays its own asset class, with no sector, so it is outside the sector limit. It counts as one position in the single-position limit (Watch from 5%, limit 10%) and as one holding in the HHI. Replaces the "information only" part of D7.
+
+**Consequences.** 5% or 10% in gold: no change. 25%: one position over the limit, score 51 (C). 100%: score 34 (D), like any portfolio of one position. The "A quarter in gold" stress test goes from 100 to 51.
+
+**Sources.**
+- Directive 2009/65/EC (UCITS), Articles 50 and 52.
+- Invesco, Physical Gold ETC – UCITS eligibility note.
+- Baur, D. G., & Lucey, B. M. (2010). *The Financial Review*, 45(2), 217–229.
+- Erb, C. B., & Harvey, C. R. (2013). *Financial Analysts Journal*, 69(4), 10–42.
+

@@ -15,7 +15,7 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 ### ✅ Solid
 - Pick a sample, upload a CSV (also Excel with Romanian settings), download the template; clear messages for a missing column or a bad value.
 - Type or paste positions; details fill in from the built-in list.
-- The score from three parts (D9): sector (limit 25%, the US regulator's concentration level), positions (10%, EU and US fund law) and spread (the HHI against 30 stocks, Statman 1987). Every breach counts and costs more the bigger it is; tiers D to A+ on an animated gauge. Funds, government bonds, cash and precious metals are outside the limits.
+- The score from three parts (D9): sector (limit 25%, the US regulator's concentration level), positions (10%, EU and US fund law) and spread (the HHI against 30 stocks, Statman 1987). Every breach counts and costs more the bigger it is; tiers D to A+ on an animated gauge. Funds, government bonds and cash are outside the limits; a precious metal counts as one position (D12).
 - Statuses OK, Watch, Just over, Over limit, each with a word and a colour.
 - At a glance, warnings in order of severity, limit cards with "Why it matters" and the source.
 - Charts by sector, currency, position and region; values inside the bars; tooltips that list the positions; click a bar to list them.
@@ -28,7 +28,7 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 - Insights: concentration index (HHI), top 5, other currencies, sector coverage, regions; the summary "What looks good / What to look at".
 - Comparison of the US share with all listed companies in the world (World Bank, about 49%).
 - Region note.
-- Corporate bonds count as a position; precious metals shown in the profile and an insight.
+- Corporate bonds and precious metals count as a position (D7, D12); metals have their own slice in the asset mix and an insight.
 - Ten stress-test portfolios.
 
 ### ⚠️ Good but sketchy

@@ -53,7 +53,7 @@ EXPECTED = {
     "stress_small_index_slice.csv": (GREEN, RED, 39, "D", ["region"]),
     "stress_half_index.csv": (GREEN, YELLOW, 89, "A", ["region"]),
     "stress_corporate_bond.csv": (GREEN, RED, 84, "B", []),
-    "stress_gold.csv": (GREEN, GREEN, 100, "A+", []),
+    "stress_gold.csv": (GREEN, RED, 51, "C", []),  # a metal is one position (D12)
     "stress_government_bonds.csv": (GREEN, GREEN, 100, "A+", []),
     "stress_us_large_caps.csv": (GREEN, GREEN, 94, "A", ["region"]),
     "stress_bvb_only.csv": (RED, RED, 65, "C", ["region"]),
@@ -127,7 +127,7 @@ def test_summary_good_side():
         "Your companies are spread as if over 69 equal stocks; 30 or more counts as well diversified.",
     ]
     assert sample("conservative_saver.csv").summary.good[0] == (
-        "No single company carries your money: it is in funds, bonds, cash or metals.")
+        "No single company carries your money: it is in funds, government bonds or cash.")
 
 
 def test_one_global_etf_region_is_global():
@@ -968,11 +968,22 @@ def test_corporate_bond_counts_as_one_position():
     assert analysis.profile.defensive_share == pytest.approx(1.0)  # both kinds of bond
 
 
-def test_precious_metals_are_information_only():
+@pytest.mark.parametrize("gold, score", [(5, 100), (10, 100), (25, 51), (100, 34)])
+def test_a_precious_metal_is_one_position(gold, score):
+    # D12: no sector, but one position, as EU fund rules treat a gold ETC (one issuer).
+    rows = [("Gold ETC", gold, "n/a", "precious metal", "n/a", "USD", "Global")]
+    if gold < 100:
+        rows.append(("World", 100 - gold, "Diversified", "ETF", "n/a", "EUR", "Global"))
+    analysis = scoring.analyze(make(rows))
+    assert analysis.score == score
+    assert next(r for r in analysis.limits if r.key == "sector").category == ""  # no sector
+
+
+def test_precious_metals_insight_and_mix():
     df = make([("Gold ETC", 30, "n/a", "Gold", "n/a", "USD", "Global"),
                ("World", 70, "Diversified", "ETF", "n/a", "EUR", "Global")])
     analysis = scoring.analyze(df)
-    assert analysis.score == 100
+    assert next(r for r in analysis.limits if r.key == "asset").category == "Gold ETC"
     types = dict(zip(analysis.positions["asset"], analysis.positions["asset_type"]))
     assert types["Gold ETC"] == "precious metal"  # "Gold" is accepted
     metals = next(i for i in analysis.insights if i.key == "precious_metals")

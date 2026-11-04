@@ -1114,10 +1114,11 @@ and it does not know your goals, income or situation.
   Just over are warnings and cost nothing, but while a limit is Just over the score stays below
   95, and while it is Over limit below 85.
 - Tiers: {tiers}.
-- Broad funds, government bonds, cash and precious metals don't count towards the limits, but
-  they are part of the total. A broad fund already spreads your money over hundreds of
+- Broad funds, government bonds and cash don't count towards the limits, but they are part of
+  the total. A broad fund already spreads your money over hundreds of
   companies, so it doesn't lower your score.
-- A corporate bond counts like a position in the company.{narrow}
+- A corporate bond counts like a position in the company. A precious metal counts as one
+  position too (no sector): EU fund rules treat a gold ETC as one issuer.{narrow}
 - The limits are the ones EU and US law set for funds, used here as a reference. The Watch
   thresholds and the sector margin are example values.
 

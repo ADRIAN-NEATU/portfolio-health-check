@@ -88,7 +88,7 @@ STRESS_PORTFOLIOS = {
     ),
     "stress_gold.csv": (
         "A quarter in gold",
-        "25% in gold, which stays outside the limits, plus a global fund and cash.",
+        "25% in gold: no sector, but one position, over the 10% limit, plus a global fund and cash.",
     ),
     "stress_government_bonds.csv": (
         "Government bond ladder",
@@ -737,9 +737,9 @@ def limit_score(weight: float, limit: dict) -> float:
     return limit_part(pd.Series([weight]), limit["limit"])
 
 
-# Positions that are one company each, for the spread: funds, government bonds,
-# cash and precious metals add nothing to the HHI.
-COMPANY_TYPES = ("stock", "corporate bond")
+# Positions that are one holding each, for the spread: a company's stock or bond, or
+# one precious metal (D12). Funds, government bonds and cash add nothing to the HHI.
+COMPANY_TYPES = ("stock", "corporate bond", "precious metal")
 
 
 def spread(df: pd.DataFrame) -> tuple[float, float]:
@@ -924,8 +924,8 @@ def insights_for(
     metals = float(weights(df, "asset_type").get("precious metal", 0.0))
     if metals > EPS:
         text = (
-            f"{fmt_pct(metals)} of your portfolio is in precious metals. They are not companies, "
-            "so they don't count towards the sector or single-position limits."
+            f"{fmt_pct(metals)} of your portfolio is in precious metals. They have no sector, but "
+            "each one counts as a single position, as EU fund rules treat a gold ETC."
         )
         insights.append(Insight("precious_metals", "Precious metals", text, "Info"))
 
@@ -935,7 +935,8 @@ def insights_for(
 HHI_EXPLAINED = (
     "How it works: take each company's share of your portfolio in %, square it, and add "
     "them up. One company with all your money gives 10,000; 100 equal companies give 100. "
-    "The lower, the more spread out. Funds, government bonds, cash and precious metals "
+    "The lower, the more spread out. Each precious metal counts as one holding; funds, "
+    "government bonds and cash "
     "count as spread out. Dividing 10,000 by the HHI gives the number of equal stocks it is "
     "worth. Below 333 (30 or more equal stocks) is well spread: research finds that a "
     "well-diversified portfolio of randomly chosen stocks needs at least 30 (Statman, 1987). "
@@ -957,7 +958,7 @@ def hhi_insight(df: pd.DataFrame) -> Insight:
     target = rules.WELL_DIVERSIFIED_STOCKS
     if hhi <= EPS:
         text = ("Your HHI is 0: no single company carries your money, which is all in funds, "
-                "government bonds, cash or precious metals.")
+                "government bonds or cash.")
     else:
         worth = "more than 100" if equal > 100 else f"about {round_half_up(equal)}"
         band = rules.HHI_BANDS[hhi_band(equal)][1]
@@ -988,7 +989,7 @@ def summary_for(df: pd.DataFrame, limits: list[LimitResult], warnings: list[Limi
         look_at.append(f"{r.category} is {fmt_pct(r.weight)} of your money, {where} the {limit} limit{more}.")
     target = rules.WELL_DIVERSIFIED_STOCKS
     if equal_stocks == math.inf:
-        good.append("No single company carries your money: it is in funds, bonds, cash or metals.")
+        good.append("No single company carries your money: it is in funds, government bonds or cash.")
     elif equal_stocks >= target:
         good.append(f"Your companies are spread as if over {round_half_up(equal_stocks)} equal stocks; "
                     f"{target} or more counts as well diversified.")
