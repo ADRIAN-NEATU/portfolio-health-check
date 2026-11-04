@@ -46,6 +46,8 @@ The app can run for free on [Streamlit Community Cloud](https://share.streamlit.
 3. **Create app** → choose the repository `portfolio-health-check`, branch `main`, main file `app.py`; under **Advanced settings** pick the newest Python offered, 3.12 or newer (the app was tested on 3.12 and 3.15) → **Deploy**.
 4. In a few minutes the app has an address such as `https://<name>.streamlit.app`: send that link.
 
+The online copy: **https://portfolio-health-check-ro.streamlit.app**
+
 Every visitor gets their own session: one person's portfolio is never shown to another. Streamlit Community Cloud keeps its own logs and has its own privacy policy, which applies to the online copy.
 
 ## Install and run by hand
@@ -68,7 +70,7 @@ The app opens with a short "Before you start" window: the app is just math on th
 
 "Give feedback", in the side panel and at the bottom of the page, opens an anonymous Google form in a new tab. It asks for no name or email. Answers are kept by Google, in the form owner's account.
 
-**Your data.** The app keeps your portfolio only in memory while you use it: nothing is written to a file, and it is gone when you close the page. Run on your computer, nothing leaves it; in a shared online copy, the portfolio is held by the hosting service for the time you use it. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml).
+**Your data.** The app keeps your portfolio only in memory while you use it: nothing is written to a file, and it is gone when you close the page. Run on your computer, nothing leaves it; in a shared online copy, the portfolio is held by the hosting service for the time you use it. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml). The shared online copy runs on Streamlit Community Cloud, whose page adds its own cookies and analytics (such as Google Analytics) that the app can't turn off; they fall under [Streamlit's privacy policy](https://streamlit.io/privacy-policy).
 
 The score (0 to 100, shown on a gauge with tiers D, C, B, A and A+) is the average of three parts, each from 0 to 100 ([decision D9](docs/decisions.md)):
 

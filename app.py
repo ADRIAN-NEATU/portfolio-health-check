@@ -1162,7 +1162,10 @@ and it does not know your goals, income or situation.
 - To keep positions you typed, use "Download as CSV": the file is saved where you choose.
 - If online lookup is on, only the names and tickers you type are sent to SEC EDGAR and OpenFIGI,
   never the values. You can turn the lookup off.
-- The app collects no usage statistics.{feedback}
+- The app's own code collects no usage statistics. The shared online version runs on Streamlit
+  Community Cloud, whose page adds its own cookies and analytics (such as Google Analytics);
+  this app can't turn them off. They fall under
+  [Streamlit's privacy policy](https://streamlit.io/privacy-policy).{feedback}
 """
     )
     if st.button("I understand", type="primary"):
