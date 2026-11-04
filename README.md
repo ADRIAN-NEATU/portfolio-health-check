@@ -43,7 +43,7 @@ The app can run for free on [Streamlit Community Cloud](https://share.streamlit.
 
 1. Push the project to GitHub (`git push -u origin main`).
 2. Sign in at share.streamlit.io with your GitHub account.
-3. **Create app** → choose the repository `portfolio-health-check`, branch `main`, main file `app.py`; under **Advanced settings** pick Python 3.12, the version the app was tested with → **Deploy**.
+3. **Create app** → choose the repository `portfolio-health-check`, branch `main`, main file `app.py`; under **Advanced settings** pick the newest Python offered, 3.12 or newer (the app was tested on 3.12 and 3.15) → **Deploy**.
 4. In a few minutes the app has an address such as `https://<name>.streamlit.app`: send that link.
 
 Every visitor gets their own session: one person's portfolio is never shown to another. Streamlit Community Cloud keeps its own logs and has its own privacy policy, which applies to the online copy.
