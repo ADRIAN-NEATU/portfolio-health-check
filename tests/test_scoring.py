@@ -979,3 +979,48 @@ def test_precious_metals_are_information_only():
     assert metals.text.startswith("30% of your portfolio is in precious metals.")
     slices = scoring.asset_class_slices(analysis.profile)
     assert list(slices["label"]) == ["Equity", "Precious metals"]
+
+
+# ---------------------------------------------------------------------------
+# Funds on small indices (D11)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "name, size",
+    [
+        ("ETF BET Patria-Tradeville", 20),
+        ("BT Index Romania ETF BET-TR", 20),
+        ("InterCapital BET-TRN UCITS ETF", 20),
+        ("Globinvest BET-XT ETF", 30),
+        ("InterCapital CROBEX10tr UCITS ETF", 10),
+        ("Vanguard FTSE All-World UCITS ETF", 0),  # a broad index: thousands of companies
+        ("Betterment Fund", 0),  # "bet" only as a whole word
+    ],
+)
+def test_small_index_size(name, size):
+    row = pd.Series({"asset": name, "asset_type": "ETF", "sector": "Diversified"})
+    assert scoring.small_index_size(row) == size
+
+
+def test_bet_fund_counts_as_20_equal_stocks():
+    analysis = scoring.analyze(make([("ETF BET BRK", 100, "Diversified", "ETF", "n/a", "RON", "Romania")]))
+    assert analysis.equal_stocks == pytest.approx(20)
+    assert (round(analysis.spread_score), analysis.score, analysis.tier) == (67, 89, "A")
+    assert "broad funds" not in " ".join(analysis.summary.good)
+
+
+def test_bvb_etfs_are_in_the_built_in_list():
+    for ticker in ["TVBETETF", "BKBETETF", "BTBETRETF", "ICBETNETF", "GIBXTETF", "ICCROETF", "ICSLOETF", "ICGROETF"]:
+        assert scoring.match_key(ticker) in scoring.known_securities(), ticker
+    bond_fund = scoring.known_securities()[scoring.match_key("ICGROETF")]
+    assert bond_fund.details["asset_type"] == "bond"  # government bonds: outside the limits
+
+
+def test_built_in_list_has_no_duplicates_and_known_ucits_etfs():
+    table = pd.read_csv(scoring.KNOWN_SECURITIES_PATH, dtype=str, keep_default_na=False)
+    assert not table["name"].duplicated().any()
+    for ticker in ["VWCE", "IWDA", "EUNL", "IUSQ", "SPYI", "CSPX", "VUSA", "EQQQ", "SXRT", "VEUR",
+                   "EIMI", "VFEM", "EUNA", "EUNH", "XEON"]:
+        assert scoring.match_key(ticker) in scoring.known_securities(), ticker
+    assert scoring.known_securities()[scoring.match_key("XEON")].details["asset_type"] == "cash"

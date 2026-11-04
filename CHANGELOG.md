@@ -2,6 +2,10 @@
 
 ## v0.1 – MVP (in progress)
 
+### 4 Nov 2026
+- The built-in list knows the ETFs listed in Bucharest (BET, BET-TR, BET-TRN, BET-XT, Croatian and Slovenian index funds, a Romanian government bond fund) and the largest UCITS ETFs: global, US, European, emerging markets, bonds and a money-market fund. The name of TVBETETF is corrected.
+- A fund on a small index, such as BET (at most 20 companies), no longer counts as fully spread: it counts as its companies at equal weights.
+
 ### 2 Nov 2026
 - A new score from three parts: sector, positions and spread. Every sector and company above its limit counts, not only the largest, and a bigger breach costs much more than a small one. The spread part uses the HHI: 30 or more equal stocks score full marks.
 - The score is shown on a gauge with tiers from D to A+, red to green, that animates when a portfolio opens. While a limit is breached, the tier can't be the top one.

@@ -744,11 +744,25 @@ COMPANY_TYPES = ("stock", "corporate bond")
 
 def spread(df: pd.DataFrame) -> tuple[float, float]:
     """The HHI of the single companies (each one's share in %, squared, added up) and
-    the number of equal stocks it is worth (10,000 / HHI; infinite with no company)."""
+    the number of equal stocks it is worth (10,000 / HHI; infinite with no company).
+    A fund on a small index adds its share split over the index's companies (D11)."""
+    total = df["value"].sum()
     companies = df[df["asset_type"].isin(COMPANY_TYPES)]
-    shares = companies.groupby("asset")["value"].sum() / df["value"].sum() * 100
+    shares = companies.groupby("asset")["value"].sum() / total * 100
     hhi = float((shares**2).sum())
+    for _, row in df.iterrows():
+        count = small_index_size(row)
+        if count:
+            hhi += (row["value"] / total * 100) ** 2 / count
     return hhi, (10_000 / hhi if hhi > EPS else math.inf)
+
+
+def small_index_size(row) -> int:
+    """How many companies a broad ETF's small index holds at most; 0 if it isn't one."""
+    if row["asset_type"] != "ETF" or row["sector"] != rules.BROAD_ETF_SECTOR:
+        return 0
+    name = str(row["asset"]).lower()
+    return next((count for pattern, count in rules.SMALL_INDEX_FUNDS if re.search(pattern, name)), 0)
 
 
 def spread_score(equal_stocks: float) -> float:
@@ -981,8 +995,9 @@ def summary_for(df: pd.DataFrame, limits: list[LimitResult], warnings: list[Limi
     else:
         look_at.append(f"Your companies are spread as if over only {round_half_up(equal_stocks)} "
                        f"equal stocks; research suggests at least {target}.")
-    broad = float(df.loc[(df["asset_type"] == "ETF") & (df["sector"] == rules.BROAD_ETF_SECTOR),
-                         "value"].sum() / df["value"].sum())
+    broad_rows = (df["asset_type"] == "ETF") & (df["sector"] == rules.BROAD_ETF_SECTOR)
+    broad_rows &= ~df.apply(small_index_size, axis=1).astype(bool)  # 20 companies are not "many"
+    broad = float(df.loc[broad_rows, "value"].sum() / df["value"].sum())
     if broad > EPS:
         good.append(f"{fmt_pct(broad)} is in broad funds, which spread money over many companies.")
     look_at += [n.text.split(":")[0] + ": most of it depends on one region's economy." for n in notes]

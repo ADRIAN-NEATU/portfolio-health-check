@@ -1,7 +1,7 @@
 asset,value,sector,asset_type,market_cap,currency,region
 Vanguard FTSE All-World UCITS ETF,40000,Diversified,ETF,n/a,EUR,Global
 iShares Core MSCI EM IMI UCITS ETF,14000,Diversified,ETF,n/a,USD,Emerging
-Patria BET-TR UCITS ETF,12000,Diversified,ETF,n/a,RON,Romania
+ETF BET Patria-Tradeville,12000,Diversified,ETF,n/a,RON,Romania
 Romanian government bond 2029 (RON),18000,n/a,bond,n/a,RON,Romania
 Romanian government bond 2031 (EUR),12000,n/a,bond,n/a,EUR,Romania
 Cash deposit (RON),8000,n/a,cash,n/a,RON,Romania

@@ -25,7 +25,7 @@ Only free sources whose terms allow this use, in this order:
 
 | Source | Covers | Licence | Gives |
 |---|---|---|---|
-| Built-in list, [data/known_securities.csv](data/known_securities.csv) | about 220 popular stocks and ETFs: US and European large caps, Bucharest (BVB) shares, US and UCITS ETFs | our own compilation | everything |
+| Built-in list, [data/known_securities.csv](data/known_securities.csv) | about 250 popular stocks and funds: US and European large caps, Bucharest (BVB) shares, the ETFs listed in Bucharest, the largest UCITS ETFs (global, US, European, emerging markets, bonds, a money-market fund) and US ETFs | our own compilation | everything |
 | [SEC EDGAR](https://www.sec.gov/edgar) | every company listed in the US (about 10,000), including European and emerging-market companies with US listings | U.S. government data, public domain | sector (from the SIC code), size (from the public float), region (from the business address), currency |
 | [OpenFIGI](https://www.openfigi.com) | listings on other exchanges, and funds | free, MIT licence, no restrictions on use or redistribution | type and currency; for funds, region and sector read from the fund's name |
 
@@ -129,6 +129,9 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 ## Known limitations
 
 - The Watch thresholds, the sector margin and the note thresholds are EXAMPLES until they are replaced with the rules from the author's bachelor's thesis.
+- A fund on a small index (BET, BET-TR, BET-TRN, BET-XT, CROBEX10) counts in the spread as its companies at equal weights, the most spread it can be; BET caps a company at 20%, so the real concentration is higher ([decision D11](docs/decisions.md)).
+- ETF tickers point to the listing most investors in Romania use (Bucharest or Xetra); another listing of the same fund may trade in another currency, which you can change in the editor.
+- US-domiciled ETFs (SPY, VOO, QQQ…) are in the list for portfolios that already hold them; EU retail investors usually can't buy them, because they have no PRIIPs key information document.
 - Funds are not looked inside: an S&P 500 fund and a company you also hold directly are not added together.
 - There is no market reference for company sizes: the figures we had came from an index provider whose terms don't allow reproducing them.
 - A corporate bond and a stock of the same company are not added together, because their names differ.

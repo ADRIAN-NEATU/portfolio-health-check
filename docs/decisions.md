@@ -193,3 +193,17 @@ Every label is a word as well as a colour. The question is still open: whether a
 
 **Consequences.** No score changes. The screen has fewer elements, and the only example values left are the Watch thresholds, the sector margin and the region note.
 - **HHI bands (added the same day):** well spread below 333 (30 or more equal stocks, Statman), partly spread to 1,000 (10 equal stocks would each sit at the 10% limit), concentrated to 2,500 (4 equal stocks would each be 25%, the size of the sector limit), very concentrated above. Shown on a small scale under the HHI insight.
+
+## D11 – Romanian and European ETFs, and funds on small indices (4 Nov 2026)
+
+**Context.** Investors on the Bucharest Stock Exchange often hold BET index funds, and many investors hold UCITS ETFs. The built-in list knew one Bucharest ETF (under a wrong name) and missed several of the largest UCITS ETFs. A BET fund counted as fully spread, although BET holds at most 20 companies.
+
+**Decision.**
+- **Bucharest ETFs** added to the built-in list with their public names and symbols (BVB press releases, Aug 2026): ETF BET Patria-Tradeville (TVBETETF, corrected name), ETF BET BRK, BT Index Romania ETF BET-TR, InterCapital BET-TRN, Globinvest BET-XT, InterCapital CROBEX10tr and SBITOP TR (Croatia, Slovenia), and InterCapital EUR Romania Govt Bond 5-10YR (a government bond fund).
+- **UCITS ETFs** added, each ticker checked on OpenFIGI (MIT licence): global (All-World Dist, MSCI ACWI, ACWI IMI, SPDR MSCI World, Invesco FTSE All-World, Developed World), US (S&P 500 Dist, SPDR S&P 500, S&P 500 Equal Weight, Invesco Nasdaq-100), Europe (two EURO STOXX 50, Developed Europe), emerging markets (Vanguard), bonds (Global Aggregate, Eurozone government) and a money-market fund (XEON, counted as cash).
+- **Funds on small indices** count in the spread as their index's companies at equal weights: BET, BET-TR, BET-TRN 20 (BVB index rules: at most 20), BET-XT 30, CROBEX10 10. Equal weights are the most spread these funds can be, so the score is, if anything, generous. A 100% BET fund: as if 20 equal stocks, spread 67, score 89 (A).
+- **Legal:** only names, symbols and the number of companies in an index, which are public facts, and our own classification. No index weights or holdings.
+- **Not recommended:** the app recognises these funds; it never suggests which one to buy.
+
+**Open.** The two sector ETFs in Bucharest, ETF Energie Patria-Tradeville (PTENGETF, BET-NG: energy and related utilities) and Globinvest Energy & Financials (GIBEFETF, BET-EF), span more than one sector, and their split isn't available without index weights. They are not in the list until their treatment is decided.
+

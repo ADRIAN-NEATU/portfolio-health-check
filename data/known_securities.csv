@@ -88,15 +88,22 @@ iShares Core MSCI World UCITS ETF (USD),IWDA,Diversified,ETF,n/a,USD,Global
 iShares Core S&P 500 UCITS ETF,CSPX,Diversified,ETF,n/a,USD,US
 iShares Core S&P 500 UCITS ETF (EUR),SXR8,Diversified,ETF,n/a,EUR,US
 Vanguard S&P 500 UCITS ETF,VUAA,Diversified,ETF,n/a,USD,US
-iShares Nasdaq 100 UCITS ETF,CNDX,Diversified,ETF,n/a,USD,US
+iShares Nasdaq 100 UCITS ETF,CNDX|SXRV,Diversified,ETF,n/a,USD,US
 iShares Core MSCI EM IMI UCITS ETF,EIMI,Diversified,ETF,n/a,USD,Emerging
 iShares Core MSCI EM IMI UCITS ETF (EUR),IS3N,Diversified,ETF,n/a,EUR,Emerging
 iShares MSCI World Small Cap UCITS ETF,IUSN,Diversified,ETF,n/a,EUR,Global
-Patria BET-TR UCITS ETF,TVBETETF|Patria Stock Market BET-TR UCITS ETF,Diversified,ETF,n/a,RON,Romania
+ETF BET Patria-Tradeville,TVBETETF|ETF BET Tradeville|Patria BET ETF,Diversified,ETF,n/a,RON,Romania
+ETF BET BRK,BKBETETF,Diversified,ETF,n/a,RON,Romania
+BT Index Romania ETF BET-TR,BTBETRETF|BT Romania ETF,Diversified,ETF,n/a,RON,Romania
+InterCapital BET-TRN UCITS ETF,ICBETNETF,Diversified,ETF,n/a,RON,Romania
+Globinvest BET-XT ETF,GIBXTETF,Diversified,ETF,n/a,RON,Romania
+InterCapital CROBEX10tr UCITS ETF,ICCROETF,Diversified,ETF,n/a,RON,Europe
+InterCapital SBITOP TR UCITS ETF,ICSLOETF,Diversified,ETF,n/a,RON,Europe
+InterCapital EUR Romania Govt Bond 5-10YR UCITS ETF,ICGROETF,n/a,bond,n/a,RON,Romania
 iShares S&P 500 Information Technology Sector UCITS ETF,IUIT,Information Technology,ETF,n/a,USD,US
 VanEck Semiconductor UCITS ETF,SMH,Information Technology,ETF,n/a,USD,Global
 VanEck Defense UCITS ETF,,Industrials,ETF,n/a,USD,Global
-iShares Core Euro Government Bond UCITS ETF,IEGA,n/a,bond,n/a,EUR,Europe
+iShares Core Euro Government Bond UCITS ETF,IEGA|EUNH|SEGA,n/a,bond,n/a,EUR,Europe
 iShares USD Treasury Bond 7-10yr UCITS ETF,IBTM,n/a,bond,n/a,USD,US
 Fidelis,Fidelis bond,n/a,bond,n/a,RON,Romania
 Tezaur,Tezaur bond,n/a,bond,n/a,RON,Romania
@@ -225,3 +232,20 @@ Vanguard FTSE All-World High Dividend Yield UCITS ETF,VHYL,Diversified,ETF,n/a,E
 iShares Core EUR Corporate Bond UCITS ETF,IEAC,n/a,bond,n/a,EUR,Europe
 iShares Physical Gold ETC,IGLN|SGLN,n/a,precious metal,n/a,USD,Global
 Xetra-Gold,4GLD,n/a,precious metal,n/a,EUR,Global
+Vanguard FTSE All-World UCITS ETF (Dist),VGWL|VWRL,Diversified,ETF,n/a,EUR,Global
+iShares MSCI ACWI UCITS ETF,IUSQ|SSAC,Diversified,ETF,n/a,EUR,Global
+SPDR MSCI ACWI IMI UCITS ETF,SPYI,Diversified,ETF,n/a,EUR,Global
+SPDR MSCI World UCITS ETF,SPPW,Diversified,ETF,n/a,EUR,Global
+Invesco FTSE All-World UCITS ETF,FWRA,Diversified,ETF,n/a,EUR,Global
+Vanguard FTSE Developed World UCITS ETF,VEVE,Diversified,ETF,n/a,EUR,Global
+Vanguard S&P 500 UCITS ETF (Dist),VUSA,Diversified,ETF,n/a,EUR,US
+SPDR S&P 500 UCITS ETF,SPY5,Diversified,ETF,n/a,EUR,US
+Xtrackers S&P 500 Equal Weight UCITS ETF,XDEW,Diversified,ETF,n/a,EUR,US
+Invesco EQQQ Nasdaq-100 UCITS ETF,EQQQ,Diversified,ETF,n/a,EUR,US
+iShares Core EURO STOXX 50 UCITS ETF,SXRT|CSX5,Diversified,ETF,n/a,EUR,Europe
+Xtrackers EURO STOXX 50 UCITS ETF,XESC,Diversified,ETF,n/a,EUR,Europe
+Vanguard FTSE Developed Europe UCITS ETF,VEUR,Diversified,ETF,n/a,EUR,Europe
+Vanguard FTSE Emerging Markets UCITS ETF,VFEM|VFEA,Diversified,ETF,n/a,EUR,Emerging
+iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged),EUNA,n/a,bond,n/a,EUR,Global
+Xtrackers Eurozone Government Bond UCITS ETF,XGLE,n/a,bond,n/a,EUR,Europe
+Xtrackers II EUR Overnight Rate Swap UCITS ETF,XEON,n/a,cash,n/a,EUR,Europe

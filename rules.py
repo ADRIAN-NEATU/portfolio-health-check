@@ -77,6 +77,16 @@ WELL_DIVERSIFIED_STOCKS = 30  # Statman (1987): at least 30 randomly chosen stoc
 #   under 4      very concentrated                           HHI above 2,500
 HHI_BANDS = ((30, "well spread"), (10, "partly spread"), (4, "concentrated"), (0, "very concentrated"))
 
+# Funds on small indices, matched by name (first pattern first), and how many
+# companies their index holds at most, from the index rules the exchanges publish
+# (decision D11). In the spread they count as that many equal stocks, which is the
+# most spread they can be: BET caps a company at 20%, so the real HHI is higher.
+SMALL_INDEX_FUNDS = (
+    (r"bet[- ]?xt", 30),  # BET-XT: the 30 most traded Romanian companies (BVB)
+    (r"\bbet\b", 20),  # BET, BET-TR, BET-TRN: at most 20 companies (BVB index rules)
+    (r"crobex ?10", 10),  # CROBEX10: 10 companies (Zagreb Stock Exchange)
+)
+
 # Score tiers, best first, with the lowest score of each (our choice).
 SCORE_TIERS = (("A+", 95), ("A", 85), ("B", 70), ("C", 50), ("D", 0))
 # The highest score while a limit is breached, so the tier never contradicts a
