@@ -1024,3 +1024,11 @@ def test_built_in_list_has_no_duplicates_and_known_ucits_etfs():
                    "EIMI", "VFEM", "EUNA", "EUNH", "XEON"]:
         assert scoring.match_key(ticker) in scoring.known_securities(), ticker
     assert scoring.known_securities()[scoring.match_key("XEON")].details["asset_type"] == "cash"
+
+
+def test_small_index_found_from_a_ticker():
+    # Typed as a ticker, the fund is still recognised through the built-in list.
+    analysis = scoring.analyze(make([("TVBETETF", 50, "Diversified", "ETF", "n/a", "RON", "Romania"),
+                                     ("GIBXTETF", 50, "Diversified", "ETF", "n/a", "RON", "Romania")]))
+    assert analysis.equal_stocks == pytest.approx(10_000 / (50**2 / 20 + 50**2 / 30))
+    assert "broad funds" not in " ".join(analysis.summary.good)

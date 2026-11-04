@@ -633,7 +633,7 @@ def fund_index(row) -> str:
     have no figures for it."""
     if row["asset_type"] != "ETF" or row["sector"] != rules.BROAD_ETF_SECTOR:
         return ""
-    name = str(row["asset"]).lower()
+    name = canonical_name(row["asset"]).lower()
     if re.search(rules.INDEX_NAME_EXCLUDE, name):
         return ""
     index = next((index for pattern, index in rules.INDEX_NAME_PATTERNS if re.search(pattern, name)), "")
@@ -761,7 +761,7 @@ def small_index_size(row) -> int:
     """How many companies a broad ETF's small index holds at most; 0 if it isn't one."""
     if row["asset_type"] != "ETF" or row["sector"] != rules.BROAD_ETF_SECTOR:
         return 0
-    name = str(row["asset"]).lower()
+    name = canonical_name(row["asset"]).lower()  # "TVBETETF" -> "etf bet patria-tradeville"
     return next((count for pattern, count in rules.SMALL_INDEX_FUNDS if re.search(pattern, name)), 0)
 
 
