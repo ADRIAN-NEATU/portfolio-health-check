@@ -33,8 +33,20 @@ COLORS = {
     "note": "#6B7280",
     "light": "#CBD3DE",  # lighter step of the neutral bars
 }
+# The anonymous feedback form (S1-28): paste its Google Forms link here. While it is empty,
+# or not a Google Forms link, the app shows no feedback button.
+FEEDBACK_URL = ""
+FEEDBACK_PREFIXES = ("https://docs.google.com/forms/", "https://forms.gle/")
+
+
+def feedback_url() -> str:
+    """The feedback form's link, or "" when none is set or it isn't a Google Forms link."""
+    url = FEEDBACK_URL.strip()
+    return url if url.startswith(FEEDBACK_PREFIXES) else ""
+
+
 # System fonts only: a web font from Google would send the user's IP address to Google.
-FONT = "'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif"
+FONT ="'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif"
 
 BAR_COLORS = {GREEN: COLORS["neutral"], YELLOW: COLORS["yellow"], ORANGE: COLORS["orange"],
               RED: COLORS["red"]}
@@ -1096,6 +1108,10 @@ def about_dialog() -> None:
                   " limit by what it holds.")
         inside = ("Funds are counted as copies of their index, and only the largest companies"
                   " of each index are known.")
+    feedback = ""
+    if feedback_url():
+        feedback = ('\n- "Give feedback" opens an anonymous Google form in a new tab. It asks for no '
+                    "name or email: please don't write personal details in it. Google keeps the answers.")
     st.markdown(
         f"""
 **Just math, not investment advice.** Portfolio Health Check shows how concentrated a portfolio
@@ -1134,7 +1150,7 @@ and it does not know your goals, income or situation.
 - To keep positions you typed, use "Download as CSV": the file is saved where you choose.
 - If online lookup is on, only the names and tickers you type are sent to SEC EDGAR and OpenFIGI,
   never the values. You can turn the lookup off.
-- The app collects no usage statistics.
+- The app collects no usage statistics.{feedback}
 """
     )
     if st.button("I understand", type="primary"):
@@ -1145,6 +1161,9 @@ and it does not know your goals, income or situation.
 def footer() -> None:
     if st.button("How the score works", key="about", type="tertiary", icon=":material/info:"):
         about_dialog()
+    if feedback_url():
+        st.link_button("Give feedback", feedback_url(), type="tertiary", icon=":material/rate_review:",
+                       help="An anonymous Google form, in a new tab. Please don't write your name or email.")
     st.html(
         '<div class="phc-footer">Analysis, not investment advice. '
         "Both limits follow EU and US fund rules; the Watch thresholds and the sector "
