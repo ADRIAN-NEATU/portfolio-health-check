@@ -4,7 +4,7 @@
 - **Dates:** Tuesday 27 Oct – Monday 2 Nov 2026
 - **Increment (release):** v0.1 – MVP
 - Day 1 was built on my previous laptop and moved to this one on 28 Oct.
-- **Jira:** Sprint 1 set up on 29 Oct, with dates 27 Oct – 2 Nov. The Jira column links each item to its card.
+- **Jira:** Sprint 1 set up on 29 Oct, with dates 27 Oct – 2 Nov. The Jira column links each item to its card. The items added on 1–2 Nov and the release items were imported on 4 Nov (PHC-32 to PHC-41).
 
 ## Sprint Backlog
 
@@ -34,13 +34,13 @@
 | S1-23 | PHC-29 | Story | E3 | See which positions make up each bar in the charts | 3 | Done | 29 Oct |
 | S1-24 | PHC-30 | Task | E4 | Review how the currency and sector limits are calculated | 3 | Done | 29 Oct |
 | S1-25 | PHC-31 | Story | E3 | Keep chart labels off the limit line and make the tooltips easier to read | 2 | Done | 29 Oct |
-| S1-26 | – | Story | E5 | See what the app is and how the score is calculated before I start | 1 | Done | 1 Nov |
-| S1-27 | – | Story | E3 | See what my index funds hold: sectors, countries and overlap with my stocks | 5 | Done | 1 Nov |
-| S1-29 | – | Story | E4 | Count corporate bonds as positions and show precious metals | 3 | Done | 1 Nov |
-| S1-30 | – | Story | E5 | Ten stress-test portfolios that sit on the new thresholds | 2 | Done | 1 Nov |
-| S1-31 | – | Task | E5 | Release check: nothing its source doesn't allow, pinned versions, licence | 2 | Done | 1 Nov |
-| S1-33 | – | Story | E4 | A score from three parts (sector, positions, spread with the HHI), progressive, in tiers on an animated gauge | 5 | Done | 2 Nov |
-| S1-34 | – | Story | E3 | A simpler screen: what looks good and what to look at, nothing without a reason | 3 | Done | 2 Nov |
+| S1-26 | PHC-32 | Story | E5 | See what the app is and how the score is calculated before I start | 1 | Done | 1 Nov |
+| S1-27 | PHC-33 | Story | E3 | See what my index funds hold: sectors, countries and overlap with my stocks | 5 | Done | 1 Nov |
+| S1-29 | PHC-34 | Story | E4 | Count corporate bonds as positions and show precious metals | 3 | Done | 1 Nov |
+| S1-30 | PHC-35 | Story | E5 | Ten stress-test portfolios that sit on the new thresholds | 2 | Done | 1 Nov |
+| S1-31 | PHC-36 | Task | E5 | Release check: nothing its source doesn't allow, pinned versions, licence | 2 | Done | 1 Nov |
+| S1-33 | PHC-37 | Story | E4 | A score from three parts (sector, positions, spread with the HHI), progressive, in tiers on an animated gauge | 5 | Done | 2 Nov |
+| S1-34 | PHC-38 | Story | E3 | A simpler screen: what looks good and what to look at, nothing without a reason | 3 | Done | 2 Nov |
 
 S1-18 to S1-24 came from the Daily Scrum on 29 Oct and were pulled into the Sprint the same day. S1-24 ended in [decision D1](decisions.md): currency became a note, which also solved S1-16. S1-25 came from a look at the charts later on 29 Oct and was pulled in and done the same day. On 1 Nov:
 - S1-13 was finished: both limits now come from documented rules ([D2](decisions.md) single position, [D3](decisions.md) sector).
@@ -62,7 +62,7 @@ Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or no
 | ID | Jira | Type | Epic | Title | Points | Added |
 |---|---|---|---|---|---|---|
 | S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
-| S1-28 | – | Story | E5 | Give feedback through an anonymous form | 1 | 1 Nov |
+| S1-28 | PHC-39 | Story | E5 | Give feedback through an anonymous form | 1 | 1 Nov |
 
 ## Burndown
 
@@ -222,8 +222,8 @@ Done before the v0.1 release, outside the Sprint.
 
 | ID | Jira | Type | Epic | Title | Points | Status | Done on |
 |---|---|---|---|---|---|---|---|
-| REL-01 | – | Story | E2 | Recognise the Bucharest ETFs and the largest UCITS ETFs; count BET funds as 20 companies | 3 | Done | 4 Nov |
-| REL-02 | – | Story | E4 | Count a precious metal as one position, with sources | 1 | Done | 4 Nov |
+| REL-01 | PHC-40 | Story | E2 | Recognise the Bucharest ETFs and the largest UCITS ETFs; count BET funds as 20 companies | 3 | Done | 4 Nov |
+| REL-02 | PHC-41 | Story | E4 | Count a precious metal as one position, with sources | 1 | Done | 4 Nov |
 
 ## Sprint Review (2 Nov)
 
