@@ -58,7 +58,7 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 | Check | Result |
 |---|---|
 | Passwords, API keys, tokens in any commit | none |
-| Local paths, e-mail or Jira site in the files | none (the e-mail appears only as the commit author) |
+| Local paths, e-mail or Jira site in the files | none; every commit uses GitHub's private no-reply address (since 4 Nov, for the whole history) |
 | `notes/` and the real portfolio file | never committed; `notes/` is in `.gitignore` |
 | Index-provider data (MSCI, Nasdaq, CRSP) | not in any file or any commit: the few figures older commits quoted were removed from the whole history on 4 Nov, before the first push |
 | Requests from the page to other sites | none (Google Fonts and the Google-hosted tab icon removed on 2 Nov) |
@@ -70,5 +70,4 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 | Feedback | anonymous Google form: no name or e-mail asked, no sign-in; the app itself collects nothing |
 
 **Still the owner's choice:**
-- The author e-mail is visible in every commit. Future commits can use GitHub's private no-reply address.
 - The documents mention shares from the author's real portfolio (68% in the US, Industrials 28.9%), without amounts.
