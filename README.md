@@ -1,6 +1,6 @@
 # Portfolio Health Check
 
-Portfolio Health Check is a local web tool that shows an individual investor, in under a minute, how concentrated their portfolio is. You pick a sample portfolio, upload a CSV, or type your positions straight into the app. The app gives a score from 0 to 100, based on two concentration limits: sector and single position. It then lists what to look at first, compares every figure with its threshold, and adds plain-language insights about asset classes, market cap and regions. It is analysis, not investment advice.
+Portfolio Health Check is a local web tool that shows an individual investor, in under a minute, how concentrated their portfolio is. You pick a sample portfolio, upload a CSV, or type your positions straight into the app. The app gives a score from 0 to 100, from three parts: the sector limit, the single-position limit and how spread your companies are (HHI). It then lists what to look at first, compares every figure with its threshold, and adds plain-language insights about asset classes, market cap and regions. It is analysis, not investment advice.
 
 ![At a glance and the concentration limits for a sample portfolio](docs/screenshots/andrei-overview-desktop.png)
 
@@ -65,6 +65,8 @@ The app opens at http://localhost:8501. Run the tests with `pytest`.
 ## How to read the score
 
 The app opens with a short "Before you start" window: the app is just math on the numbers you enter, not investment advice. It also explains the score in a few lines. "How the score works" at the bottom of the page opens it again.
+
+"Give feedback", in the side panel and at the bottom of the page, opens an anonymous Google form in a new tab. It asks for no name or email. Answers are kept by Google, in the form owner's account.
 
 **Your data.** The app keeps your portfolio only in memory while you use it: nothing is written to a file, and it is gone when you close the page. Run on your computer, nothing leaves it; in a shared online copy, the portfolio is held by the hosting service for the time you use it. With the online lookup on, only names and tickers are sent to SEC EDGAR and OpenFIGI, never values. Streamlit's usage statistics are turned off in [.streamlit/config.toml](.streamlit/config.toml).
 

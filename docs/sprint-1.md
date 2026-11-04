@@ -62,7 +62,6 @@ Added at the Daily Scrums. An item comes into a Sprint at Sprint Planning, or no
 | ID | Jira | Type | Epic | Title | Points | Added |
 |---|---|---|---|---|---|---|
 | S1-17 | PHC-23 | Story | E2 | Search bar with suggestions as you type a name or ticker | 3 | 28 Oct |
-| S1-28 | PHC-39 | Story | E5 | Give feedback through an anonymous form | 1 | 1 Nov |
 
 ## Burndown
 
@@ -212,9 +211,11 @@ As the person testing the app, I want portfolios that sit exactly on each thresh
 - Given "Exactly at the limits", when it opens, then both limits show Watch and the score is 80.
 - Given "Five stocks, a little index", when it opens, then the score is 63: a 5% fund barely helps.
 
-**S1-28 – Give feedback through an anonymous form** (waits for the form link)
+**S1-28 – Give feedback through an anonymous form** (done 4 Nov, before the release)
 As a user, I want to send feedback without giving my name or email, so that I can say what is unclear.
 - Given any screen, when I click "Give feedback", then an anonymous form opens in a new tab.
+- Given any screen, the button is in the side panel, and a card at the end of the page asks for feedback.
+- The form asks for no name or email and needs no sign-in.
 
 ## Release preparation (after Sprint 1, 4 Nov)
 
@@ -224,6 +225,9 @@ Done before the v0.1 release, outside the Sprint.
 |---|---|---|---|---|---|---|---|
 | REL-01 | PHC-40 | Story | E2 | Recognise the Bucharest ETFs and the largest UCITS ETFs; count BET funds as 20 companies | 3 | Done | 4 Nov |
 | REL-02 | PHC-41 | Story | E4 | Count a precious metal as one position, with sources | 1 | Done | 4 Nov |
+| S1-28 | PHC-39 | Story | E5 | Give feedback through an anonymous form: side panel and end of page | 1 | Done | 4 Nov |
+
+Also on 4 Nov: "Just math on your numbers, not investment advice" under the title, so it is on the page from the start, not only in the "Before you start" window.
 
 ## Sprint Review (2 Nov)
 

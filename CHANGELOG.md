@@ -6,6 +6,8 @@
 - The built-in list knows the ETFs listed in Bucharest (BET, BET-TR, BET-TRN, BET-XT, Croatian and Slovenian index funds, a Romanian government bond fund) and the largest UCITS ETFs: global, US, European, emerging markets, bonds and a money-market fund. The name of TVBETETF is corrected.
 - A fund on a small index, such as BET (at most 20 companies), no longer counts as fully spread: it counts as its companies at equal weights.
 - A precious metal now counts as one position (no sector), as EU fund rules treat a gold ETC: 25% in gold is over the 10% limit.
+- "Give feedback", in the side panel and at the end of the page, opens a short anonymous form (no name or email).
+- "Just math on your numbers, not investment advice" now sits under the title.
 
 ### 2 Nov 2026
 - A new score from three parts: sector, positions and spread. Every sector and company above its limit counts, not only the largest, and a bigger breach costs much more than a small one. The spread part uses the HHI: 30 or more equal stocks score full marks.

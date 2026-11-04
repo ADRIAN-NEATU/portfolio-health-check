@@ -35,7 +35,7 @@ COLORS = {
 }
 # The anonymous feedback form (S1-28): paste its Google Forms link here. While it is empty,
 # or not a Google Forms link, the app shows no feedback button.
-FEEDBACK_URL = ""
+FEEDBACK_URL = "https://forms.gle/rCDzNotXnRzBJYJW6"
 FEEDBACK_PREFIXES = ("https://docs.google.com/forms/", "https://forms.gle/")
 
 
@@ -108,6 +108,11 @@ def inject_css() -> None:
 /* Header, sections, footer */
 .phc-title { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
 .phc-sub { color: var(--text-2); font-size: 1.05rem; margin-top: .35rem; }
+.phc-advice { display: inline-block; margin-top: .7rem; padding: .25rem .8rem; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--card); color: var(--text-2); font-size: .85rem; }
+.st-key-feedback { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.1rem 1.25rem; margin-top: 2.5rem; }
+.phc-feedback-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .2rem; }
 .phc-section { font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
   color: var(--text-2); margin: 1.75rem 0 .15rem; }
 .phc-side-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .25rem; }
@@ -648,6 +653,7 @@ def header() -> None:
     st.html(
         '<div class="phc-title">Portfolio Health Check</div>'
         '<div class="phc-sub">See how concentrated your portfolio is — in under a minute.</div>'
+        '<div class="phc-advice">Just math on your numbers, not investment advice.</div>'
     )
 
 
@@ -743,6 +749,12 @@ def choose_portfolio():
             mime="text/csv",
             icon=":material/download:",
         )
+        if feedback_url():
+            st.html(
+                '<div class="phc-side-title phc-side-gap">Feedback</div>'
+                '<div class="phc-muted">Something unclear or missing? Anonymous, no name or email.</div>'
+            )
+            st.link_button("Give feedback", feedback_url(), icon=":material/rate_review:")
 
     if upload is not None:
         return io.BytesIO(upload.getvalue()), upload.file_id, upload.name
@@ -869,7 +881,7 @@ def start_screen() -> None:
             "Choose a portfolio",
             "Pick a sample in the side panel, upload a CSV, or type your positions.",
         ),
-        ("See your score", "One number from 0 to 100, built from two concentration limits."),
+        ("See your score", "One number from 0 to 100, from three parts: sector, positions and spread."),
         ("Read the details", "Limits, stocks, charts and every position, one tab each."),
     ]
     cards = "".join(
@@ -1158,12 +1170,23 @@ and it does not know your goals, income or situation.
         st.rerun()
 
 
+def feedback_card() -> None:
+    """Asks for feedback at the end of the page (S1-28): anonymous, in a new tab."""
+    if not feedback_url():
+        return
+    with st.container(key="feedback"):
+        st.html(
+            '<div class="phc-feedback-title">Help make this app better</div>'
+            '<div class="phc-muted">What was unclear, what is missing, what would you change? '
+            "A short anonymous form: no name or email, and please don't write personal details.</div>"
+        )
+        st.link_button("Give feedback", feedback_url(), type="primary", icon=":material/rate_review:")
+
+
 def footer() -> None:
+    feedback_card()
     if st.button("How the score works", key="about", type="tertiary", icon=":material/info:"):
         about_dialog()
-    if feedback_url():
-        st.link_button("Give feedback", feedback_url(), type="tertiary", icon=":material/rate_review:",
-                       help="An anonymous Google form, in a new tab. Please don't write your name or email.")
     st.html(
         '<div class="phc-footer">Analysis, not investment advice. '
         "Both limits follow EU and US fund rules; the Watch thresholds and the sector "
