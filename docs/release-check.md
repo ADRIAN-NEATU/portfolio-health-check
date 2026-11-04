@@ -60,14 +60,15 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 | Passwords, API keys, tokens in any commit | none |
 | Local paths, e-mail or Jira site in the files | none (the e-mail appears only as the commit author) |
 | `notes/` and the real portfolio file | never committed; `notes/` is in `.gitignore` |
-| Index-provider data (MSCI, Nasdaq, CRSP) | not in any file or any commit that will be pushed |
+| Index-provider data (MSCI, Nasdaq, CRSP) | not in any file or any commit: the few figures older commits quoted were removed from the whole history on 4 Nov, before the first push |
 | Requests from the page to other sites | none (Google Fonts and the Google-hosted tab icon removed on 2 Nov) |
 | Licence | MIT, "as is", in `LICENSE` |
 | Trademarks | GICS, S&P 500, Nasdaq-100, MSCI, FTSE named as their owners' marks in the README |
 | Third-party data | SEC EDGAR (public domain), OpenFIGI (MIT), World Bank (CC BY 4.0, attributed) |
-| Not investment advice | "Before you start" window with "I understand", the footer, no buy or sell recommendations |
+| Not investment advice | "Before you start" window with "I understand", a line under the title, the footer, no buy or sell recommendations |
+| Sources' usage rules | SEC: identified requests, at most about 7 a second (its limit is 10); OpenFIGI: public API, without a key by default |
+| Feedback | anonymous Google form: no name or e-mail asked, no sign-in; the app itself collects nothing |
 
 **Still the owner's choice:**
 - The author e-mail is visible in every commit. Future commits can use GitHub's private no-reply address.
-- Older commits quote a few index-provider figures as single facts with their source. A full history rewrite before the first push can remove them.
 - The documents mention shares from the author's real portfolio (68% in the US, Industrials 28.9%), without amounts.

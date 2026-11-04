@@ -208,3 +208,20 @@ def test_partial_details_leave_the_rest_to_the_user():
     assert problems == ["NOVOB: sector, market cap"]
     # nothing new the second time: the editor does not refresh in a loop
     assert scoring.autofill(filled, lambda names: {n: partial for n in names})[1] == []
+
+
+def test_sec_requests_are_paced():
+    """SEC allows at most 10 requests a second: even from several threads, requests wait their turn."""
+    import threading
+    import time
+
+    times = []
+    threads = [threading.Thread(target=lambda: (lookup._pace(), times.append(time.monotonic()))) for _ in range(5)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    times.sort()
+    gaps = [b - a for a, b in zip(times, times[1:])]
+    assert min(gaps) >= lookup.SEC_MIN_INTERVAL * 0.9
+    assert 1 / lookup.SEC_MIN_INTERVAL < 10

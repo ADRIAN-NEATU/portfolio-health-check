@@ -172,7 +172,24 @@ class SourceError(Exception):
     """A source could not be reached or answered with an error."""
 
 
+# SEC's fair-access policy allows at most 10 requests a second: every request to SEC
+# (all GETs here) waits its turn, so the app stays well below that, even with threads.
+SEC_MIN_INTERVAL = 0.15  # seconds between two requests, about 7 a second
+_pace_lock = threading.Lock()
+_last_request = 0.0
+
+
+def _pace() -> None:
+    global _last_request
+    with _pace_lock:
+        wait = _last_request + SEC_MIN_INTERVAL - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _last_request = time.monotonic()
+
+
 def _get_json(url: str):
+    _pace()
     try:
         response = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT)
         response.raise_for_status()
