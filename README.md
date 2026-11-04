@@ -43,7 +43,7 @@ The app can run for free on [Streamlit Community Cloud](https://share.streamlit.
 
 1. Push the project to GitHub (`git push -u origin main`).
 2. Sign in at share.streamlit.io with your GitHub account.
-3. **Create app** → choose the repository `portfolio-health-check`, branch `main`, main file `app.py` → **Deploy**.
+3. **Create app** → choose the repository `portfolio-health-check`, branch `main`, main file `app.py`; under **Advanced settings** pick Python 3.12, the version the app was tested with → **Deploy**.
 4. In a few minutes the app has an address such as `https://<name>.streamlit.app`: send that link.
 
 Every visitor gets their own session: one person's portfolio is never shown to another. Streamlit Community Cloud keeps its own logs and has its own privacy policy, which applies to the online copy.
@@ -158,7 +158,7 @@ The 11 official GICS sectors: Energy, Materials, Industrials, Consumer Discretio
 
 ## Licence and trademarks
 
-The code is under the [MIT licence](LICENSE). GICS®, S&P 500®, Nasdaq-100®, MSCI® and FTSE® are trademarks of their respective owners, used here only to name what they refer to; this project is not affiliated with, endorsed or sponsored by any of them. The sectors in the built-in list are our own assignments, made from public information, not official GICS data.
+The code is under the [MIT licence](LICENSE). GICS®, S&P 500®, Nasdaq-100®, MSCI® and FTSE® are trademarks of their respective owners, used here only to name what they refer to; this project is not affiliated with, endorsed or sponsored by any of them. The same goes for the fund, issuer and company names in the built-in list (iShares, Vanguard, Xtrackers, SPDR, Invesco, Patria, InterCapital, Globinvest and others), which name the products a user may hold. The sectors in the built-in list are our own assignments, made from public information, not official GICS data.
 
 ## How it was built
 

@@ -1089,7 +1089,8 @@ def about_dialog() -> None:
     # What is said about funds depends on whether index figures are installed (D6, D8).
     if scoring.index_funds().empty:
         narrow = ""
-        inside = "It does not look inside funds: a broad fund counts as diversified."
+        inside = ("It does not look inside funds: a broad fund counts as diversified, and a fund on a "
+                  "small index, like BET, counts as its companies at equal weights.")
     else:
         narrow = (" A fund on a narrower index, like the Nasdaq-100, counts towards the sector"
                   " limit by what it holds.")
