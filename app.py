@@ -1130,6 +1130,16 @@ def about_dialog() -> None:
 is, using only the numbers you enter. It does not recommend buying, selling or holding anything,
 and it does not know your goals, income or situation.
 
+**Before you rely on it**
+- The score measures concentration only. A high score does not mean a portfolio is safe or
+  will do well, and a low score does not mean it is bad.
+- Investing involves risk, including losing money. Your decisions are your own; for advice
+  that fits your situation, talk to a licensed financial adviser.
+- This is a personal, educational project. Its author is not a licensed investment adviser,
+  and it is not a regulated financial service.
+- It is provided "as is", without any warranty that it is complete, correct or up to date,
+  and its author is not liable for decisions made with it.
+
 **How the score is calculated**
 - Each position's weight is its value divided by the total of the portfolio.
 - The score is the average of three parts, each from 0 to 100:
@@ -1152,7 +1162,9 @@ and it does not know your goals, income or situation.
 
 **What it can't see**
 - {inside}
-- Details looked up online come from public sources and may be wrong: check them.
+- The sectors and company sizes in the built-in list are this app's own approximate
+  assignments, and details looked up online come from public sources: both may be wrong,
+  so check them.
 
 **Your data**
 - Your portfolio is kept only in the app's memory while you use it: nothing is written to a
