@@ -37,6 +37,9 @@ COLORS = {
 # or not a Google Forms link, the app shows no feedback button.
 FEEDBACK_URL = "https://forms.gle/rCDzNotXnRzBJYJW6"
 FEEDBACK_PREFIXES = ("https://docs.google.com/forms/", "https://forms.gle/")
+# The terms of use and the privacy notice, published with the code.
+TERMS_URL = "https://github.com/ADRIAN-NEATU/portfolio-health-check/blob/main/TERMS.md"
+PRIVACY_URL = "https://github.com/ADRIAN-NEATU/portfolio-health-check/blob/main/PRIVACY.md"
 
 
 def feedback_url() -> str:
@@ -118,6 +121,7 @@ def inject_css() -> None:
 .phc-side-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .25rem; }
 .phc-footer { margin-top: 3.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
   color: var(--note); font-size: .8rem; text-align: center; }
+.phc-footer a { color: var(--note); }
 
 /* Cards */
 .phc-card, .st-key-glance, .st-key-profile { background: var(--card); border: 1px solid var(--border);
@@ -1177,7 +1181,11 @@ and it does not know your goals, income or situation.
 - The app's own code collects no usage statistics. The shared online version runs on Streamlit
   Community Cloud, whose page adds its own cookies and analytics (such as Google Analytics);
   this app can't turn them off. They fall under
-  [Streamlit's privacy policy](https://streamlit.io/privacy-policy).{feedback}
+  [Streamlit's privacy policy](https://streamlit.io/privacy-policy). You can block them in your
+  browser; the app still works.{feedback}
+
+Using the app means you accept the [Terms of use]({TERMS_URL}) and have read the
+[Privacy notice]({PRIVACY_URL}).
 """
     )
     if st.button("I understand", type="primary"):
@@ -1205,7 +1213,9 @@ def footer() -> None:
     st.html(
         '<div class="phc-footer">Analysis, not investment advice. '
         "Both limits follow EU and US fund rules; the Watch thresholds and the sector "
-        "margin are examples until replaced with the author's thesis rules.</div>"
+        "margin are examples until replaced with the author's thesis rules.<br>"
+        f'<a href="{TERMS_URL}" target="_blank">Terms of use</a> · '
+        f'<a href="{PRIVACY_URL}" target="_blank">Privacy notice</a></div>'
     )
 
 

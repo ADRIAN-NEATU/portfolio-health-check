@@ -2,6 +2,11 @@
 
 ## v0.1 – MVP (released 4 Nov 2026)
 
+### 5 Nov 2026
+- Terms of use ([TERMS.md](TERMS.md)) and a privacy notice ([PRIVACY.md](PRIVACY.md)), linked at the bottom of the page and in the "Before you start" window.
+- The "Before you start" window says more plainly that a high score does not mean a safe portfolio, that the author is not a licensed adviser, and that the app comes without warranty.
+- The online version's hosting page adds Streamlit's own analytics; the window says so, with a link to Streamlit's privacy policy, and that blocking them doesn't stop the app.
+
 ### 4 Nov 2026
 - The built-in list knows the ETFs listed in Bucharest (BET, BET-TR, BET-TRN, BET-XT, Croatian and Slovenian index funds, a Romanian government bond fund) and the largest UCITS ETFs: global, US, European, emerging markets, bonds and a money-market fund. The name of TVBETETF is corrected.
 - A fund on a small index, such as BET (at most 20 companies), no longer counts as fully spread: it counts as its companies at equal weights.

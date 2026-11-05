@@ -63,6 +63,7 @@ Every feature, sorted by how ready it is, and the security and legal checks befo
 | Index-provider data (MSCI, Nasdaq, CRSP) | not in any file or any commit: the few figures older commits quoted were removed from the whole history on 4 Nov, before the first push |
 | Requests from the page to other sites | none from the app (Google Fonts and the Google-hosted tab icon removed on 2 Nov). Online, the Streamlit Community Cloud page adds its own analytics and cookies (Google Analytics, Segment, Heap); the "Before you start" window and the README say so, with Streamlit's privacy policy |
 | Licence | MIT, "as is", in `LICENSE` |
+| Terms and privacy | `TERMS.md` and `PRIVACY.md` (5 Nov), linked in the footer and the "Before you start" window |
 | Trademarks | GICS, S&P 500, Nasdaq-100, MSCI, FTSE named as their owners' marks in the README |
 | Third-party data | SEC EDGAR (public domain), OpenFIGI (MIT), World Bank (CC BY 4.0, attributed) |
 | Not investment advice | "Before you start" window with "I understand", a line under the title, the footer, no buy or sell recommendations |

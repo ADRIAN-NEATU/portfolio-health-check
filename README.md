@@ -68,7 +68,7 @@ The app opens at http://localhost:8501. Run the tests with `pytest`.
 
 The app opens with a short "Before you start" window: the app is just math on the numbers you enter, not investment advice. It also explains the score in a few lines. "How the score works" at the bottom of the page opens it again.
 
-The score measures concentration only: a high score does not mean a portfolio is safe or will do well. This is a personal, educational project; its author is not a licensed investment adviser, and it is not a regulated financial service. It is provided "as is", without warranty, and its author is not liable for decisions made with it. For advice that fits your situation, talk to a licensed financial adviser.
+The score measures concentration only: a high score does not mean a portfolio is safe or will do well. This is a personal, educational project; its author is not a licensed investment adviser, and it is not a regulated financial service. It is provided "as is", without warranty, and its author is not liable for decisions made with it. For advice that fits your situation, talk to a licensed financial adviser. See the [terms of use](TERMS.md) and the [privacy notice](PRIVACY.md).
 
 "Give feedback", in the side panel and at the bottom of the page, opens an anonymous Google form in a new tab. It asks for no name or email. Answers are kept by Google, in the form owner's account.
 
